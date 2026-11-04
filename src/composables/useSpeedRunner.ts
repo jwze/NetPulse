@@ -4,6 +4,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useNodesStore } from '@/stores/nodes'
 import { useFormatter } from '@/composables/useFormatter'
 import { useBackgroundKeepAlive } from '@/composables/useBackgroundKeepAlive'
+import { useHistoryStore } from '@/stores/history'
 import { validateSpeedNodeUrl } from '@/utils/nodeConnectivity'
 import { brand } from '@/config/brand'
 import { safeWebNodeHeaders } from '@/utils/webNodeHeaders'
@@ -36,6 +37,7 @@ export function useSpeedRunner(target?: ChartTarget | null) {
   const panel = usePanelStore()
   const settings = useSettingsStore()
   const nodesStore = useNodesStore()
+  const history = useHistoryStore()
   const { formatBytes, formatSpeed, formatBandwidth, formatRunTime } = useFormatter()
   const keepAlive = useBackgroundKeepAlive(
     () => panel.isRunning,
@@ -414,6 +416,12 @@ export function useSpeedRunner(target?: ChartTarget | null) {
     }
   }
 
+  function currentNodeLabel() {
+    if (settings.groupMode) return `节点组 · ${settings.groupValue}`
+    const matched = Object.values(nodesStore.groupedNodes).flat().find(node => node.url === settings.urlValue)
+    return matched?.title || settings.urlValue
+  }
+
   async function stop() {
     if (abortController) {
       abortController.abort()
@@ -422,10 +430,22 @@ export function useSpeedRunner(target?: ChartTarget | null) {
     clearTasks()
     keepAlive.stop()
     const elapsed = Math.max(1, Date.now() / 1000 - startTime)
-    const avgSpeed = (panel.bytesUsed - startUse) / elapsed
+    const totalBytes = Math.max(0, panel.bytesUsed - startUse)
+    const avgSpeed = totalBytes / elapsed
     setSpeed(avgSpeed)
     setUsed()
     setTitle()
+
+    if (panel.runTimeStamp >= 1 && totalBytes > 0) {
+      history.add({
+        kind: 'download',
+        speed: totalBytes / elapsed / 1024 / 1024,
+        bytes: totalBytes,
+        seconds: elapsed,
+        node: currentNodeLabel(),
+      })
+    }
+
     rotationBytesAtSwitch = 0
     rotationRunCounts = []
     rotationCurrentIndex = 0

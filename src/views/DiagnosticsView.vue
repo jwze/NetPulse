@@ -4,6 +4,7 @@ import ClientInfoCard from '@/components/diagnostics/ClientInfoCard.vue'
 import DnsLookupCard from '@/components/diagnostics/DnsLookupCard.vue'
 import QualityCard from '@/components/diagnostics/QualityCard.vue'
 import UploadCard from '@/components/diagnostics/UploadCard.vue'
+import HistoryCard from '@/components/diagnostics/HistoryCard.vue'
 </script>
 
 <template>
@@ -21,6 +22,7 @@ import UploadCard from '@/components/diagnostics/UploadCard.vue'
       <div class="span-full"><DnsLookupCard /></div>
       <QualityCard />
       <UploadCard />
+      <div class="span-full"><HistoryCard /></div>
     </div>
   </div>
 </template>

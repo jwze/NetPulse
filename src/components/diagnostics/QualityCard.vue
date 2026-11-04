@@ -2,6 +2,9 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import DiagCard from '@/components/diagnostics/DiagCard.vue'
 import { runQualityTest, type QualityResult } from '@/utils/quality'
+import { useHistoryStore } from '@/stores/history'
+
+const history = useHistoryStore()
 
 const COUNT = 20
 
@@ -44,6 +47,15 @@ async function start() {
         progress.value = { done, total, ms }
       },
     })
+    if (result.value.received > 0 && !controller.signal.aborted) {
+      history.add({
+        kind: 'quality',
+        latency: result.value.avg,
+        jitter: result.value.jitter,
+        loss: result.value.loss,
+        node: result.value.target,
+      })
+    }
   } catch (err) {
     error.value = err instanceof Error ? err.message : '测试中断'
   } finally {

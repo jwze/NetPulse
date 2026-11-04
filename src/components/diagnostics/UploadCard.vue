@@ -2,6 +2,9 @@
 import { onBeforeUnmount, ref } from 'vue'
 import DiagCard from '@/components/diagnostics/DiagCard.vue'
 import { runUploadTest, type UploadProgress, type UploadResult } from '@/utils/uploadTest'
+import { useHistoryStore } from '@/stores/history'
+
+const history = useHistoryStore()
 
 const running = ref(false)
 const live = ref<UploadProgress | null>(null)
@@ -37,6 +40,13 @@ async function start() {
       onProgress: (state) => {
         live.value = state
       },
+    })
+    history.add({
+      kind: 'upload',
+      mbps: result.value.mbps,
+      bytes: result.value.bytes,
+      seconds: result.value.seconds,
+      node: 'Cloudflare — __up',
     })
   } catch (err) {
     error.value = err instanceof Error ? err.message : '上传测试失败'
