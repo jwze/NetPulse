@@ -14,8 +14,12 @@ const props = defineProps<{
 
 const siteOf = (id: string, ip: string) => SOURCES.find(source => source.id === id)?.site?.(ip) || ''
 
+/** 按来源顺序排好，谁先返回都不改变行的位置 */
 const rows = computed(() =>
-  props.results.map(result => {
+  SOURCES.map(source => {
+    const result = props.results.find(item => item.id === source.id)
+    if (!result) return { id: source.id, name: source.name, pending: true }
+
     const data = result.data || {}
     const facts: string[] = []
     if (data.cc) facts.push(data.cc + (data.city ? ` · ${data.city}` : ''))
@@ -37,6 +41,7 @@ const rows = computed(() =>
     return {
       id: result.id,
       name: result.name,
+      pending: false,
       error: result.error,
       ms: result.ms,
       facts: facts.join(' · '),
@@ -50,27 +55,31 @@ const checked = computed(() => props.dnsbl.filter(item => item.listed !== null).
 </script>
 
 <template>
-  <section class="np-card iq-sources">
-    <header class="iq-head">
+  <section class="np-card np-panel iq-sources">
+    <header class="np-panel-head">
       <h2>来源明细</h2>
-      <span class="iq-count font-mono">{{ done }}/{{ total }}</span>
+      <span class="np-panel-meta font-mono">{{ done }}/{{ total }}</span>
     </header>
 
     <ul class="iq-rows">
-      <li v-for="row in rows" :key="row.id" class="iq-row">
-        <span class="iq-status" :class="row.error ? 'is-fail' : 'is-ok'">{{ row.error ? '✕' : '✓' }}</span>
+      <li v-for="row in rows" :key="row.id" class="iq-row" :class="{ 'is-pending': row.pending }">
+        <span class="iq-status" :class="row.pending ? '' : row.error ? 'is-fail' : 'is-ok'">
+          {{ row.pending ? '·' : row.error ? '✕' : '✓' }}
+        </span>
         <div class="iq-row-body">
           <div class="iq-row-top">
             <a v-if="row.site && !row.error" class="iq-row-name" :href="row.site" target="_blank" rel="noreferrer noopener">{{ row.name }}</a>
             <span v-else class="iq-row-name">{{ row.name }}</span>
-            <span v-for="flag in row.flags" :key="flag" class="iq-flag">{{ flag }}</span>
-            <span class="iq-ms font-mono">{{ row.error ? '' : `${row.ms} ms` }}</span>
+            <template v-if="row.pending">
+              <span class="np-skel iq-pending-bar" />
+            </template>
+            <template v-else>
+              <span v-for="flag in row.flags" :key="flag" class="iq-flag">{{ flag }}</span>
+              <span class="iq-ms font-mono">{{ row.error ? '' : `${row.ms} ms` }}</span>
+            </template>
           </div>
-          <p class="iq-row-facts">{{ row.error ? '没有返回结果' : row.facts || '没有更多字段' }}</p>
+          <p v-if="!row.pending" class="iq-row-facts">{{ row.error ? '没有返回结果' : row.facts || '没有更多字段' }}</p>
         </div>
-      </li>
-      <li v-if="!rows.length" class="iq-row is-empty">
-        {{ running ? '等待来源返回…' : '还没有查询结果' }}
       </li>
     </ul>
 
@@ -94,27 +103,7 @@ const checked = computed(() => props.dnsbl.filter(item => item.listed !== null).
 
 <style scoped>
 .iq-sources {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
   min-width: 0;
-}
-
-.iq-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.iq-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.iq-count {
-  color: var(--text-muted);
-  font-size: 11px;
 }
 
 .iq-rows {
@@ -126,6 +115,7 @@ const checked = computed(() => props.dnsbl.filter(item => item.listed !== null).
 .iq-row {
   display: flex;
   gap: 8px;
+  min-height: 52px;
   padding: 8px 0;
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -134,9 +124,15 @@ const checked = computed(() => props.dnsbl.filter(item => item.listed !== null).
   border-bottom: none;
 }
 
-.iq-row.is-empty {
-  color: var(--text-muted);
-  font-size: 12px;
+.iq-row.is-pending {
+  opacity: 0.6;
+}
+
+.iq-pending-bar {
+  margin-left: auto;
+  width: 72px;
+  height: 8px;
+  align-self: center;
 }
 
 .iq-status {

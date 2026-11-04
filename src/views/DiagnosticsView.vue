@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PageHead from '@/components/common/PageHead.vue'
 import ExitInfoCard from '@/components/diagnostics/ExitInfoCard.vue'
 import ClientInfoCard from '@/components/diagnostics/ClientInfoCard.vue'
 import DnsLookupCard from '@/components/diagnostics/DnsLookupCard.vue'
@@ -10,10 +11,8 @@ import HistoryCard from '@/components/diagnostics/HistoryCard.vue'
 </script>
 
 <template>
-  <div class="np-shell pt-5 pb-14">
-    <section class="hero">
-      <h1 class="hero-title">网络诊断</h1>
-    </section>
+  <div class="np-shell np-page">
+    <PageHead title="网络诊断" />
 
     <div class="diag-grid">
       <ExitInfoCard />
@@ -22,35 +21,23 @@ import HistoryCard from '@/components/diagnostics/HistoryCard.vue'
       <QualityCard />
       <UploadCard />
       <div class="span-full"><MultiNodeCard /></div>
-      <div class="span-full"><WebRtcCard /></div>
-      <div class="span-full"><HistoryCard /></div>
+      <WebRtcCard />
+      <HistoryCard />
     </div>
   </div>
 </template>
 
 <style scoped>
-.hero {
-  margin-top: 3px;
-  margin-bottom: 14px;
-}
-
-.hero-title {
-  color: var(--text-primary);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-}
-
 .diag-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .span-full {
   display: flex;
+  grid-column: 1 / -1;
 }
 
 .span-full > * {
@@ -60,10 +47,6 @@ import HistoryCard from '@/components/diagnostics/HistoryCard.vue'
 @media (min-width: 900px) {
   .diag-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .span-full {
-    grid-column: 1 / -1;
   }
 }
 </style>

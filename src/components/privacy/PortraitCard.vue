@@ -10,11 +10,12 @@ defineProps<{
 </script>
 
 <template>
-  <section class="np-card pv-portrait">
-    <header class="pv-head">
+  <section class="np-card np-panel pv-portrait">
+    <header class="np-panel-head">
       <h2>网站眼里的你</h2>
       <span v-if="shared" class="np-chip pv-flag">分享的画像</span>
-      <span v-else-if="portrait" class="pv-fp font-mono">指纹 {{ portrait.fpid }}</span>
+      <span v-else-if="portrait" class="np-panel-meta font-mono">指纹 {{ portrait.fpid }}</span>
+      <span v-else class="np-panel-meta">{{ running ? '读取中…' : '等待探测' }}</span>
     </header>
 
     <p v-if="portrait" class="pv-sentence">
@@ -27,7 +28,7 @@ defineProps<{
       {{ running ? '正在读这台设备的信息…' : '点「开始探测」，看看网站不用询问就能读到什么。' }}
     </p>
 
-    <ul v-if="labels.length" class="pv-labels">
+    <ul class="pv-labels">
       <li v-for="item in labels" :key="item.id">{{ item.text }}</li>
     </ul>
   </section>
@@ -35,22 +36,7 @@ defineProps<{
 
 <style scoped>
 .pv-portrait {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
-}
-
-.pv-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.pv-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
 }
 
 .pv-flag {
@@ -58,12 +44,8 @@ defineProps<{
   padding: 2px 7px;
 }
 
-.pv-fp {
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
 .pv-sentence {
+  min-height: 76px;
   color: var(--text-secondary);
   font-size: 12.5px;
   line-height: 2;
@@ -78,6 +60,9 @@ defineProps<{
 }
 
 .pv-empty {
+  display: flex;
+  align-items: center;
+  min-height: 76px;
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.7;
@@ -87,6 +72,7 @@ defineProps<{
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+  min-height: 24px;
   list-style: none;
 }
 

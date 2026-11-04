@@ -112,17 +112,16 @@ const hint = computed(() => {
 
 .lane-track {
   position: relative;
-  height: 10px;
-  border-radius: 5px;
-  background:
-    linear-gradient(90deg, rgba(22, 163, 74, 0.14) 0%, rgba(37, 99, 235, 0.12) 42%, rgba(217, 119, 6, 0.14) 72%, rgba(220, 38, 38, 0.12) 100%);
+  height: 8px;
+  border-radius: 4px;
+  background: var(--bg-subtle);
 }
 
 .lane-cold {
   position: absolute;
   top: -3px;
   width: 1px;
-  height: 16px;
+  height: 14px;
   background: var(--text-muted);
   opacity: 0.35;
   transform: translateX(-0.5px);
@@ -130,7 +129,7 @@ const hint = computed(() => {
 
 .lane-dot {
   position: absolute;
-  top: 3px;
+  top: 2px;
   width: 4px;
   height: 4px;
   border-radius: 50%;
@@ -141,13 +140,12 @@ const hint = computed(() => {
 
 .lane-median {
   position: absolute;
-  top: -1px;
-  width: 8px;
+  top: -2px;
+  width: 3px;
   height: 12px;
   border-radius: 2px;
   background: var(--tone);
-  transform: translateX(-4px);
-  box-shadow: 0 0 0 2px var(--bg-card);
+  transform: translateX(-1.5px);
 }
 
 .lane-ms {

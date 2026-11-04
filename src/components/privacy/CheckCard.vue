@@ -64,8 +64,8 @@ const displayTitle = computed(() =>
 </script>
 
 <template>
-  <section class="np-card pv-checks">
-    <header class="pv-head">
+  <section class="np-card np-panel pv-checks">
+    <header class="np-panel-head">
       <h2>伪装检测</h2>
       <span class="pv-score font-mono" :class="`tone-${displayTone}`">
         {{ items.some(i => i.level !== 'none') ? displayScore.grade : '—' }}
@@ -92,22 +92,7 @@ const displayTitle = computed(() =>
 
 <style scoped>
 .pv-checks {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
-}
-
-.pv-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.pv-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
 }
 
 .pv-score {
@@ -134,6 +119,7 @@ const displayTitle = computed(() =>
 .dark .tone-ok { color: #50E3A4; }
 
 .pv-verdict {
+  min-height: 19px;
   font-size: 12px;
   line-height: 1.6;
 }

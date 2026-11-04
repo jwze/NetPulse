@@ -24,13 +24,13 @@ const rows = computed(() =>
 </script>
 
 <template>
-  <section class="np-card eg-exits">
-    <header class="eg-head">
+  <section class="np-card np-panel eg-exits">
+    <header class="np-panel-head">
       <h2>出口</h2>
-      <span class="eg-count font-mono">{{ exits.length }}</span>
+      <span class="np-panel-meta font-mono">{{ exits.length }}</span>
     </header>
 
-    <p v-if="!rows.length" class="eg-empty">
+    <p v-if="!rows.length" class="np-empty eg-empty">
       {{ running ? '正在询问各类目的地…' : '还没有结果。开始探测后会列出这条线路上所有的出口。' }}
     </p>
 
@@ -60,32 +60,11 @@ const rows = computed(() =>
 
 <style scoped>
 .eg-exits {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.eg-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.eg-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.eg-count {
-  color: var(--text-muted);
-  font-size: 12px;
+  min-width: 0;
 }
 
 .eg-empty {
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.6;
+  min-height: 92px;
 }
 
 .eg-list {

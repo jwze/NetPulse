@@ -39,19 +39,20 @@ function sourceText(exit: ExitGroup) {
 </script>
 
 <template>
-  <section class="np-card exit-card">
-    <header class="exit-head">
-      <div class="exit-head-main">
-        <h3>出口</h3>
+  <section class="np-card np-panel exit-card">
+    <header class="np-panel-head">
+      <h2>
+        出口
         <span v-if="warp" class="np-chip exit-warp">WARP</span>
-      </div>
-      <button class="np-btn-ghost exit-eye" type="button" @click="emit('toggle-mask')">
+      </h2>
+      <button class="np-btn-quiet exit-eye" type="button" @click="emit('toggle-mask')">
         {{ mask ? '显示 IP' : '隐藏 IP' }}
       </button>
     </header>
 
-    <p v-if="!hasExits && state === 'checking'" class="exit-empty">正在核对多个来源…</p>
-    <p v-else-if="!hasExits" class="exit-empty">开始探测后，这里会列出每条出口线路。</p>
+    <p v-if="!hasExits" class="np-empty exit-empty">
+      {{ state === 'checking' ? '正在核对多个来源…' : '开始探测后，这里会列出每条出口线路。' }}
+    </p>
 
     <ul v-else class="exit-list">
       <li v-for="exit in exits" :key="exit.key" class="exit-item">
@@ -80,28 +81,7 @@ function sourceText(exit: ExitGroup) {
 
 <style scoped>
 .exit-card {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
-}
-
-.exit-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.exit-head h3 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.exit-head-main {
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .exit-warp {
@@ -110,16 +90,12 @@ function sourceText(exit: ExitGroup) {
 }
 
 .exit-eye {
-  width: auto;
-  height: 24px;
-  padding: 0 8px;
-  font-size: 11px;
+  height: 26px;
+  padding: 0 9px;
 }
 
 .exit-empty {
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.6;
+  min-height: 88px;
 }
 
 .exit-list {

@@ -57,10 +57,10 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
 </script>
 
 <template>
-  <section class="np-card cmp-card">
-    <header class="cmp-head">
+  <section class="np-card np-panel cmp-card">
+    <header class="np-panel-head">
       <h2>IPv4 与 IPv6 对比</h2>
-      <span class="cmp-count font-mono">{{ done }}/{{ total }}</span>
+      <span class="np-panel-meta font-mono">{{ done }}/{{ total }}</span>
     </header>
 
     <p class="cmp-verdict" :class="pending ? 's-muted' : `s-${tone}`">{{ title }}</p>
@@ -91,31 +91,11 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
 
 <style scoped>
 .cmp-card {
-  display: flex;
-  flex-direction: column;
   gap: 4px;
 }
 
-.cmp-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.cmp-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.cmp-count {
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
 .cmp-verdict {
-  margin-top: 6px;
+  margin-top: 4px;
   color: var(--text-primary);
   font-size: 16px;
   font-weight: 650;

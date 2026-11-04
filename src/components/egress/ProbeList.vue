@@ -30,10 +30,10 @@ const groups = computed(() =>
 </script>
 
 <template>
-  <section class="np-card eg-probes">
-    <header class="eg-head">
+  <section class="np-card np-panel eg-probes">
+    <header class="np-panel-head">
       <h2>探测器</h2>
-      <span class="eg-hint">走另一条线路的会标出来</span>
+      <span class="np-panel-meta">走另一条线路的会标出来</span>
     </header>
 
     <div class="eg-groups">
@@ -70,41 +70,31 @@ const groups = computed(() =>
 
 <style scoped>
 .eg-probes {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
   min-width: 0;
 }
 
-.eg-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.eg-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.eg-hint {
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
 .eg-groups {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 14px 24px;
+  columns: 1;
+  column-gap: 16px;
+}
+
+.eg-group {
+  break-inside: avoid;
+  margin-bottom: 12px;
+  padding: 0 10px 4px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+}
+
+.eg-group:last-child {
+  margin-bottom: 0;
 }
 
 .eg-group-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 5px;
+  padding: 7px 0 5px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -112,6 +102,7 @@ const groups = computed(() =>
   color: var(--text-secondary);
   font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .eg-group-count {
@@ -191,7 +182,7 @@ const groups = computed(() =>
 
 @media (min-width: 720px) {
   .eg-groups {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    columns: 2;
   }
 }
 </style>

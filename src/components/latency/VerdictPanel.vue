@@ -23,27 +23,31 @@ const detail = computed(() => {
   return props.running ? '正在确认出口并逐个测量服务往返。' : '开始后会先确认出口线路，再逐个测量服务的真实往返。'
 })
 
+/** 三格始终存在，探测前后高度不变 */
 const stats = computed(() => {
-  if (!props.verdict) return []
-  const { local, global, med } = props.verdict
+  const { local, global, med } = props.verdict || { local: null, global: null, med: null }
   return [
-    { key: 'local', label: '本地常用', med: local.med, ok: local.ok, n: local.n },
-    { key: 'global', label: '海外服务', med: global.med, ok: global.ok, n: global.n },
-    { key: 'all', label: '整体', med, ok: 0, n: 0 },
+    { key: 'local', label: '本地常用', med: local?.med ?? null, ok: local?.ok ?? 0, n: local?.n ?? 0 },
+    { key: 'global', label: '海外服务', med: global?.med ?? null, ok: global?.ok ?? 0, n: global?.n ?? 0 },
+    { key: 'all', label: '整体', med: med ?? null, ok: 0, n: 0 },
   ]
 })
 </script>
 
 <template>
-  <section class="np-card verdict-card" :class="`tone-${tone}`">
-    <div class="verdict-head">
+  <section class="np-card np-panel verdict-card" :class="`tone-${tone}`">
+    <header class="np-panel-head">
+      <h2>延迟结论</h2>
+      <span v-if="answered.n" class="np-panel-meta font-mono">{{ answered.ok }}/{{ answered.n }}</span>
+    </header>
+
+    <div class="verdict-main">
       <span class="verdict-dot" />
       <h3>{{ headline }}</h3>
-      <span v-if="answered.n" class="verdict-count font-mono">{{ answered.ok }}/{{ answered.n }}</span>
     </div>
     <p class="verdict-text">{{ detail }}</p>
 
-    <div v-if="stats.length" class="verdict-stats">
+    <div class="verdict-stats">
       <div v-for="item in stats" :key="item.key" class="verdict-stat">
         <span class="verdict-label">{{ item.label }}</span>
         <span class="verdict-value font-mono">
@@ -53,7 +57,7 @@ const stats = computed(() => {
       </div>
     </div>
 
-    <div v-if="uses.length" class="verdict-uses">
+    <div class="verdict-uses">
       <span
         v-for="use in uses"
         :key="use.id"
@@ -64,15 +68,15 @@ const stats = computed(() => {
         {{ use.label }}
         <b>{{ USE_TEXT[use.status] }}</b>
       </span>
+      <span v-if="!uses.length" class="verdict-uses-empty">开始后按用途给出可用性</span>
     </div>
   </section>
 </template>
 
 <style scoped>
 .verdict-card {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
+  min-height: 352px;
   --tone: var(--text-muted);
 }
 
@@ -87,7 +91,7 @@ const stats = computed(() => {
 .dark .tone-warn { --tone: #fbbf24; }
 .dark .tone-bad { --tone: #f87171; }
 
-.verdict-head {
+.verdict-main {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -101,22 +105,18 @@ const stats = computed(() => {
   background: var(--tone);
 }
 
-.verdict-head h3 {
+.verdict-main h3 {
   flex: 1;
   min-width: 0;
   color: var(--text-primary);
   font-size: 15px;
   font-weight: 700;
+  line-height: 1.4;
   letter-spacing: -0.01em;
 }
 
-.verdict-count {
-  flex: 0 0 auto;
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
 .verdict-text {
+  min-height: 40px;
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.65;
@@ -165,8 +165,15 @@ const stats = computed(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-height: 58px;
   padding-top: 8px;
   border-top: 1px solid var(--border-subtle);
+}
+
+.verdict-uses-empty {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .use-chip {

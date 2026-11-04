@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
+import PageHead from '@/components/common/PageHead.vue'
 import ScoreBoard from '@/components/unlock/ScoreBoard.vue'
 import ServiceRows from '@/components/unlock/ServiceRows.vue'
 import { useUnlock } from '@/composables/useUnlock'
@@ -45,146 +46,89 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-shell pt-5 pb-14">
-    <section class="un-hero">
-      <div class="un-hero-main">
-        <h1 class="un-title">解锁检测</h1>
-        <span v-if="sharedCode" class="np-chip un-badge-flag">分享结果</span>
-        <span v-else-if="running" class="np-chip np-chip-success un-badge-flag">
-          <span class="np-pulse-dot" />
-          {{ done }}/{{ total }}
-        </span>
-        <span v-else-if="elapsed" class="un-time">用时 {{ elapsed }}s</span>
-      </div>
-      <div class="un-actions">
-        <template v-if="done">
-          <button class="np-btn-ghost un-act" type="button" :disabled="running" @click="copyLink">复制链接</button>
-        </template>
-        <button class="np-btn-primary un-run" type="button" @click="toggleRun">
+  <div class="np-shell np-page">
+    <PageHead title="解锁检测">
+      <span v-if="sharedCode" class="np-chip">分享结果</span>
+      <span v-else-if="running" class="np-chip np-chip-success">
+        <span class="np-pulse-dot" />
+        {{ done }}/{{ total }}
+      </span>
+      <span v-else-if="elapsed" class="np-page-meta">用时 {{ elapsed }}s</span>
+
+      <template #actions>
+        <button v-if="done" class="np-btn-quiet" type="button" :disabled="running" @click="copyLink">
+          复制链接
+        </button>
+        <button class="np-btn-primary np-btn-run" type="button" @click="toggleRun">
           {{ running ? '停止' : done ? '重新检测' : '开始检测' }}
         </button>
+      </template>
+    </PageHead>
+
+    <ScoreBoard :card="card" :counts="counts" :running="running" />
+
+    <div class="np-split np-split--main-first">
+      <div class="np-main">
+        <ServiceRows :verdicts="verdicts" v-model:filter="filter" :running="running" />
       </div>
-    </section>
 
-    <ScoreBoard class="un-scoreboard" :card="card" :counts="counts" :running="running" />
-
-    <div class="un-grid">
-      <ServiceRows class="un-col-list" :verdicts="verdicts" v-model:filter="filter" :running="running" />
-
-      <div class="un-col-side">
-        <section v-if="adviceText.length" class="np-card un-advice">
-          <header class="un-card-head"><h2>分流建议</h2></header>
-          <ul class="un-advice-list">
-            <li v-for="item in adviceText" :key="item.id">{{ item.text }}</li>
-          </ul>
+      <aside class="np-aside">
+        <section class="np-card np-panel un-advice">
+          <header class="np-panel-head">
+            <h2>分流建议</h2>
+            <span class="np-panel-meta font-mono">{{ adviceText.length }} 条</span>
+          </header>
+          <div class="un-advice-body">
+            <ul v-if="adviceText.length" class="un-advice-list">
+              <li v-for="item in adviceText" :key="item.id">{{ item.text }}</li>
+            </ul>
+            <p v-else class="np-empty">
+              检测后列出哪个服务在哪个地区不可用、该把域名分到哪条线路。
+            </p>
+          </div>
         </section>
 
-        <section v-if="exits.length" class="np-card un-exits">
-          <header class="un-card-head"><h2>各服务看到的地区</h2></header>
-          <ul class="un-exit-list">
-            <li v-for="exit in exits" :key="exit.cc" class="un-exit">
-              <span class="un-exit-cc">{{ countryName(exit.cc, exit.cc) }}</span>
-              <span class="un-exit-ids">{{ exit.ids.length }} 个服务</span>
-            </li>
-          </ul>
+        <section class="np-card np-panel un-exits">
+          <header class="np-panel-head">
+            <h2>各服务看到的地区</h2>
+            <span class="np-panel-meta font-mono">{{ exits.length }}</span>
+          </header>
+          <div class="un-exits-body">
+            <ul v-if="exits.length" class="un-exit-list">
+              <li v-for="exit in exits" :key="exit.cc" class="un-exit">
+                <span class="un-exit-cc">{{ countryName(exit.cc, exit.cc) }}</span>
+                <span class="un-exit-ids">{{ exit.ids.length }} 个服务</span>
+              </li>
+            </ul>
+            <p v-else class="np-empty">检测后按服务看到的地区分组。</p>
+          </div>
           <p v-if="exits.length > 1" class="un-note">不同服务看到不同的国家，说明规则按域名分流。</p>
         </section>
-      </div>
+
+        <section class="np-card np-panel un-how">
+          <header class="np-panel-head"><h2>怎么判定</h2></header>
+          <ul class="un-how-list">
+            <li><b>Cloudflare trace</b><span>读它看到的国家，最直接。</span></li>
+            <li><b>服务自己的接口</b><span>读地区与片源；NBC 需要 POST，DAZN 需要先有登录态。</span></li>
+            <li><b>纯连通性</b><span>读不到信息时按能不能打开推测，列表里标成「推测」。</span></li>
+          </ul>
+        </section>
+      </aside>
     </div>
   </div>
 </template>
 
 <style scoped>
-.un-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 3px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-
-.un-hero-main {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.un-title {
-  color: var(--text-primary);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-}
-
-.un-badge-flag {
-  font-size: 11px;
-  padding: 3px 8px;
-}
-
-.un-time {
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
-.un-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.un-act {
-  width: auto;
-  height: 30px;
-  padding: 0 10px;
-  font-size: 12px;
-}
-
-.un-act:disabled { opacity: 0.45; cursor: not-allowed; }
-
-.un-run {
-  height: 34px;
-  padding: 0 16px;
-  font-size: 13px;
-}
-
-.un-scoreboard {
-  margin-bottom: 16px;
-}
-
-.un-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
-  align-items: start;
-}
-
-.un-col-side {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
-}
-
-.un-card-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
 .un-advice,
-.un-exits {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
+.un-exits,
+.un-how {
+  min-width: 0;
 }
 
 .un-advice-list {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   list-style: none;
 }
 
@@ -192,8 +136,8 @@ onUnmounted(() => {
   position: relative;
   padding-left: 10px;
   color: var(--text-secondary);
-  font-size: 11px;
-  line-height: 1.55;
+  font-size: 11.5px;
+  line-height: 1.6;
 }
 
 .un-advice-list li::before {
@@ -207,10 +151,27 @@ onUnmounted(() => {
   background: var(--text-muted);
 }
 
+/* 建议条数会随结果增加，固定高度内部滚动，避免把下面的卡推来推去 */
+.un-advice-body {
+  height: 236px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.un-exits-body {
+  min-height: 128px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.un-advice-body .np-empty {
+  height: 100%;
+}
+
 .un-exit-list {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2px;
   list-style: none;
 }
 
@@ -219,6 +180,12 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.un-exit:last-child {
+  border-bottom: none;
 }
 
 .un-exit-cc {
@@ -232,21 +199,35 @@ onUnmounted(() => {
 }
 
 .un-note {
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
   color: var(--text-muted);
   font-size: 11px;
   line-height: 1.5;
 }
 
-@media (max-width: 640px) {
-  .un-title { font-size: 24px; }
-  .un-actions { width: 100%; }
-  .un-act { flex: 1 1 40%; height: 32px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-card); }
-  .un-run { flex: 1 1 56%; height: 36px; }
+.un-how-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
 }
 
-@media (min-width: 960px) {
-  .un-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
-  }
+.un-how-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.un-how-list b {
+  color: var(--text-primary);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.un-how-list span {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
 }
 </style>

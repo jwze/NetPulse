@@ -58,7 +58,13 @@ function ipText(fam: 4 | 6): string {
 </script>
 
 <template>
-  <section class="np-card score-card">
+  <section class="np-card np-panel score-card">
+    <header class="np-panel-head">
+      <h2>本次评分</h2>
+      <span class="np-panel-meta">满分 10 分 · 指到分数看扣分项</span>
+    </header>
+
+    <div class="score-body">
     <div class="score-top">
       <div class="score-ring" :class="`s-${tone}`" :title="SCORE_TIP" tabindex="0">
         <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -75,6 +81,7 @@ function ipText(fam: 4 | 6): string {
       </div>
     </div>
 
+    <div class="score-addr">
     <div class="addr-head">
       <h3>本机地址</h3>
       <button
@@ -115,14 +122,42 @@ function ipText(fam: 4 | 6): string {
         </div>
       </div>
     </div>
+    </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
 .score-card {
+  gap: 14px;
+}
+
+.score-body {
+  display: grid;
+  gap: 14px;
+  align-items: start;
+}
+
+.score-addr {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
+  min-width: 0;
+}
+
+@media (min-width: 760px) {
+  .score-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: center;
+  }
+
+  .score-addr {
+    align-self: stretch;
+    justify-content: center;
+    padding-left: 24px;
+    border-left: 1px solid var(--border-subtle);
+  }
 }
 
 .score-top {
@@ -204,23 +239,22 @@ function ipText(fam: 4 | 6): string {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-subtle);
 }
 
 .addr-head h3 {
-  color: var(--text-primary);
-  font-size: 13px;
+  color: var(--text-secondary);
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 .addr-eye {
+  padding: 2px 0;
+  border: none;
+  background: none;
   color: var(--text-muted);
   font-size: 11px;
-  background: none;
-  border: none;
   cursor: pointer;
-  padding: 2px 0;
 }
 
 .addr-eye:hover {

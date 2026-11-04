@@ -17,10 +17,10 @@ const MARK: Record<Ipv6Row['state'], string> = {
 </script>
 
 <template>
-  <section class="np-card test-card">
-    <header class="test-head">
+  <section class="np-card np-panel test-card">
+    <header class="np-panel-head">
       <h2>测试项目</h2>
-      <span class="test-count font-mono">{{ answered }}/{{ total }}</span>
+      <span class="np-panel-meta font-mono">{{ answered }}/{{ total }}</span>
     </header>
 
     <ol class="test-list">
@@ -44,28 +44,7 @@ const MARK: Record<Ipv6Row['state'], string> = {
 
 <style scoped>
 .test-card {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.test-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  padding-bottom: 8px;
-}
-
-.test-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.test-count {
-  color: var(--text-muted);
-  font-size: 11px;
+  gap: 2px;
 }
 
 .test-list {
@@ -77,8 +56,9 @@ const MARK: Record<Ipv6Row['state'], string> = {
 .test-row {
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr) auto;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
+  min-height: 74px;
   padding: 9px 0;
   border-top: 1px solid var(--border-subtle);
 }

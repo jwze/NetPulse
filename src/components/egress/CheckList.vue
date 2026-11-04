@@ -55,9 +55,26 @@ const detail = computed(() => {
   }
 })
 
+/** 七项始终列出，探测前后卡片高度一致 */
+const CHECK_LABEL: Record<string, string> = {
+  route: '路线是否一致',
+  except: '例外线路',
+  ai: 'AI 服务可达性',
+  rtc: 'WebRTC 泄露',
+  nat: 'NAT 类型',
+  v6: 'IPv6',
+  tz: '时区与出口',
+}
+
 const checks = computed(() =>
-  CHECK_ORDER.filter(id => props.found && props.found[id].s !== 'none').map(id => {
-    const finding = props.found![id]
+  CHECK_ORDER.map(id => {
+    const finding = props.found?.[id]
+    if (!finding) {
+      return { id, title: CHECK_LABEL[id] || id, text: props.running ? '正在核对…' : '', tone: 'info', level: 'none' }
+    }
+    if (finding.s === 'none') {
+      return { id, title: CHECK_LABEL[id] || id, text: '不适用于当前结果', tone: 'info', level: 'none' }
+    }
     const text = findingText(id, finding, nameOf)
     const tone =
       finding.s === 'bad' ? 'bad' : finding.s === 'warn' ? 'warn' : finding.s === 'ok' ? 'good' : 'info'
@@ -69,10 +86,10 @@ const icon = (tone: string) => (tone === 'bad' ? '✕' : tone === 'warn' ? '!' :
 </script>
 
 <template>
-  <section class="np-card eg-check">
-    <header class="eg-check-head">
+  <section class="np-card np-panel eg-check">
+    <header class="np-panel-head">
       <h2>结论</h2>
-      <span class="eg-progress font-mono">{{ answered }}/{{ total }}</span>
+      <span class="np-panel-meta font-mono">{{ answered }}/{{ total }}</span>
     </header>
 
     <div class="eg-verdict">
@@ -84,12 +101,12 @@ const icon = (tone: string) => (tone === 'bad' ? '✕' : tone === 'warn' ? '!' :
     </div>
     <p class="eg-detail">{{ detail }}</p>
 
-    <ul v-if="checks.length" class="eg-checks">
+    <ul class="eg-checks">
       <li v-for="item in checks" :key="item.id" class="eg-check-row">
         <span class="eg-badge" :class="`is-${item.tone}`">{{ icon(item.tone) }}</span>
         <div>
           <p class="eg-check-title" :class="`tone-${item.tone === 'info' ? 'none' : item.tone}`">{{ item.title }}</p>
-          <p class="eg-check-text">{{ item.text }}</p>
+          <p v-if="item.text" class="eg-check-text">{{ item.text }}</p>
         </div>
       </li>
     </ul>
@@ -98,26 +115,7 @@ const icon = (tone: string) => (tone === 'bad' ? '✕' : tone === 'warn' ? '!' :
 
 <style scoped>
 .eg-check {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
-}
-
-.eg-check-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.eg-check-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.eg-progress {
-  color: var(--text-muted);
-  font-size: 11px;
 }
 
 .eg-verdict {
@@ -168,7 +166,7 @@ const icon = (tone: string) => (tone === 'bad' ? '✕' : tone === 'warn' ? '!' :
 .eg-checks {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 8px;
   margin-top: 2px;
   padding-top: 10px;
   border-top: 1px solid var(--border-subtle);
@@ -178,6 +176,7 @@ const icon = (tone: string) => (tone === 'bad' ? '✕' : tone === 'warn' ? '!' :
 .eg-check-row {
   display: flex;
   gap: 8px;
+  min-height: 36px;
 }
 
 .eg-badge {

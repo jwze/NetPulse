@@ -4,6 +4,7 @@ import { NSelect, useMessage } from 'naive-ui'
 import VerdictPanel from '@/components/latency/VerdictPanel.vue'
 import ExitPanel from '@/components/latency/ExitPanel.vue'
 import ServiceLane from '@/components/latency/ServiceLane.vue'
+import PageHead from '@/components/common/PageHead.vue'
 import { useLatencyProbe } from '@/composables/useLatencyProbe'
 import { CATS, PACK_LABELS } from '@/data/latencyServices'
 import { fmtDelta, fmtMs, posOf, tierOf } from '@/utils/latency'
@@ -108,25 +109,89 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-shell pt-5 pb-14">
-    <section class="lat-hero">
-      <div class="lat-hero-main">
-        <h1 class="lat-title">全球延迟</h1>
-        <span v-if="sharedCode" class="np-chip lat-badge">分享结果</span>
-        <span v-else-if="running" class="np-chip np-chip-success lat-badge">
-          <span class="np-pulse-dot" />
-          {{ progressText }}
-        </span>
-      </div>
-      <button class="np-btn-primary lat-run" type="button" @click="toggleRun">
-        {{ running ? '停止' : '开始探测' }}
-      </button>
-    </section>
+  <div class="np-shell np-page">
+    <PageHead title="全球延迟">
+      <span v-if="sharedCode" class="np-chip">分享结果</span>
+      <span v-else-if="running" class="np-chip np-chip-success">
+        <span class="np-pulse-dot" />
+        {{ progressText }}
+      </span>
+
+      <template #actions>
+        <button class="np-btn-quiet" type="button" :disabled="!answered.n" @click="copyLink">
+          复制链接
+        </button>
+        <button class="np-btn-quiet" type="button" :disabled="!verdict" @click="exportImage">
+          导出图片
+        </button>
+        <button class="np-btn-primary np-btn-run" type="button" @click="toggleRun">
+          {{ running ? '停止' : '开始探测' }}
+        </button>
+      </template>
+    </PageHead>
 
     <p v-if="error" class="lat-error">{{ error }}</p>
 
-    <div class="lat-layout">
-      <div class="lat-side">
+    <div class="np-split">
+      <div class="np-main">
+        <section class="np-card np-panel lat-card">
+          <header class="np-panel-head lat-card-head">
+            <div class="lat-card-title">
+              <h2>服务延迟</h2>
+              <span class="np-panel-meta font-mono">{{ answered.ok }}/{{ answered.n || rows.length }}</span>
+            </div>
+            <div class="lat-controls">
+              <NSelect
+                :value="pack"
+                :options="packOptions"
+                size="small"
+                class="lat-select"
+                :disabled="running"
+                @update:value="probe.setPack"
+              />
+              <NSelect
+                v-model:value="samples"
+                :options="sampleOptions"
+                size="small"
+                class="lat-select lat-select-sm"
+                :disabled="running"
+              />
+            </div>
+          </header>
+
+          <div class="lat-axis">
+            <span class="lat-axis-name">服务</span>
+            <div class="lat-axis-track">
+              <span
+                v-for="(tick, index) in axis"
+                :key="tick.ms"
+                class="lat-tick font-mono"
+                :class="`tick-${index}`"
+                :style="{ left: `${tick.left}%` }"
+              >{{ tick.ms }}</span>
+            </div>
+            <span class="lat-axis-ms">中位</span>
+            <span class="lat-axis-extra">抖动</span>
+          </div>
+
+          <div class="lat-groups">
+            <div v-for="group in groups" :key="group.id" class="lat-group">
+              <div class="lat-group-head">
+                <span class="lat-group-label">{{ group.id === 'local' ? localLabel : group.label }}</span>
+                <span class="lat-group-count font-mono">{{ group.rows.filter(r => r.median != null).length }}/{{ group.rows.length }}</span>
+              </div>
+              <ServiceLane v-for="row in group.rows" :key="row.id" :row="row" />
+            </div>
+          </div>
+
+          <footer v-if="verdict" class="lat-foot">
+            <span>本地 {{ fmtMs(localSegment.med) }}ms · 海外 {{ fmtMs(globalSegment.med) }}ms · 整体 {{ fmtMs(verdict.med) }}ms</span>
+            <span class="font-mono">{{ tierOf(verdict.med).label }}</span>
+          </footer>
+        </section>
+      </div>
+
+      <aside class="np-aside">
         <VerdictPanel
           :verdict="verdict"
           :uses="uses"
@@ -142,10 +207,10 @@ onUnmounted(() => {
           :warp="warp"
           @toggle-mask="mask = !mask"
         />
-        <section v-if="compare" class="np-card compare-card">
-          <header class="compare-head">
-            <h3>与上次对比</h3>
-            <span class="compare-time font-mono">{{ new Date(compare.ts).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
+        <section v-if="compare" class="np-card np-panel compare-card">
+          <header class="np-panel-head">
+            <h2>与上次对比</h2>
+            <span class="np-panel-meta font-mono">{{ new Date(compare.ts).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</span>
           </header>
           <p v-if="!compare.changed.length" class="compare-empty">两次结果基本一致。</p>
           <ul v-else class="compare-list">
@@ -161,184 +226,46 @@ onUnmounted(() => {
             </li>
           </ul>
         </section>
-      </div>
-
-      <section class="np-card lat-card">
-        <header class="lat-card-head">
-          <div class="lat-card-title">
-            <h3>服务延迟</h3>
-            <span class="lat-count font-mono">{{ answered.ok }}/{{ answered.n || rows.length }}</span>
-          </div>
-          <div class="lat-controls">
-            <NSelect
-              :value="pack"
-              :options="packOptions"
-              size="small"
-              class="lat-select"
-              :disabled="running"
-              @update:value="probe.setPack"
-            />
-            <NSelect
-              v-model:value="samples"
-              :options="sampleOptions"
-              size="small"
-              class="lat-select lat-select-sm"
-              :disabled="running"
-            />
-            <button class="np-btn-ghost lat-copy" type="button" :disabled="!answered.n" @click="copyLink">
-              复制链接
-            </button>
-            <button class="np-btn-ghost lat-copy" type="button" :disabled="!verdict" @click="exportImage">
-              导出图片
-            </button>
-          </div>
-        </header>
-
-        <div class="lat-axis">
-          <span class="lat-axis-name">服务</span>
-          <div class="lat-axis-track">
-            <span
-              v-for="(tick, index) in axis"
-              :key="tick.ms"
-              class="lat-tick font-mono"
-              :class="`tick-${index}`"
-              :style="{ left: `${tick.left}%` }"
-            >{{ tick.ms }}</span>
-          </div>
-          <span class="lat-axis-ms">中位</span>
-          <span class="lat-axis-extra">抖动</span>
-        </div>
-
-        <div class="lat-groups">
-          <div v-for="group in groups" :key="group.id" class="lat-group">
-            <div class="lat-group-head">
-              <span class="lat-group-label">{{ group.id === 'local' ? localLabel : group.label }}</span>
-              <span class="lat-group-count font-mono">{{ group.rows.filter(r => r.median != null).length }}/{{ group.rows.length }}</span>
-            </div>
-            <ServiceLane v-for="row in group.rows" :key="row.id" :row="row" />
-          </div>
-        </div>
-
-        <footer v-if="verdict" class="lat-foot">
-          <span>本地 {{ fmtMs(localSegment.med) }}ms · 海外 {{ fmtMs(globalSegment.med) }}ms · 整体 {{ fmtMs(verdict.med) }}ms</span>
-          <span class="font-mono">{{ tierOf(verdict.med).label }}</span>
-        </footer>
-      </section>
+      </aside>
     </div>
   </div>
 </template>
 
 <style scoped>
-.lat-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 3px;
-  margin-bottom: 14px;
-}
-
-.lat-hero-main {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.lat-title {
-  color: var(--text-primary);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-}
-
-.lat-badge {
-  font-size: 11px;
-  padding: 3px 8px;
-}
-
-.lat-run {
-  flex: 0 0 auto;
-  height: 34px;
-  padding: 0 16px;
-  font-size: 13px;
-}
-
 .lat-error {
   margin-bottom: 12px;
   color: var(--color-danger);
   font-size: 12px;
 }
 
-.lat-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
-}
-
-.lat-side {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  order: 2;
-  min-width: 0;
-}
-
 .lat-card {
-  order: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
 .lat-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
 .lat-card-title {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
-}
-
-.lat-card-title h3 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.lat-count {
-  color: var(--text-muted);
-  font-size: 11px;
+  min-width: 0;
 }
 
 .lat-controls {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  gap: 8px;
 }
 
 .lat-select {
-  width: 120px;
+  width: 116px;
 }
 
 .lat-select-sm {
-  width: 84px;
-}
-
-.lat-copy {
-  width: auto;
-  height: 28px;
-  padding: 0 10px;
-  font-size: 12px;
+  width: 80px;
 }
 
 .lat-axis {
@@ -346,7 +273,7 @@ onUnmounted(() => {
   grid-template-columns: minmax(0, 118px) minmax(0, 1fr) 62px 52px;
   align-items: end;
   gap: 10px;
-  padding: 4px 10px 0;
+  padding: 2px 10px 0;
   color: var(--text-muted);
   font-size: 10px;
 }
@@ -364,10 +291,7 @@ onUnmounted(() => {
   font-size: 9px;
 }
 
-.lat-axis-ms {
-  text-align: right;
-}
-
+.lat-axis-ms,
 .lat-axis-extra {
   text-align: right;
 }
@@ -377,25 +301,23 @@ onUnmounted(() => {
   flex-direction: column;
 }
 
-.lat-group + .lat-group {
-  margin-top: 6px;
-}
-
 .lat-group-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px 4px;
-  border-top: 1px solid var(--border-subtle);
+  margin: 10px 0 2px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: var(--bg-subtle);
 }
 
 .lat-group:first-child .lat-group-head {
-  border-top: none;
+  margin-top: 0;
 }
 
 .lat-group-label {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -411,7 +333,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 6px;
+  margin-top: 8px;
   padding-top: 10px;
   border-top: 1px solid var(--border-subtle);
   color: var(--text-muted);
@@ -419,27 +341,7 @@ onUnmounted(() => {
 }
 
 .compare-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.compare-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.compare-head h3 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.compare-time {
-  color: var(--text-muted);
-  font-size: 10px;
+  gap: 10px;
 }
 
 .compare-empty {
@@ -509,42 +411,12 @@ onUnmounted(() => {
     display: none;
   }
 
-  .lat-title {
-    font-size: 24px;
-  }
-
   .lat-controls {
     width: 100%;
   }
 
   .lat-select {
-    flex: 1 1 calc(50% - 3px);
-  }
-
-  .lat-copy {
-    flex: 1 1 40%;
-    height: 30px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--bg-card);
-  }
-}
-
-@media (min-width: 1024px) {
-  .lat-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
-    align-items: start;
-  }
-
-  .lat-card {
-    order: 1;
-  }
-
-  .lat-side {
-    order: 2;
+    flex: 1 1 calc(50% - 4px);
   }
 }
 </style>

@@ -30,10 +30,10 @@ const tone = (grade?: string) => (!grade || grade === '—' ? 'none' : grade ===
 </script>
 
 <template>
-  <section class="np-card un-board">
-    <header class="un-head">
+  <section class="np-card np-panel un-board">
+    <header class="np-panel-head">
       <h2>成绩单</h2>
-      <span class="un-counts font-mono">
+      <span class="np-panel-meta font-mono">
         可用 {{ counts.ok }} · 不可用 {{ counts.no }} · 待定 {{ counts.reach }} · 打不开 {{ counts.fail }}
       </span>
     </header>
@@ -55,28 +55,7 @@ const tone = (grade?: string) => (!grade || grade === '—' ? 'none' : grade ===
 
 <style scoped>
 .un-board {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.un-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.un-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.un-counts {
-  color: var(--text-muted);
-  font-size: 11px;
+  margin-bottom: 16px;
 }
 
 .un-cells {
@@ -89,7 +68,8 @@ const tone = (grade?: string) => (!grade || grade === '—' ? 'none' : grade ===
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 10px;
+  min-height: 46px;
+  padding: 9px 12px;
   border: 1px solid var(--border-subtle);
   border-radius: 5px;
   background: var(--bg-subtle);
@@ -132,15 +112,23 @@ const tone = (grade?: string) => (!grade || grade === '—' ? 'none' : grade ===
 .dark .tone-ok { color: #F5A623; }
 .dark .tone-bad { color: #FF5C4E; }
 
+@media (max-width: 719px) {
+  .un-cell.is-total {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (min-width: 720px) {
   .un-cells {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .un-cell {
+    min-height: 88px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2px;
+    justify-content: center;
+    gap: 3px;
   }
 
   .un-cell-detail {

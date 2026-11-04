@@ -7,16 +7,16 @@ defineProps<{
 </script>
 
 <template>
-  <section class="np-card diag-card">
-    <header class="diag-head">
+  <section class="np-card np-panel diag-card">
+    <header class="np-panel-head diag-head">
       <div class="diag-title">
         <span class="diag-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <path :d="icon || 'M12 12h.01'" />
           </svg>
         </span>
-        <h3>{{ title }}</h3>
-        <span v-if="hint" class="diag-hint">{{ hint }}</span>
+        <h2>{{ title }}</h2>
+        <span v-if="hint" class="np-panel-meta diag-hint">{{ hint }}</span>
       </div>
       <div class="diag-action">
         <slot name="action" />
@@ -28,17 +28,12 @@ defineProps<{
 
 <style scoped>
 .diag-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  height: 100%;
+  min-width: 0;
 }
 
 .diag-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  min-height: 24px;
 }
 
 .diag-title {
@@ -63,18 +58,7 @@ defineProps<{
   height: 100%;
 }
 
-.diag-title h3 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
 .diag-hint {
-  color: var(--text-muted);
-  font-size: 11px;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }

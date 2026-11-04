@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
+import PageHead from '@/components/common/PageHead.vue'
 import PortraitCard from '@/components/privacy/PortraitCard.vue'
 import SnifferList from '@/components/privacy/SnifferList.vue'
 import CheckCard from '@/components/privacy/CheckCard.vue'
@@ -30,36 +31,36 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-shell pt-5 pb-14">
-    <section class="pv-hero">
-      <div class="pv-hero-main">
-        <h1 class="pv-h1">隐私画像</h1>
-        <span v-if="sharedCode" class="np-chip pv-flag">分享结果</span>
-        <span v-else-if="running" class="np-chip np-chip-success pv-flag">
-          <span class="np-pulse-dot" />
-          {{ done }}/{{ total }}
-        </span>
-        <span v-else-if="elapsed" class="pv-time">用时 {{ elapsed }}s</span>
-      </div>
+  <div class="np-shell np-page">
+    <PageHead title="隐私画像">
+      <span v-if="sharedCode" class="np-chip">分享结果</span>
+      <span v-else-if="running" class="np-chip np-chip-success">
+        <span class="np-pulse-dot" />
+        {{ done }}/{{ total }}
+      </span>
+      <span v-else-if="elapsed" class="np-page-meta">用时 {{ elapsed }}s</span>
 
-      <div class="pv-actions">
-        <button v-if="portrait" class="np-btn-ghost pv-act" type="button" @click="masked = !masked">
+      <template #actions>
+        <button v-if="portrait" class="np-btn-quiet" type="button" @click="masked = !masked">
           {{ masked ? '显示地址' : '隐藏地址' }}
         </button>
-        <button v-if="portrait" class="np-btn-ghost pv-act" type="button" :disabled="running" @click="copyLink">复制链接</button>
-        <button class="np-btn-primary pv-run" type="button" @click="toggleRun">
+        <button v-if="portrait" class="np-btn-quiet" type="button" :disabled="running" @click="copyLink">
+          复制链接
+        </button>
+        <button class="np-btn-primary np-btn-run" type="button" @click="toggleRun">
           {{ running ? '停止' : portrait ? '重新探测' : '开始探测' }}
         </button>
-      </div>
-    </section>
+      </template>
+    </PageHead>
 
-    <div class="pv-grid">
-      <div class="pv-main-col">
-        <PortraitCard :portrait="portrait" :labels="labels" :running="running" :shared="!!shared" />
+    <PortraitCard :portrait="portrait" :labels="labels" :running="running" :shared="!!shared" />
+
+    <div class="np-split pv-split">
+      <div class="np-main">
         <SnifferList :rows="rows" :masked="masked" :running="running" />
       </div>
 
-      <div class="pv-side">
+      <aside class="np-aside">
         <CheckCard
           :verdicts="verdicts"
           :score="score"
@@ -69,109 +70,28 @@ onUnmounted(() => {
           :shared-levels="shared?.checks || null"
         />
 
-        <section class="np-card pv-note">
-          <h2>怎么读这些结果</h2>
+        <section class="np-card np-panel pv-note">
+          <header class="np-panel-head"><h2>怎么读这些结果</h2></header>
           <ul>
             <li>指纹是把画布、显卡、音频、字体和文字度量算成的一串编号：同一个浏览器同一台机器基本不变，清 Cookie 也甩不掉。</li>
             <li>伪装检测只比「你说的」和「实际露出来的」：系统时区对出口时区、语言对出口国家、DNS 对出口、IPv6 里的网卡号。</li>
             <li>一键隐藏所有地址类字段再截图；分享码里只有结论和指纹编号，不含 IP、DNS 和坐标。</li>
           </ul>
         </section>
-      </div>
+      </aside>
     </div>
   </div>
 </template>
 
 <style scoped>
-.pv-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 3px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-
-.pv-hero-main {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pv-h1 {
-  color: var(--text-primary);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-}
-
-.pv-flag {
-  font-size: 11px;
-  padding: 3px 8px;
-}
-
-.pv-time {
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
-.pv-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.pv-act {
-  width: auto;
-  height: 30px;
-  padding: 0 10px;
-  font-size: 12px;
-}
-
-.pv-act:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.pv-run {
-  height: 34px;
-  padding: 0 16px;
-  font-size: 13px;
-}
-
-.pv-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
-}
-
-.pv-main-col,
-.pv-side {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-width: 0;
-}
-
-.pv-note {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.pv-note h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
+.pv-split {
+  margin-top: 16px;
 }
 
 .pv-note ul {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   list-style: none;
 }
 
@@ -180,7 +100,7 @@ onUnmounted(() => {
   padding-left: 10px;
   color: var(--text-secondary);
   font-size: 11px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .pv-note li::before {
@@ -192,23 +112,5 @@ onUnmounted(() => {
   height: 3px;
   border-radius: 50%;
   background: var(--text-muted);
-}
-
-@media (max-width: 640px) {
-  .pv-h1 { font-size: 24px; }
-  .pv-actions { width: 100%; }
-  .pv-act { flex: 1 1 32%; height: 32px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-card); }
-  .pv-run { flex: 1 1 40%; height: 36px; }
-}
-
-@media (min-width: 960px) {
-  .pv-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
-  }
-
-  .pv-side {
-    position: sticky;
-    top: 72px;
-  }
 }
 </style>

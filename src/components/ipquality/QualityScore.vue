@@ -30,11 +30,11 @@ const parts = computed(() =>
 </script>
 
 <template>
-  <section class="np-card iq-score">
-    <header class="iq-head">
+  <section class="np-card np-panel iq-score">
+    <header class="np-panel-head">
       <h2>评分</h2>
-      <span v-if="assessment" class="iq-ip font-mono">{{ ip }}</span>
-      <span v-else-if="running" class="iq-ip">查询中…</span>
+      <span v-if="assessment" class="np-panel-meta font-mono iq-ip">{{ ip }}</span>
+      <span v-else class="np-panel-meta">{{ running ? '查询中…' : '等待查询' }}</span>
     </header>
 
     <div v-if="assessment" class="iq-main">
@@ -47,9 +47,14 @@ const parts = computed(() =>
       </div>
     </div>
 
-    <p v-else class="iq-empty">
-      {{ running ? '正在询问 IP 情报来源…' : '输入一个公网地址，或直接检查本机出口。' }}
-    </p>
+    <div v-else class="iq-main is-idle">
+      <div class="iq-grade tone-none">—</div>
+      <div class="iq-main-text">
+        <p class="iq-number"><b>—</b><span>/100</span></p>
+        <p class="iq-place">{{ running ? '正在询问 IP 情报来源…' : '还没有查询结果' }}</p>
+        <p class="iq-org">{{ running ? '12 个来源会同时回答' : '查本机，或在上面填一个公网地址' }}</p>
+      </div>
+    </div>
 
     <div v-if="parts.length" class="iq-parts">
       <div v-for="part in parts" :key="part.k" class="iq-part">
@@ -70,22 +75,7 @@ const parts = computed(() =>
 
 <style scoped>
 .iq-score {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.iq-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.iq-head h2 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
+  min-height: 268px;
 }
 
 .iq-ip {
@@ -100,6 +90,11 @@ const parts = computed(() =>
   display: flex;
   align-items: center;
   gap: 14px;
+  min-height: 68px;
+}
+
+.iq-main.is-idle {
+  opacity: 0.75;
 }
 
 .iq-grade {
@@ -166,12 +161,6 @@ const parts = computed(() =>
   margin-top: 1px;
   color: var(--text-muted);
   font-size: 11px;
-}
-
-.iq-empty {
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.6;
 }
 
 .iq-parts {

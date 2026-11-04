@@ -40,8 +40,13 @@ const doneOf = (cat: string) =>
 </script>
 
 <template>
-  <section class="np-card un-list">
-    <header class="un-list-head">
+  <section class="np-card np-panel un-list">
+    <header class="np-panel-head">
+      <h2>服务</h2>
+      <span class="np-panel-meta font-mono">{{ doneOf('all') }}/{{ SERVICES.length }}</span>
+    </header>
+
+    <div class="un-list-head">
       <div class="un-tabs">
         <button
           v-for="tab in tabs"
@@ -55,7 +60,7 @@ const doneOf = (cat: string) =>
           <span class="un-tab-count font-mono">{{ doneOf(tab.id) }}/{{ tab.n }}</span>
         </button>
       </div>
-    </header>
+    </div>
 
     <ul class="un-rows">
       <li v-for="item in list" :key="item.id" class="un-row" :class="{ 'is-wait': !item.verdict }">
@@ -72,30 +77,35 @@ const doneOf = (cat: string) =>
 
 <style scoped>
 .un-list {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
   min-width: 0;
 }
 
-.un-tabs {
+.un-list-head {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+  align-items: center;
+  gap: 8px;
 }
 
 .un-tab {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 26px;
-  padding: 0 9px;
+  height: 28px;
+  padding: 0 10px;
   border: 1px solid transparent;
   border-radius: 4px;
   background: transparent;
   color: var(--text-muted);
   font-size: 12px;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.un-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .un-tab:hover {
