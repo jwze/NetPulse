@@ -13,7 +13,8 @@ const themeMenuOpen = ref(false)
 const navItems = [
   { id: 0, label: '测速台', path: '/' },
   { id: 1, label: '全球延迟', path: '/latency' },
-  { id: 2, label: '网络诊断', path: '/diagnostics' },
+  { id: 2, label: 'IPv6 测试', path: '/ipv6' },
+  { id: 3, label: '网络诊断', path: '/diagnostics' },
 ]
 
 function navigate(path: string) {

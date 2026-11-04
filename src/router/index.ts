@@ -20,6 +20,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/LatencyView.vue'),
   },
   {
+    path: '/ipv6',
+    name: 'Ipv6',
+    component: () => import('@/views/Ipv6View.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFoundView.vue'),
@@ -41,6 +46,8 @@ router.afterEach((to) => {
     document.title = `网络诊断 · ${brand.name}`
   } else if (to.name === 'Latency') {
     document.title = `全球延迟 · ${brand.name}`
+  } else if (to.name === 'Ipv6') {
+    document.title = `IPv6 测试 · ${brand.name}`
   } else {
     document.title = `页面未找到 · ${brand.name}`
   }
