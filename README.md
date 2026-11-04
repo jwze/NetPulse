@@ -12,6 +12,8 @@
 - **后台保活**：切到后台继续跑（移动端适配 iOS）
 - **出口信息**：当前出口 IP、归属地与国内 / 海外延迟
 - **网络诊断**：ASN / 机房标记、IPv4-IPv6 双栈探测、DoH 多解析器对比、链路质量（延迟 / 抖动 / 丢包）、上行带宽测试
+- **历史与导出**：测速结果存本机，最多 50 条，可导出 CSV / JSON
+- **可离线**：Service Worker 预热全部构建产物，断网也能打开，可安装到桌面
 - **息屏模式**：大字号时钟 + 实时速率
 - 日间 / 夜间 / 跟随系统三档主题
 
@@ -84,6 +86,17 @@ npm run icons    # 重新生成 PNG 图标
 | 上传测速 | `speed.cloudflare.com/__up` | 4 路并发上传数据块，按完成量 / 耗时估算上行带宽 |
 
 国内网络环境下 Cloudflare、Google 的 DoH 可能被拦截，界面会如实显示「无响应或被拦截」——这本身也是诊断结论。
+
+## 离线与安装
+
+构建时 `vite.config.ts` 里的 `precacheManifest()` 插件会输出 `dist/precache.json`，列出全部 js/css 产物；`public/sw.js` 在安装阶段按清单预热，因此**首次访问后断网也能打开**（含 `/diagnostics`）。
+
+- 导航请求走 network-first，断网回落到缓存的 `index.html`
+- 静态资源 cache-first，只缓存同源请求，第三方接口一律不碰
+- 静态服务器普遍返回 `Vary: Origin`，缓存匹配统一用 `ignoreVary`
+- Service Worker 只在生产构建注册，开发时不会干扰热更新
+
+浏览器地址栏出现「安装」图标即可装成桌面应用；iOS 用 Safari 分享 → 添加到主屏幕（图标为 `apple-touch-icon.png`）。
 
 ## 关于「无后端」
 

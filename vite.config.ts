@@ -1,13 +1,31 @@
 import { resolve } from 'node:path'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 
+/** 构建后输出资源清单，供 Service Worker 一次性预热，保证首次离线可用 */
+function precacheManifest(): Plugin {
+  return {
+    name: 'np-precache-manifest',
+    apply: 'build',
+    generateBundle(_options, bundle) {
+      const files = Object.keys(bundle)
+        .filter(file => file.startsWith('assets/') && /\.(js|css)$/.test(file))
+        .map(file => `/${file}`)
+      this.emitFile({
+        type: 'asset',
+        fileName: 'precache.json',
+        source: JSON.stringify({ files }),
+      })
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [vue(), tailwindcss()],
+  plugins: [vue(), tailwindcss(), precacheManifest()],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      '@': resolve(import.meta.dirname, 'src'),
     },
   },
   build: {
