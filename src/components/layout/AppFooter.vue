@@ -12,7 +12,6 @@ const year = new Date().getFullYear()
         <span class="font-medium" style="color: var(--text-secondary)">{{ brand.name }}</span>
         <span class="np-chip font-mono" style="padding: 2px 6px; font-size: 11px; line-height: 1">v{{ brand.version }}</span>
       </div>
-      <div class="footer-right">纯前端 · 无账号 · 数据仅存本地</div>
     </div>
   </footer>
 </template>
@@ -21,7 +20,6 @@ const year = new Date().getFullYear()
 .footer-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   height: 34px;
   font-size: 12px;
@@ -34,11 +32,6 @@ const year = new Date().getFullYear()
   gap: 8px;
   flex-wrap: wrap;
   min-width: 0;
-}
-
-.footer-right {
-  flex: 0 0 auto;
-  white-space: nowrap;
 }
 
 @media (max-width: 520px) {

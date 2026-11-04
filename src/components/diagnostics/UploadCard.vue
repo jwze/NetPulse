@@ -59,7 +59,7 @@ onBeforeUnmount(() => controller?.abort())
 </script>
 
 <template>
-  <DiagCard title="上传测速" hint="Cloudflare 节点" icon="M12 19V5 M5 12l7-7 7 7">
+  <DiagCard title="上传测速" icon="M12 19V5 M5 12l7-7 7 7">
     <template #action>
       <button class="np-btn-primary up-btn" @click="start">
         {{ running ? '停止' : '开始测速' }}

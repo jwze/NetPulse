@@ -69,7 +69,7 @@ onBeforeUnmount(() => controller?.abort())
 <template>
   <DiagCard
     title="链路质量"
-    :hint="result ? result.target : '延迟 / 抖动 / 丢包'"
+    :hint="result ? result.target : ''"
     icon="M3 12h4l2-6 4 12 3-8h5"
   >
     <template #action>

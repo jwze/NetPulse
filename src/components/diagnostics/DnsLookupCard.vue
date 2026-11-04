@@ -70,7 +70,6 @@ onBeforeUnmount(() => controller?.abort())
 <template>
   <DiagCard
     title="DNS 解析对比"
-    hint="DoH 直查，非本机 DNS"
     icon="M3 12h18 M12 3a15 15 0 0 1 0 18 M12 3a15 15 0 0 0 0 18 M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"
   >
     <template #action>

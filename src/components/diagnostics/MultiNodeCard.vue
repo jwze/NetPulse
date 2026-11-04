@@ -135,7 +135,6 @@ onBeforeUnmount(() => {
 <template>
   <DiagCard
     title="多节点对比"
-    hint="并发拉流"
     icon="M3 17h4v4H3zM10 9h4v12h-4zM17 3h4v18h-4z"
   >
     <template #action>

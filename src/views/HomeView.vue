@@ -149,9 +149,6 @@ async function handlePaste(e: ClipboardEvent) {
     <section class="hero-strip">
       <div>
         <h1 class="hero-title">{{ brand.name }}</h1>
-        <p class="mt-1 text-[14px] home-tagline" style="color: var(--text-secondary)">
-          <span v-for="item in brand.highlights" :key="item">{{ item }}</span>
-        </p>
       </div>
       <div class="np-chip status-pill" :class="statusChipClass">
         <span v-if="panel.isRunning" class="np-pulse-dot" />
@@ -279,24 +276,6 @@ async function handlePaste(e: ClipboardEvent) {
     grid-column: 1 / -1;
     order: unset;
   }
-}
-
-.home-tagline {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-
-.home-tagline span + span::before {
-  content: '';
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  margin: 0 8px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.4;
-  vertical-align: middle;
 }
 
 .status-pill {

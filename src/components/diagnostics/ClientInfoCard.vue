@@ -22,7 +22,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DiagCard title="本机环境" hint="不出网" icon="M4 4h16v12H4z M8 20h8 M12 16v4">
+  <DiagCard title="本机环境" icon="M4 4h16v12H4z M8 20h8 M12 16v4">
     <div class="proto-row">
       <div>
         <div class="proto-label">当前页面协议</div>

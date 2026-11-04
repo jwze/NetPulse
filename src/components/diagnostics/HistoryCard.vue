@@ -52,7 +52,7 @@ function handleClear() {
 </script>
 
 <template>
-  <DiagCard title="历史记录" :hint="`本地保存 · ${history.entries.length}/50`" icon="M12 8v5l3 2 M3 12a9 9 0 1 0 3-6.7 M3 4v4h4">
+  <DiagCard title="历史记录" :hint="`${history.entries.length}/50`" icon="M12 8v5l3 2 M3 12a9 9 0 1 0 3-6.7 M3 4v4h4">
     <template #action>
       <button class="np-btn-ghost hist-btn" :disabled="!history.entries.length" @click="history.exportCsv()">CSV</button>
       <button class="np-btn-ghost hist-btn" :disabled="!history.entries.length" @click="history.exportJson()">JSON</button>

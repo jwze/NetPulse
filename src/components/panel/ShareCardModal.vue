@@ -82,7 +82,6 @@ watch(() => props.show, (visible) => {
           <header>
             <div class="share-head-text">
               <h3>成绩卡</h3>
-              <p>本地绘制，分享图里不含 IP 与任何身份信息</p>
             </div>
             <button type="button" aria-label="关闭" @click="emit('close')">×</button>
           </header>
@@ -143,13 +142,6 @@ header {
   font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
-}
-
-.share-head-text p {
-  margin-top: 3px;
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.5;
 }
 
 header button {

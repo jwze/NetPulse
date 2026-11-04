@@ -235,7 +235,7 @@ export function buildShareCard(data: ShareCardData): HTMLCanvasElement {
   ctx.textAlign = 'right'
   ctx.fillStyle = COLOR.faint
   ctx.font = `500 14px ${SANS}`
-  ctx.fillText(`${brand.name} · 纯前端测速 · 数据仅留在本机`, WIDTH - pad, 566)
+  ctx.fillText(brand.name, WIDTH - pad, 566)
   ctx.textAlign = 'left'
 
   // 细边框
