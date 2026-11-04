@@ -4,18 +4,21 @@ import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
+import { LegacyGridContainLabel } from 'echarts/features'
 import VChart from 'vue-echarts'
 import { useSettingsStore } from '@/stores/settings'
 import { useAppStore } from '@/stores/app'
 import { useNetworkStore } from '@/stores/network'
+import { usePanelStore } from '@/stores/panel'
 import { useFormatter } from '@/composables/useFormatter'
 import { formatDateTime } from '@/utils/date'
 
-use([CanvasRenderer, LineChart, GridComponent, TooltipComponent, LegendComponent])
+use([CanvasRenderer, LineChart, GridComponent, TooltipComponent, LegendComponent, LegacyGridContainLabel])
 
 const settings = useSettingsStore()
 const appStore = useAppStore()
 const networkStore = useNetworkStore()
+const panel = usePanelStore()
 const { formatSpeed } = useFormatter()
 const chartRef = ref()
 
@@ -156,7 +159,7 @@ const option = computed(() => {
 
 function addDataPoint(speed: number, latency: number) {
   const now = Date.now()
-  const latencyValue = latency || networkStore.localLatencyMs || networkStore.cloudflareLatencyMs || 0
+  const latencyValue = latency || panel.latencyNow || networkStore.localLatencyMs || networkStore.cloudflareLatencyMs || 0
   speedData.value.push([now, Number.isFinite(speed) ? speed : 0])
   latencyData.value.push([now, Number.isFinite(latencyValue) ? latencyValue : 0])
 
@@ -175,7 +178,7 @@ defineExpose({ addDataPoint, clearData })
 </script>
 
 <template>
-  <div class="np-card mb-6">
+  <div class="np-card">
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-2">
         <div class="w-5 h-5 flex items-center justify-center" style="color: var(--text-secondary)">

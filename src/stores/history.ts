@@ -22,6 +22,8 @@ export interface HistoryEntry {
   seconds?: number
   bytes?: number
   node?: string
+  /** Bufferbloat 评级 A+ / A / B / C / D / F */
+  bloat?: string
 }
 
 const STORAGE_KEY = 'np:history'
@@ -80,7 +82,7 @@ export const useHistoryStore = defineStore('history', () => {
   }
 
   function exportCsv() {
-    const header = ['时间', '类型', '下载(MB/s)', '上传(Mbps)', '延迟(ms)', '抖动(ms)', '丢包(%)', '流量(字节)', '时长(s)', '节点']
+    const header = ['时间', '类型', '下载(MB/s)', '上传(Mbps)', '延迟(ms)', '抖动(ms)', '丢包(%)', '流量(字节)', '时长(s)', '节点', '满载延迟评级']
     const kindLabel: Record<HistoryKind, string> = { download: '下载测速', upload: '上传测速', quality: '链路质量' }
     const rows = entries.value.map(item => [
       new Date(item.ts).toLocaleString('zh-CN'),
@@ -93,6 +95,7 @@ export const useHistoryStore = defineStore('history', () => {
       item.bytes ?? '',
       item.seconds?.toFixed(1) ?? '',
       item.node ?? '',
+      item.bloat ?? '',
     ])
     const csv = [header, ...rows]
       .map(cols => cols.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))

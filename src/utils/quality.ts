@@ -37,7 +37,7 @@ export interface QualityOptions {
   onProgress?: (done: number, total: number, ms: number | null) => void
 }
 
-async function probeOnce(url: string, timeout: number, outer?: AbortSignal) {
+export async function probeOnce(url: string, timeout: number, outer?: AbortSignal) {
   const link = linkSignals(timeout, outer)
   const start = performance.now()
   try {
@@ -86,7 +86,7 @@ function gradeOf(avg: number, jitter: number, loss: number): QualityResult['grad
 }
 
 /** 先各打一次，挑延迟更低的目标做正式采样 */
-async function pickTarget(timeout: number, outer?: AbortSignal): Promise<QualityProbeTarget> {
+export async function pickTarget(timeout: number, outer?: AbortSignal): Promise<QualityProbeTarget> {
   const results = await Promise.all(
     QUALITY_TARGETS.map(async target => ({ target, ms: await probeOnce(target.url, timeout, outer) })),
   )

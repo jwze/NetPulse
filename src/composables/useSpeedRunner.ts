@@ -8,6 +8,14 @@ import { useHistoryStore } from '@/stores/history'
 import { validateSpeedNodeUrl } from '@/utils/nodeConnectivity'
 import { brand } from '@/config/brand'
 import { safeWebNodeHeaders } from '@/utils/webNodeHeaders'
+import {
+  gradeBloat,
+  measureIdleLatency,
+  medianOf,
+  startLoadedProbe,
+  type LoadedProbeHandle,
+} from '@/utils/bufferbloat'
+import type { QualityProbeTarget } from '@/utils/quality'
 import type { NodeItem } from '@/stores/nodes'
 
 type ChartTarget = {
@@ -30,6 +38,12 @@ let rotationRunCounts: number[] = []
 let rotationCurrentIndex = 0
 let visibilityHandler: (() => void) | null = null
 let abortController: AbortController | null = null
+/** Bufferbloat 采样用独立控制器，避免线程重启时把探测一起打断 */
+let bloatAbort: AbortController | null = null
+let bloatProbe: LoadedProbeHandle | null = null
+let bloatBaseline: number | null = null
+let bloatSamples: number[] = []
+let bloatTarget: QualityProbeTarget | null = null
 
 const homeTitle = `${brand.name} · ${brand.tagline}`
 
@@ -259,7 +273,7 @@ export function useSpeedRunner(target?: ChartTarget | null) {
     while (speedTemp.length >= stepLength) {
       const tmp = speedTemp.splice(0, stepLength)
       const avg = tmp.includes(0) ? 0 : tmp.reduce((sum, item) => sum + item, 0) / stepLength
-      chartTarget?.addDataPoint?.(avg, 0)
+      chartTarget?.addDataPoint?.(avg, panel.latencyNow)
     }
     if (stepLength < 64 && panel.runTimeStamp > 200 * stepLength) {
       stepLength *= 2
@@ -365,6 +379,36 @@ export function useSpeedRunner(target?: ChartTarget | null) {
     settings.cronTab.tasks = cronTask
   }
 
+  /** 下载压满后持续打小请求，实时给出满载延迟与评级 */
+  function startBloatProbe() {
+    const ctrl = bloatAbort
+    if (!bloatTarget || !ctrl) return
+    bloatProbe?.stop()
+    bloatProbe = startLoadedProbe({
+      target: bloatTarget,
+      interval: 500,
+      timeout: 3000,
+      signal: ctrl.signal,
+      onSample: (ms) => {
+        if (ms === null) return
+        bloatSamples.push(ms)
+        const loaded = medianOf(bloatSamples)
+        if (loaded === null) return
+        const base = bloatBaseline ?? Math.min(...bloatSamples)
+        const increase = Number((loaded - base).toFixed(1))
+        const grade = gradeBloat(increase)
+        panel.latencyNow = ms
+        panel.patchBloat({
+          loadedMs: loaded,
+          increaseMs: increase,
+          grade: grade?.key ?? '',
+          tone: grade?.tone ?? '',
+          samples: bloatSamples.slice(-40),
+        })
+      },
+    })
+  }
+
   async function start() {
     panel.lastError = ''
     panel.isChecking = true
@@ -396,12 +440,36 @@ export function useSpeedRunner(target?: ChartTarget | null) {
       speedTemp = []
       stepLength = 1
 
+      // Bufferbloat：先在无负载状态下采一组基线，再在压测中持续采样
+      bloatSamples = []
+      bloatBaseline = null
+      bloatTarget = null
+      const bloatCtrl = new AbortController()
+      bloatAbort = bloatCtrl
+      panel.resetBloat(true)
+      try {
+        const idle = await measureIdleLatency({
+          count: 4,
+          interval: 100,
+          timeout: 2500,
+          signal: bloatCtrl.signal,
+        })
+        if (panel.isRunning) {
+          bloatBaseline = idle.ms
+          bloatTarget = idle.target
+          panel.patchBloat({ idleMs: idle.ms, target: idle.target.label })
+        }
+      } catch {
+        // 基线测不到不阻断测速，评分时用满载样本最小值兜底
+      }
+
       if (!panel.isRunning) {
         clearTasks()
         return
       }
 
       for (let i = 0; i < settings.threadNum; i++) void startThread(i)
+      startBloatProbe()
 
       tasks.push(window.setInterval(frameEvent, 15))
       secEvent()
@@ -423,6 +491,12 @@ export function useSpeedRunner(target?: ChartTarget | null) {
   }
 
   async function stop() {
+    bloatProbe?.stop()
+    bloatProbe = null
+    bloatAbort?.abort()
+    bloatAbort = null
+    panel.patchBloat({ active: false })
+
     if (abortController) {
       abortController.abort()
       abortController = null
@@ -437,14 +511,37 @@ export function useSpeedRunner(target?: ChartTarget | null) {
     setTitle()
 
     if (panel.runTimeStamp >= 1 && totalBytes > 0) {
+      const nodeLabel = currentNodeLabel()
+      const bloat = panel.bloat
+      panel.lastResult = {
+        ts: Date.now(),
+        bytesPerSecond: avgSpeed,
+        mbps: (avgSpeed * 8) / 1_000_000,
+        bytes: totalBytes,
+        seconds: elapsed,
+        node: nodeLabel,
+        bloat: bloat.grade
+          ? {
+              idleMs: bloat.idleMs,
+              loadedMs: bloat.loadedMs,
+              increaseMs: bloat.increaseMs,
+              grade: bloat.grade,
+            }
+          : null,
+      }
       history.add({
         kind: 'download',
         speed: totalBytes / elapsed / 1024 / 1024,
         bytes: totalBytes,
         seconds: elapsed,
-        node: currentNodeLabel(),
+        node: nodeLabel,
+        bloat: bloat.grade || undefined,
       })
     }
+
+    bloatSamples = []
+    bloatBaseline = null
+    bloatTarget = null
 
     rotationBytesAtSwitch = 0
     rotationRunCounts = []

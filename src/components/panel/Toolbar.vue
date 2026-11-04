@@ -3,10 +3,12 @@ const emit = defineEmits<{
   (e: 'openScreen'): void
   (e: 'openSettings'): void
   (e: 'openNodes'): void
+  (e: 'openCard'): void
 }>()
 
 const actions = [
   { key: 'nodes', label: '节点', event: 'openNodes', path: 'M4 6h16M4 12h16M4 18h10' },
+  { key: 'card', label: '成绩卡', event: 'openCard', path: 'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8 M16 6l-4-4-4 4 M12 2v13' },
   { key: 'screen', label: '息屏', event: 'openScreen', path: 'M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3' },
   { key: 'settings', label: '设置', event: 'openSettings', path: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z' },
 ] as const
@@ -16,12 +18,13 @@ function handleClick(event: string) {
     case 'openNodes': emit('openNodes'); break
     case 'openScreen': emit('openScreen'); break
     case 'openSettings': emit('openSettings'); break
+    case 'openCard': emit('openCard'); break
   }
 }
 </script>
 
 <template>
-  <div class="grid grid-cols-3 gap-1.5">
+  <div class="grid grid-cols-4 gap-1.5">
     <button
       v-for="action in actions"
       :key="action.key"

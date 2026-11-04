@@ -43,6 +43,7 @@ const emit = defineEmits<{
   (e: 'openScreen'): void
   (e: 'setFlowMax'): void
   (e: 'setLimitMax'): void
+  (e: 'openCard'): void
 }>()
 
 function switchView(view: PanelView) {
@@ -78,6 +79,7 @@ function switchView(view: PanelView) {
           @open-nodes="switchView('nodes')"
           @open-screen="emit('openScreen')"
           @open-settings="switchView('settings')"
+          @open-card="emit('openCard')"
         />
         <div class="panel-overview">
           <div class="overview-head">

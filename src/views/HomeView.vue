@@ -11,6 +11,8 @@ import NetworkPanel from '@/components/panel/NetworkPanel.vue'
 import RealtimeChart from '@/components/chart/RealtimeChart.vue'
 import ExitIpInfo from '@/components/ip/ExitIpInfo.vue'
 import StatsRow from '@/components/panel/StatsRow.vue'
+import BufferbloatCard from '@/components/panel/BufferbloatCard.vue'
+import ShareCardModal from '@/components/panel/ShareCardModal.vue'
 import ScreenSaver from '@/components/screensaver/ScreenSaver.vue'
 
 const nodesStore = useNodesStore()
@@ -38,6 +40,7 @@ watch(() => nodesStore.lastNodeSwitchReason, (reason) => {
 
 const chartRef = ref<InstanceType<typeof RealtimeChart> | null>(null)
 const screenOpen = ref(false)
+const cardOpen = ref(false)
 const limitDialog = ref<'flow' | 'speed' | null>(null)
 const limitValue = ref<number | null>(null)
 const limitUnit = ref('GB')
@@ -165,6 +168,7 @@ async function handlePaste(e: ClipboardEvent) {
           @open-screen="handleOpenScreen"
           @set-flow-max="handleSetFlowMax"
           @set-limit-max="handleSetLimitMax"
+          @open-card="cardOpen = true"
         />
       </div>
 
@@ -179,9 +183,14 @@ async function handlePaste(e: ClipboardEvent) {
       <div class="bento-chart min-w-0">
         <RealtimeChart ref="chartRef" />
       </div>
+
+      <div class="bento-bloat min-w-0">
+        <BufferbloatCard />
+      </div>
     </div>
 
     <ScreenSaver :show="screenOpen" @close="screenOpen = false" />
+    <ShareCardModal :show="cardOpen" @close="cardOpen = false" />
 
     <Teleport to="body">
       <Transition name="modal-fade">
@@ -234,11 +243,15 @@ async function handlePaste(e: ClipboardEvent) {
 }
 
 .bento-sidebar > :last-child {
-  order: 4;
+  order: 5;
 }
 
 .bento-chart {
   order: 3;
+}
+
+.bento-bloat {
+  order: 4;
 }
 
 @media (min-width: 1024px) {
@@ -258,6 +271,11 @@ async function handlePaste(e: ClipboardEvent) {
   }
 
   .bento-chart {
+    grid-column: 1 / -1;
+    order: unset;
+  }
+
+  .bento-bloat {
     grid-column: 1 / -1;
     order: unset;
   }
