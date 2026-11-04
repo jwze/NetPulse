@@ -4,6 +4,7 @@ import ClientInfoCard from '@/components/diagnostics/ClientInfoCard.vue'
 import DnsLookupCard from '@/components/diagnostics/DnsLookupCard.vue'
 import QualityCard from '@/components/diagnostics/QualityCard.vue'
 import UploadCard from '@/components/diagnostics/UploadCard.vue'
+import WebRtcCard from '@/components/diagnostics/WebRtcCard.vue'
 import HistoryCard from '@/components/diagnostics/HistoryCard.vue'
 </script>
 
@@ -22,6 +23,7 @@ import HistoryCard from '@/components/diagnostics/HistoryCard.vue'
       <div class="span-full"><DnsLookupCard /></div>
       <QualityCard />
       <UploadCard />
+      <div class="span-full"><WebRtcCard /></div>
       <div class="span-full"><HistoryCard /></div>
     </div>
   </div>
