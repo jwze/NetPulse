@@ -14,7 +14,11 @@ const navItems = [
   { id: 0, label: '测速台', path: '/' },
   { id: 1, label: '全球延迟', path: '/latency' },
   { id: 2, label: 'IPv6 测试', path: '/ipv6' },
-  { id: 3, label: '网络诊断', path: '/diagnostics' },
+  { id: 3, label: '出口对照', path: '/egress' },
+  { id: 4, label: 'IP 质量', path: '/ip-quality' },
+  { id: 5, label: '解锁检测', path: '/unlock' },
+  { id: 6, label: '隐私画像', path: '/privacy' },
+  { id: 7, label: '网络诊断', path: '/diagnostics' },
 ]
 
 function navigate(path: string) {
@@ -53,7 +57,7 @@ onBeforeUnmount(() => {
           <span class="brand-wordmark" :aria-label="brand.name">{{ brand.name }}</span>
         </div>
 
-        <nav class="hidden md:flex items-center h-full flex-1 min-w-0">
+        <nav class="hidden lg:flex items-center h-full flex-1 min-w-0">
           <a
             v-for="item in navItems"
             :key="item.id"
@@ -65,7 +69,7 @@ onBeforeUnmount(() => {
           </a>
         </nav>
 
-        <div class="flex-1 md:hidden" />
+        <div class="flex-1 lg:hidden" />
 
         <div class="flex items-center gap-1.5 shrink-0">
           <div class="theme-menu-wrap">
@@ -132,7 +136,7 @@ onBeforeUnmount(() => {
       <Transition name="fade-slide">
         <div
           v-if="mobileMenuOpen"
-          class="md:hidden"
+          class="lg:hidden"
           style="background: var(--bg-body); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border)"
         >
           <nav class="np-shell py-3 flex flex-col gap-0.5">
@@ -208,11 +212,12 @@ onBeforeUnmount(() => {
   align-items: center;
   height: 100%;
   padding: 0 2px;
-  margin: 0 14px;
+  margin: 0 13px;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-muted);
   cursor: pointer;
+  white-space: nowrap;
   transition: color 0.15s ease;
 }
 
@@ -236,7 +241,7 @@ onBeforeUnmount(() => {
   display: none;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .mobile-menu-trigger {
     display: inline-flex;
   }

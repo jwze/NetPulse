@@ -25,6 +25,26 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Ipv6View.vue'),
   },
   {
+    path: '/egress',
+    name: 'Egress',
+    component: () => import('@/views/EgressView.vue'),
+  },
+  {
+    path: '/ip-quality',
+    name: 'IpQuality',
+    component: () => import('@/views/IpQualityView.vue'),
+  },
+  {
+    path: '/unlock',
+    name: 'Unlock',
+    component: () => import('@/views/UnlockView.vue'),
+  },
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: () => import('@/views/PrivacyView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFoundView.vue'),
@@ -48,6 +68,14 @@ router.afterEach((to) => {
     document.title = `全球延迟 · ${brand.name}`
   } else if (to.name === 'Ipv6') {
     document.title = `IPv6 测试 · ${brand.name}`
+  } else if (to.name === 'Egress') {
+    document.title = `出口对照 · ${brand.name}`
+  } else if (to.name === 'IpQuality') {
+    document.title = `IP 质量 · ${brand.name}`
+  } else if (to.name === 'Unlock') {
+    document.title = `解锁检测 · ${brand.name}`
+  } else if (to.name === 'Privacy') {
+    document.title = `隐私画像 · ${brand.name}`
   } else {
     document.title = `页面未找到 · ${brand.name}`
   }
