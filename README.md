@@ -26,7 +26,16 @@ npm run dev      # http://127.0.0.1:3000
 npm run build    # 产物输出到 dist/
 npm run preview
 npm test         # node:test 单元测试
+npm run icons    # 重新生成 PNG 图标
 ```
+
+## 图标
+
+`public/favicon.svg` 与四张 PNG（PWA 192 / 512、maskable 512、iOS 180）由同一份图形生成，改图后执行 `npm run icons` 即可同步：
+
+- 图形与配色定义在 `scripts/gen-icons.mjs` 顶部常量，`buildSvg()` 负责按尺寸缩放
+- maskable 版本为满幅背景，主体收在 80% 安全区内，避免被 Android 桌面裁切
+- iOS 版本不带圆角与透明，交给系统自行切角
 
 ## 测速节点
 
