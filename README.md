@@ -29,7 +29,7 @@ Vue 3 · TypeScript · Vite · Pinia · Vue Router · Naive UI · Tailwind CSS 4
 
 ```bash
 npm install
-npm run dev      # http://127.0.0.1:3000
+npm run dev      # http://localhost:3000
 npm run build    # 产物输出到 dist/
 npm run preview
 npm test         # node:test 单元测试
