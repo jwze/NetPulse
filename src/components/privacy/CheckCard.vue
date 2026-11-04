@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { CHECKS, type CheckId } from '@/data/privacySniffers'
 import { CHECK_NAME, LEVEL_TEXT, LEVEL_TONE, type Verdict } from '@/utils/privacy'
+import { grade } from '@/utils/privacyInfer'
 
 const props = defineProps<{
   verdicts: Partial<Record<CheckId, Verdict | null>>
@@ -35,19 +36,44 @@ const counts = computed(() => ({
   bad: items.value.filter(item => item.level === 'bad').length,
   warn: items.value.filter(item => item.level === 'warn').length,
 }))
+
+const hasLive = computed(() => CHECKS.some(id => !!props.verdicts[id]))
+
+/** 打开分享链接时没有本机读数，按分享里的结论重新算一遍等级 */
+const sharedScore = computed(() => {
+  const levels: Record<string, 'ok' | 'warn' | 'bad' | 'info'> = {}
+  for (const [id, level] of Object.entries(props.sharedLevels || {})) {
+    if (level) levels[id] = level as 'ok' | 'warn' | 'bad' | 'info'
+  }
+  return grade(levels, CHECKS.filter(id => id !== 'fp'))
+})
+
+const displayScore = computed(() => (hasLive.value ? props.score : sharedScore.value))
+const displayTone = computed(() =>
+  hasLive.value ? props.tone : counts.value.bad ? 'bad' : counts.value.warn ? 'warn' : items.value.some(i => i.level !== 'none') ? 'ok' : 'none',
+)
+const displayTitle = computed(() =>
+  hasLive.value
+    ? props.title
+    : counts.value.bad
+      ? `分享的结果：${counts.value.bad} 处对不上`
+      : counts.value.warn
+        ? `分享的结果：${counts.value.warn} 处可能露馅`
+        : '分享的结果：各项都对得上',
+)
 </script>
 
 <template>
   <section class="np-card pv-checks">
     <header class="pv-head">
       <h2>伪装检测</h2>
-      <span class="pv-score font-mono" :class="`tone-${counts.bad ? 'bad' : counts.warn ? 'warn' : items.some(i => i.level !== 'none') ? 'ok' : 'none'}`">
-        {{ items.some(i => i.level !== 'none') ? score.grade : '—' }}
-        <em v-if="items.some(i => i.level !== 'none')">{{ score.score }}</em>
+      <span class="pv-score font-mono" :class="`tone-${displayTone}`">
+        {{ items.some(i => i.level !== 'none') ? displayScore.grade : '—' }}
+        <em v-if="items.some(i => i.level !== 'none')">{{ displayScore.score }}</em>
       </span>
     </header>
 
-    <p v-if="items.some(i => i.level !== 'none')" class="pv-verdict" :class="`tone-${tone}`">{{ title }}</p>
+    <p v-if="items.some(i => i.level !== 'none')" class="pv-verdict" :class="`tone-${displayTone}`">{{ displayTitle }}</p>
 
     <ul class="pv-list">
       <li v-for="item in items" :key="item.id" class="pv-item" :class="{ 'is-empty': item.level === 'none' }">
