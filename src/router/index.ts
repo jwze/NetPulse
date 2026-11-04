@@ -10,6 +10,11 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
   },
   {
+    path: '/diagnostics',
+    name: 'Diagnostics',
+    component: () => import('@/views/DiagnosticsView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFoundView.vue'),
@@ -25,7 +30,13 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
-  document.title = to.path === '/' ? `${brand.name} · ${brand.tagline}` : `页面未找到 · ${brand.name}`
+  if (to.path === '/') {
+    document.title = `${brand.name} · ${brand.tagline}`
+  } else if (to.name === 'Diagnostics') {
+    document.title = `网络诊断 · ${brand.name}`
+  } else {
+    document.title = `页面未找到 · ${brand.name}`
+  }
 })
 
 export default router

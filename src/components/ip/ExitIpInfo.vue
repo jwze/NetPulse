@@ -2,14 +2,10 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useNetworkStore } from '@/stores/network'
+import { fetchIpInfo, type IpInfo } from '@/utils/ipInfo'
 
 const { copy, copied } = useClipboard()
 const networkStore = useNetworkStore()
-
-interface ExitInfo {
-  ip: string
-  address: string
-}
 
 type LatencyLevel = 'good' | 'ok' | 'bad' | ''
 
@@ -18,7 +14,7 @@ interface LatencyState {
   level: LatencyLevel
 }
 
-const exitInfo = ref<ExitInfo | null>(null)
+const exitInfo = ref<IpInfo | null>(null)
 const loading = ref(true)
 const localLatency = ref<LatencyState>({ ms: '-', level: '' })
 const overseasLatency = ref<LatencyState>({ ms: '-', level: '' })
@@ -48,73 +44,12 @@ async function probe(url: string): Promise<number | null> {
   }
 }
 
-/** 国家码转中文名，纯前端、无需接口 */
-function countryName(code: string | undefined, fallback: string | undefined) {
-  if (code) {
-    try {
-      const display = new Intl.DisplayNames(['zh-CN'], { type: 'region' }).of(code)
-      if (display && display !== code) return display
-    } catch {
-      // 忽略不支持 Intl.DisplayNames 的环境
-    }
-  }
-  return fallback || ''
-}
-
-/** 运营商名称太长，去掉通用后缀 */
-function shortenIsp(isp: string) {
-  return isp
-    .replace(/\b(communications?|corporation|corp\.?|co\.?,?\s*ltd\.?|limited|ltd\.?|inc\.?|group|company|holding|technologies|technology)\b/gi, ' ')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
-    .slice(0, 28)
-}
-
-function composeAddress(country: string, region: string, city: string, isp: string) {
-  const parts: string[] = []
-  const push = (value?: string) => {
-    const text = (value || '').trim()
-    if (!text) return
-    if (parts.some(item => item.toLowerCase() === text.toLowerCase())) return
-    parts.push(text)
-  }
-  push(country)
-  push(city && city !== region ? city : region)
-  const area = parts.join(' ')
-  const carrier = shortenIsp(isp)
-  return carrier ? `${area} · ${carrier}` : area
-}
-
-async function fetchFromIpwho() {
-  const resp = await fetch('https://ipwho.is/', { cache: 'no-store', referrerPolicy: 'no-referrer' })
-  if (!resp.ok) throw new Error(`ipwho ${resp.status}`)
-  const data = await resp.json()
-  if (data?.success === false || !data?.ip) throw new Error('ipwho empty')
-  const country = countryName(data.country_code, data.country)
-  const address = composeAddress(country, data.region || '', data.city || '', data.connection?.isp || data.connection?.org || '')
-  return { ip: String(data.ip), address: address || String(data.ip) } as ExitInfo
-}
-
-async function fetchFromIpapi() {
-  const resp = await fetch('https://ipapi.co/json/', { cache: 'no-store', referrerPolicy: 'no-referrer' })
-  if (!resp.ok) throw new Error(`ipapi ${resp.status}`)
-  const data = await resp.json()
-  if (!data?.ip) throw new Error('ipapi empty')
-  const country = countryName(data.country_code, data.country_name)
-  const address = composeAddress(country, data.region || '', data.city || '', data.org || '')
-  return { ip: String(data.ip), address: address || String(data.ip) } as ExitInfo
-}
-
 async function refreshExitInfo(first = false) {
   if (disposed || !isVisible) return
   try {
-    exitInfo.value = await fetchFromIpwho()
+    exitInfo.value = await fetchIpInfo()
   } catch {
-    try {
-      exitInfo.value = await fetchFromIpapi()
-    } catch {
-      if (first) exitInfo.value = null
-    }
+    if (first) exitInfo.value = null
   } finally {
     loading.value = false
   }
@@ -183,7 +118,7 @@ onUnmounted(() => {
         <div class="ip-main">
           <span class="ip-label">出口</span>
           <span class="ip-address" :title="exitInfo?.ip || ''">
-            {{ exitInfo ? exitInfo.address : '未获取到出口信息' }}
+            {{ exitInfo ? exitInfo.displayAddress : '未获取到出口信息' }}
           </span>
         </div>
         <span v-if="exitInfo" class="ip-copy">

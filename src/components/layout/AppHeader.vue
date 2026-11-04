@@ -12,6 +12,7 @@ const themeMenuOpen = ref(false)
 
 const navItems = [
   { id: 0, label: '测速台', path: '/' },
+  { id: 1, label: '网络诊断', path: '/diagnostics' },
 ]
 
 function navigate(path: string) {
