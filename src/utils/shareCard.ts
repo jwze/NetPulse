@@ -29,14 +29,14 @@ const SANS = '"Inter", system-ui, -apple-system, "Segoe UI", "PingFang SC", "Mic
 const MONO = '"JetBrains Mono", "SF Mono", Menlo, Consolas, monospace'
 
 const COLOR = {
-  text: '#F4F6F9',
-  sub: '#8B9099',
-  faint: '#5C626B',
-  accent: '#3B82F6',
-  border: '#20242B',
-  good: '#4ADE9B',
-  ok: '#F5A623',
-  bad: '#FF5C4E',
+  text: '#EDF2F2',
+  sub: '#8C9A9C',
+  faint: '#5E6B6D',
+  accent: '#BF4012',
+  border: '#1C2224',
+  good: '#46A882',
+  ok: '#C6883A',
+  bad: '#CF5A4F',
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -124,16 +124,16 @@ export function buildShareCard(data: ShareCardData): HTMLCanvasElement {
   if (!ctx) return canvas
   ctx.scale(SCALE, SCALE)
 
-  // 背景：深色渐变 + 右上角品牌蓝微光
+  // 背景：近黑石墨，右上角一点笔迹橙，像记录纸被灯照到
   const bg = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT)
-  bg.addColorStop(0, '#101216')
-  bg.addColorStop(1, '#050607')
+  bg.addColorStop(0, '#0E1113')
+  bg.addColorStop(1, '#060809')
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, WIDTH, HEIGHT)
 
-  const glow = ctx.createRadialGradient(WIDTH - 120, -60, 20, WIDTH - 120, -60, 620)
-  glow.addColorStop(0, 'rgba(59, 130, 246, 0.22)')
-  glow.addColorStop(1, 'rgba(59, 130, 246, 0)')
+  const glow = ctx.createRadialGradient(WIDTH - 120, -80, 20, WIDTH - 120, -80, 560)
+  glow.addColorStop(0, 'rgba(191, 64, 18, 0.14)')
+  glow.addColorStop(1, 'rgba(191, 64, 18, 0)')
   ctx.fillStyle = glow
   ctx.fillRect(0, 0, WIDTH, HEIGHT)
 
@@ -142,31 +142,31 @@ export function buildShareCard(data: ShareCardData): HTMLCanvasElement {
   // 顶部品牌
   drawPulse(ctx, pad, 54, 40)
   ctx.fillStyle = COLOR.text
-  ctx.font = `700 26px ${SANS}`
+  ctx.font = `500 22px ${MONO}`
   ctx.textBaseline = 'alphabetic'
   ctx.fillText(brand.name, pad + 54, 84)
 
   ctx.fillStyle = COLOR.faint
-  ctx.font = `500 15px ${SANS}`
+  ctx.font = `400 14px ${SANS}`
   ctx.textAlign = 'right'
   ctx.fillText(formatDate(data.date), WIDTH - pad, 82)
   ctx.textAlign = 'left'
 
   // 主指标
   ctx.fillStyle = COLOR.sub
-  ctx.font = `500 16px ${SANS}`
+  ctx.font = `400 14px ${MONO}`
   ctx.fillText('下载速度 · 本次平均', pad, 190)
 
   const value = formatSpeedValue(data.mbps)
   const unit = formatSpeedUnit(data.mbps)
   ctx.fillStyle = COLOR.text
-  ctx.font = `800 136px ${SANS}`
+  ctx.font = `400 124px ${MONO}`
   const valueWidth = ctx.measureText(value).width
-  ctx.fillText(value, pad - 4, 320)
+  ctx.fillText(value, pad - 4, 318)
 
   ctx.fillStyle = COLOR.accent
-  ctx.font = `600 34px ${SANS}`
-  ctx.fillText(unit, pad + valueWidth + 14, 314)
+  ctx.font = `500 30px ${MONO}`
+  ctx.fillText(unit, pad + valueWidth + 12, 312)
 
   // 分隔线
   ctx.strokeStyle = COLOR.border
@@ -203,18 +203,18 @@ export function buildShareCard(data: ShareCardData): HTMLCanvasElement {
   cells.forEach((cell, index) => {
     const x = pad + colWidth * index
     ctx.fillStyle = COLOR.faint
-    ctx.font = `500 14px ${SANS}`
+    ctx.font = `400 13px ${SANS}`
     ctx.fillText(cell.label, x, 424)
 
     ctx.fillStyle = cell.color || COLOR.text
-    ctx.font = index === 0 ? `700 46px ${MONO}` : `650 30px ${MONO}`
+    ctx.font = index === 0 ? `400 44px ${MONO}` : `400 28px ${MONO}`
     // 先量宽度再改字体，否则会用下一段字体算出来的错误宽度
     const valueWidth = ctx.measureText(cell.value).width
     ctx.fillText(cell.value, x, index === 0 ? 480 : 474)
 
     if (cell.sub) {
       ctx.fillStyle = COLOR.sub
-      ctx.font = `500 14px ${MONO}`
+      ctx.font = `400 13px ${MONO}`
       // 作为评级字母的右上角注记，避免和主值挤在一条基线上
       ctx.fillText(cell.sub, x + valueWidth + 10, 452)
     }
@@ -228,13 +228,13 @@ export function buildShareCard(data: ShareCardData): HTMLCanvasElement {
   ctx.stroke()
 
   ctx.fillStyle = COLOR.sub
-  ctx.font = `500 15px ${SANS}`
+  ctx.font = `400 14px ${SANS}`
   const nodeText = data.node ? `节点 ${data.node}` : '测速节点'
   ctx.fillText(nodeText.length > 42 ? `${nodeText.slice(0, 42)}…` : nodeText, pad, 566)
 
   ctx.textAlign = 'right'
   ctx.fillStyle = COLOR.faint
-  ctx.font = `500 14px ${SANS}`
+  ctx.font = `400 13px ${MONO}`
   ctx.fillText(brand.name, WIDTH - pad, 566)
   ctx.textAlign = 'left'
 
