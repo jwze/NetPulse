@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# 截图与审计产物
+unslop/
+
+# 本地工作记忆
+.workbuddy/
