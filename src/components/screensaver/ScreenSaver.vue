@@ -127,30 +127,39 @@ onUnmounted(() => {
           }"
         >
           <div class="screen-left">
-            <div class="screen-brand">{{ brand.name }}</div>
+            <div class="screen-head">
+              <svg class="screen-mark" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M1 12h4l2.5-6 3.5 13 3-9 2 4h7" />
+              </svg>
+              <span class="screen-brand">{{ brand.nameZh }}</span>
+              <span class="screen-brand-en">{{ brand.name }}</span>
+            </div>
             <div class="screen-time">{{ timeText }}</div>
             <div class="screen-date">{{ dateText }}</div>
             <div class="screen-device">
               <span>{{ battery }}</span>
               <span>运行 {{ panel.runTimeShow || '00s' }}</span>
+              <span>{{ panel.isRunning ? '测速中' : '待命' }}</span>
             </div>
           </div>
 
           <div class="screen-right">
             <div class="screen-stat">
               <span>总流量</span>
-              <strong>{{ panel.show.allUsed || '-' }}</strong>
+              <strong>{{ panel.show.allUsed || '—' }}</strong>
             </div>
             <div class="screen-stat">
               <span>{{ panel.isRunning ? '实时速度' : '平均速度' }}</span>
-              <strong>{{ panel.show.speed || '-' }}</strong>
+              <strong>{{ panel.show.speed || '—' }}</strong>
             </div>
             <div class="screen-stat">
               <span>{{ panel.isRunning ? '实时带宽' : '平均带宽' }}</span>
-              <strong>{{ panel.show.speedBit || '-' }}</strong>
+              <strong>{{ panel.show.speedBit || '—' }}</strong>
             </div>
           </div>
         </div>
+
+        <p class="screen-hint">点击任意处唤醒</p>
       </div>
     </Transition>
   </Teleport>
@@ -162,8 +171,19 @@ onUnmounted(() => {
   inset: 0;
   z-index: 120;
   overflow: hidden;
-  background: #000;
-  color: #f5f5f5;
+  background: #060809;
+  color: #E9EFEF;
+}
+
+.screen-hint {
+  position: absolute;
+  right: 0;
+  bottom: 28px;
+  left: 0;
+  color: rgba(233, 239, 239, 0.24);
+  font-size: 11px;
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .screen-container {
@@ -188,45 +208,61 @@ onUnmounted(() => {
   min-width: 0;
 }
 
-.screen-brand {
-  display: inline-flex;
+.screen-head {
+  display: flex;
   align-items: center;
-  height: 30px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: rgba(138, 152, 179, 0.96);
-  font-family: "Audiowide", Bahnschrift, "Arial Narrow", "Segoe UI", Arial, sans-serif;
-  font-size: 26px;
-  font-weight: 400;
-  letter-spacing: 0;
+  gap: 8px;
+}
+
+.screen-mark {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: rgba(233, 239, 239, 0.5);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.screen-brand {
+  color: rgba(233, 239, 239, 0.72);
+  font-size: 14px;
   line-height: 1;
-  text-transform: uppercase;
+}
+
+.screen-brand-en {
+  color: rgba(233, 239, 239, 0.3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  line-height: 1;
 }
 
 .screen-time {
   font-family: var(--font-mono);
-  margin-top: 22px;
-  font-size: clamp(44px, 7vw, 80px);
-  font-weight: 500;
-  letter-spacing: 0;
+  margin-top: 20px;
+  font-size: clamp(44px, 7vw, 72px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .screen-date {
-  margin-top: 12px;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 15px;
+  margin-top: 10px;
+  color: rgba(233, 239, 239, 0.5);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
 }
 
 .screen-device {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 14px;
   margin-top: 14px;
-  color: rgba(255, 255, 255, 0.54);
-  font-size: 12px;
+  color: rgba(233, 239, 239, 0.4);
+  font-size: 11px;
 }
 
 .screen-device span {
@@ -253,17 +289,17 @@ onUnmounted(() => {
 }
 
 .screen-stat span {
-  color: rgba(255, 255, 255, 0.52);
-  font-size: 16px;
-  font-weight: 500;
+  color: rgba(233, 239, 239, 0.42);
+  font-size: 11px;
 }
 
 .screen-stat strong {
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(233, 239, 239, 0.88);
   font-family: var(--font-mono);
-  font-size: 26px;
-  font-weight: 500;
-  line-height: 1.1;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   overflow-wrap: anywhere;
 }
 
@@ -301,7 +337,7 @@ onUnmounted(() => {
   }
 
   .screen-brand {
-    font-size: 26px;
+    font-size: 13px;
   }
 
   .screen-time {
