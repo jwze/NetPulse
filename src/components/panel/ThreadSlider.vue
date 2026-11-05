@@ -6,19 +6,12 @@ const settings = useSettingsStore()
 </script>
 
 <template>
-  <div class="space-y-3" style="padding-top: 4px">
-    <div class="flex items-center justify-between">
-      <label class="text-[12px] font-medium leading-none" style="color: var(--text-secondary)">
-        并发线程
-      </label>
-      <div class="flex items-center gap-2">
-        <span class="text-[10px] uppercase tracking-wider leading-none" style="color: var(--text-muted); letter-spacing: 0.08em">
-          移动端建议 ≤ 10
-        </span>
-        <span class="font-mono text-[12px] font-semibold tabular-nums leading-none px-2.5 rounded inline-flex items-center justify-center" style="background: var(--bg-subtle); color: var(--text-primary); min-width: 32px; height: 24px; text-align: center">
-          {{ settings.threadNum }}
-        </span>
-      </div>
+  <div class="field">
+    <div class="field-head">
+      <span class="np-label">并发线程</span>
+      <span class="field-value">
+        <span class="thread-num np-num">{{ settings.threadNum }}</span>
+      </span>
     </div>
     <NSlider
       v-model:value="settings.threadNum"
@@ -27,5 +20,41 @@ const settings = useSettingsStore()
       :step="1"
       :tooltip="false"
     />
+    <span class="hint">移动端建议 10 以内</span>
   </div>
 </template>
+
+<style scoped>
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.field-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.thread-num {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+</style>

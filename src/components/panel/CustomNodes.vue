@@ -417,7 +417,7 @@ function formatTime(text: string) {
 .subpanel-titlebar h3 {
   color: var(--text-primary);
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 500;
   line-height: 1.25;
 }
 
@@ -454,11 +454,11 @@ function formatTime(text: string) {
   height: 36px;
   padding: 0 12px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
@@ -486,7 +486,7 @@ function formatTime(text: string) {
   height: 26px;
   padding: 0 8px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 12px;
@@ -509,7 +509,7 @@ function formatTime(text: string) {
 .group-count {
   min-width: 16px;
   padding: 0 4px;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
   color: var(--text-muted);
   font-family: var(--font-mono);
@@ -551,7 +551,7 @@ function formatTime(text: string) {
 .node-card {
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   background: var(--bg-subtle);
 }
 
@@ -573,7 +573,7 @@ function formatTime(text: string) {
   overflow: hidden;
   color: var(--text-primary);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -581,12 +581,12 @@ function formatTime(text: string) {
 .node-tag {
   flex: 0 0 auto;
   padding: 1px 5px;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: var(--bg-card);
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .node-time {
@@ -618,11 +618,11 @@ function formatTime(text: string) {
   height: 24px;
   padding: 0 8px;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 }
@@ -667,7 +667,7 @@ function formatTime(text: string) {
   gap: 10px;
   padding: 34px 16px;
   border: 1px dashed var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   color: var(--text-muted);
   font-size: 12px;
 }
@@ -689,12 +689,12 @@ function formatTime(text: string) {
   justify-content: center;
   gap: 7px;
   height: 38px;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
@@ -713,7 +713,7 @@ function formatTime(text: string) {
 .node-modal {
   width: min(420px, calc(100vw - 32px));
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-lg);
   background: var(--bg-card);
   box-shadow: var(--shadow-lg);
 }
@@ -734,14 +734,14 @@ function formatTime(text: string) {
 .node-modal h3 {
   color: var(--text-primary);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .node-modal header button {
   width: 28px;
   height: 28px;
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: var(--r-sm);
   background: var(--bg-card);
   color: var(--text-muted);
   cursor: pointer;
@@ -756,7 +756,7 @@ function formatTime(text: string) {
 .node-form label {
   color: var(--text-secondary);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .node-form-row {
@@ -784,10 +784,10 @@ function formatTime(text: string) {
 .node-modal footer button {
   height: 34px;
   min-width: 76px;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   border: 1px solid var(--border);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 

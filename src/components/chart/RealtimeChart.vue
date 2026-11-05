@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart } from 'echarts/charts'
-import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
+import { GridComponent, TooltipComponent } from 'echarts/components'
 import { LegacyGridContainLabel } from 'echarts/features'
 import VChart from 'vue-echarts'
 import { useSettingsStore } from '@/stores/settings'
@@ -12,8 +12,9 @@ import { useNetworkStore } from '@/stores/network'
 import { usePanelStore } from '@/stores/panel'
 import { useFormatter } from '@/composables/useFormatter'
 import { formatDateTime } from '@/utils/date'
+import Icon from '@/components/ui/Icon.vue'
 
-use([CanvasRenderer, LineChart, GridComponent, TooltipComponent, LegendComponent, LegacyGridContainLabel])
+use([CanvasRenderer, LineChart, GridComponent, TooltipComponent, LegacyGridContainLabel])
 
 const settings = useSettingsStore()
 const appStore = useAppStore()
@@ -29,6 +30,15 @@ function formatChartTime(value: number) {
   return formatDateTime(new Date(value).toISOString())
 }
 
+/** 坐标轴只留数字与量级，单位交给图例 */
+function formatAxisSpeed(bytesPerSec: number) {
+  const mb = bytesPerSec / 1024 / 1024
+  if (mb >= 1000) return `${(mb / 1024).toFixed(1)}G`
+  if (mb >= 10) return `${Math.round(mb)}M`
+  if (mb >= 1) return `${mb.toFixed(1)}M`
+  return `${Math.round(bytesPerSec / 1024)}K`
+}
+
 function tooltipFormatter(params: any[]) {
   const rows = Array.isArray(params) ? params : []
   const speedPoint = rows.find(item => item.seriesName === '速率')
@@ -38,14 +48,14 @@ function tooltipFormatter(params: any[]) {
   const latencyValue = Number(latencyPoint?.data?.[1]) || 0
 
   return `
-    <div style="font-weight:600;margin-bottom:6px;color:inherit;">${formatChartTime(timeValue)}</div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:28px;line-height:1.8;">
-      <span style="display:inline-flex;align-items:center;gap:7px;color:inherit;"><i style="width:8px;height:8px;border-radius:999px;background:#3B82F6;display:inline-block;"></i>速率</span>
-      <strong style="font-weight:750;">${formatSpeed(speedValue)}</strong>
+    <div style="font-family:inherit;font-size:11px;color:var(--text-muted);margin-bottom:6px;font-variant-numeric:tabular-nums;">${formatChartTime(timeValue)}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;line-height:1.9;">
+      <span style="font-size:12px;color:var(--text-secondary);">速率</span>
+      <strong style="font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--trace);">${formatSpeed(speedValue)}</strong>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:28px;line-height:1.8;">
-      <span style="display:inline-flex;align-items:center;gap:7px;color:inherit;"><i style="width:8px;height:8px;border-radius:999px;background:#50E3A4;display:inline-block;"></i>延迟</span>
-      <strong style="font-weight:750;">${latencyValue > 0 ? Math.round(latencyValue) + ' ms' : '-'}</strong>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;line-height:1.9;">
+      <span style="font-size:12px;color:var(--text-secondary);">延迟</span>
+      <strong style="font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--text-primary);">${latencyValue > 0 ? Math.round(latencyValue) + ' ms' : '—'}</strong>
     </div>
   `
 }
@@ -54,67 +64,71 @@ const hasData = computed(() => speedData.value.some(([, value]) => value > 0))
 
 const option = computed(() => {
   const isDark = appStore.isDark
-  const textMuted = isDark ? '#666666' : '#888888'
-  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'
-  const showAxisLabel = hasData.value
+  const axisColor = isDark ? '#677678' : '#78878A'
+  const gridColor = isDark ? 'rgba(230,237,238,0.06)' : 'rgba(16,23,25,0.06)'
+  const traceColor = isDark ? '#F0744A' : '#BF4012'
+  const secondColor = isDark ? '#8A999B' : '#6B7A7D'
 
   return {
+    animation: false,
     tooltip: {
       trigger: 'axis',
-      backgroundColor: isDark ? '#111111' : '#FFFFFF',
-      borderColor: isDark ? '#262626' : '#EAEAEA',
+      backgroundColor: isDark ? '#14181A' : '#FFFFFF',
+      borderColor: isDark ? 'rgba(230,237,238,0.11)' : 'rgba(16,23,25,0.11)',
       borderWidth: 1,
-      textStyle: { color: isDark ? '#EDEDED' : '#000000', fontSize: 12, fontFamily: 'Inter' },
-      borderRadius: 6,
-      padding: [8, 12],
-      extraCssText: 'z-index: 40 !important; pointer-events: none; box-shadow: 0 4px 16px rgba(0,0,0,0.08);',
+      padding: [10, 12],
+      textStyle: { color: isDark ? '#E6EDEE' : '#101719' },
+      extraCssText: 'z-index:40 !important;pointer-events:none;border-radius: var(--r-md);box-shadow:0 4px 12px rgba(0,0,0,0.08);',
       formatter: tooltipFormatter,
     },
-    legend: {
-      data: [
-        { name: '速率', icon: 'rect' },
-        { name: '延迟', icon: 'rect' },
-      ],
-      bottom: 4,
-      textStyle: { color: textMuted, fontSize: 11, fontFamily: 'Inter' },
-      itemWidth: 10,
-      itemHeight: 2,
-      itemGap: 16,
-    },
-    grid: { left: 8, right: 8, top: 20, bottom: 28, containLabel: true },
+    grid: { left: 8, right: 8, top: 12, bottom: 22, containLabel: true },
     xAxis: {
       type: 'time',
       boundaryGap: false,
-      axisLabel: { show: false },
+      axisLabel: {
+        show: true,
+        color: axisColor,
+        fontSize: 10,
+        fontFamily: 'ui-monospace, monospace',
+        hideOverlap: true,
+        formatter: (value: number) => {
+          const date = new Date(value)
+          return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
+        },
+      },
       axisTick: { show: false },
-      axisLine: { show: false },
-      splitLine: { show: false },
+      axisLine: { show: true, lineStyle: { color: gridColor } },
+      splitLine: { show: true, lineStyle: { color: gridColor } },
     },
     yAxis: [
       {
         type: 'value',
+        min: 0,
+        max: hasData.value ? undefined : 1024 * 1024,
         axisLabel: {
-          show: showAxisLabel,
-          color: textMuted,
+          show: true,
+          color: axisColor,
           fontSize: 10,
-          fontFamily: 'JetBrains Mono, monospace',
+          fontFamily: 'ui-monospace, monospace',
           margin: 8,
-          formatter: (value: number) => formatSpeed(value),
+          formatter: (value: number) => formatAxisSpeed(value),
         },
-        splitLine: { lineStyle: { color: gridColor, type: [4, 4] } },
+        splitLine: { lineStyle: { color: gridColor } },
         splitNumber: 3,
         axisLine: { show: false },
         axisTick: { show: false },
       },
       {
         type: 'value',
+        min: 0,
+        max: hasData.value ? undefined : 100,
         axisLabel: {
-          show: showAxisLabel,
-          color: textMuted,
+          show: true,
+          color: axisColor,
           fontSize: 10,
-          fontFamily: 'JetBrains Mono, monospace',
+          fontFamily: 'ui-monospace, monospace',
           margin: 8,
-          formatter: (value: number) => value > 0 ? `${Math.round(value)}ms` : '0',
+          formatter: (value: number) => (value > 0 ? `${Math.round(value)}` : '0'),
         },
         splitLine: { show: false },
         splitNumber: 3,
@@ -126,7 +140,7 @@ const option = computed(() => {
       {
         name: '速率',
         type: 'line',
-        smooth: 0.3,
+        smooth: 0.25,
         showSymbol: false,
         yAxisIndex: 0,
         areaStyle: {
@@ -134,23 +148,23 @@ const option = computed(() => {
             type: 'linear',
             x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(59, 130, 246, 0.2)' },
-              { offset: 1, color: 'rgba(59, 130, 246, 0)' },
+              { offset: 0, color: isDark ? 'rgba(240, 116, 74, 0.16)' : 'rgba(191, 64, 18, 0.12)' },
+              { offset: 1, color: 'rgba(191, 64, 18, 0)' },
             ],
           },
         },
-        lineStyle: { color: '#3B82F6', width: 1.5 },
-        itemStyle: { color: '#3B82F6' },
+        lineStyle: { color: traceColor, width: 1.5 },
+        itemStyle: { color: traceColor },
         data: speedData.value,
       },
       {
         name: '延迟',
         type: 'line',
-        smooth: 0.3,
+        smooth: 0.25,
         showSymbol: false,
         yAxisIndex: 1,
-        lineStyle: { color: '#50E3A4', width: 1.5 },
-        itemStyle: { color: '#50E3A4' },
+        lineStyle: { color: secondColor, width: 1, type: [3, 3] },
+        itemStyle: { color: secondColor },
         data: latencyData.value,
       },
     ],
@@ -178,66 +192,130 @@ defineExpose({ addDataPoint, clearData })
 </script>
 
 <template>
-  <div class="np-card">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-2">
-        <div class="w-5 h-5 flex items-center justify-center" style="color: var(--text-secondary)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-        </div>
-        <h3 class="text-[14px] font-semibold tracking-tight" style="color: var(--text-primary)">
-          实时监控
-        </h3>
-        <span class="text-[11px]" style="color: var(--text-muted)">速率 / 延迟</span>
+  <div class="trace">
+    <div class="trace-head">
+      <div class="legend">
+        <span class="legend-item">
+          <i class="swatch swatch-trace" aria-hidden="true" />
+          速率
+          <em>MB/s</em>
+        </span>
+        <span class="legend-item">
+          <i class="swatch swatch-second" aria-hidden="true" />
+          延迟
+          <em>ms</em>
+        </span>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button
-          class="np-btn-ghost"
-          :aria-label="settings.chartShow ? '关闭图表' : '开启图表'"
-          @click="settings.chartShow = !settings.chartShow"
-        >
-          <svg v-if="settings.chartShow" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-          <svg v-else class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-            <line x1="1" y1="1" x2="23" y2="23" />
-          </svg>
-        </button>
-      </div>
+      <button
+        class="np-btn-ghost small"
+        :aria-label="settings.chartShow ? '隐藏曲线' : '显示曲线'"
+        @click="settings.chartShow = !settings.chartShow"
+      >
+        <Icon :name="settings.chartShow ? 'eye' : 'eye-off'" :size="15" />
+      </button>
     </div>
 
-    <div v-show="settings.chartShow" class="chart-wrap">
+    <div v-show="settings.chartShow" class="paper">
       <VChart ref="chartRef" :option="option" autoresize />
-      <div v-if="!hasData" class="chart-empty">
-        <span class="chart-empty-dot" />
-        开始测速后显示实时曲线
-      </div>
+      <p v-if="!hasData" class="hint">
+        <span class="hint-mark" aria-hidden="true" />
+        开始测速后，曲线会在这里逐秒描出
+      </p>
     </div>
-    <div
-      v-show="!settings.chartShow"
-      class="h-20 flex flex-col items-center justify-center gap-1 rounded-md"
-      style="background: var(--bg-subtle)"
-    >
-      <svg class="w-4 h-4" style="color: var(--text-muted)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-        <line x1="1" y1="1" x2="23" y2="23" />
-      </svg>
-      <span class="text-[12px]" style="color: var(--text-muted)">监控已关闭</span>
+
+    <div v-show="!settings.chartShow" class="hidden-note">
+      <Icon name="eye-off" :size="14" />
+      曲线已隐藏
     </div>
   </div>
 </template>
 
 <style scoped>
-.chart-wrap {
-  position: relative;
-  height: 260px;
+.trace {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
 }
 
-.chart-empty {
+.trace-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.legend-item em {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 10px;
+}
+
+.swatch {
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.swatch-trace {
+  background: var(--trace);
+}
+
+.swatch-second {
+  background: var(--trace-second);
+}
+
+.small {
+  width: 28px;
+  height: 28px;
+}
+
+/* 描迹纸：细网格 + 底部基线 */
+.paper {
+  position: relative;
+  flex: 1;
+  height: 232px;
+  min-height: 200px;
+  min-width: 0;
+  border-radius: var(--r-sm);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 32px;
+  background-position: 0 0;
+}
+
+.paper::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  height: 1px;
+  background: var(--grid-line-strong);
+  pointer-events: none;
+}
+
+.hint {
   position: absolute;
   inset: 0;
   display: flex;
@@ -249,10 +327,29 @@ defineExpose({ addDataPoint, clearData })
   pointer-events: none;
 }
 
-.chart-empty-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--border);
+.hint-mark {
+  width: 14px;
+  height: 1px;
+  background: var(--trace);
+  opacity: 0.7;
+}
+
+.hidden-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 232px;
+  border-radius: var(--r-sm);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .paper,
+  .hidden-note {
+    height: 180px;
+  }
 }
 </style>

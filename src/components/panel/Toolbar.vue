@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Icon from '@/components/ui/Icon.vue'
+
 const emit = defineEmits<{
   (e: 'openScreen'): void
   (e: 'openSettings'): void
@@ -7,10 +9,10 @@ const emit = defineEmits<{
 }>()
 
 const actions = [
-  { key: 'nodes', label: '节点', event: 'openNodes', path: 'M4 6h16M4 12h16M4 18h10' },
-  { key: 'card', label: '成绩卡', event: 'openCard', path: 'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8 M16 6l-4-4-4 4 M12 2v13' },
-  { key: 'screen', label: '息屏', event: 'openScreen', path: 'M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3' },
-  { key: 'settings', label: '设置', event: 'openSettings', path: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z' },
+  { key: 'nodes', label: '节点', icon: 'list', event: 'openNodes' },
+  { key: 'card', label: '成绩卡', icon: 'card', event: 'openCard' },
+  { key: 'screen', label: '息屏', icon: 'monitor', event: 'openScreen' },
+  { key: 'settings', label: '设置', icon: 'sliders', event: 'openSettings' },
 ] as const
 
 function handleClick(event: string) {
@@ -24,35 +26,46 @@ function handleClick(event: string) {
 </script>
 
 <template>
-  <div class="grid grid-cols-4 gap-1.5">
+  <div class="tools">
     <button
       v-for="action in actions"
       :key="action.key"
       class="tool-btn"
       @click="handleClick(action.event)"
     >
-      <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <path :d="action.path" />
-      </svg>
-      <span class="text-[11px] font-medium">{{ action.label }}</span>
+      <Icon :name="action.icon" :size="15" />
+      <span>{{ action.label }}</span>
     </button>
   </div>
 </template>
 
 <style scoped>
+.tools {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+
 .tool-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 10px 4px;
-  border-radius: 6px;
+  justify-content: center;
+  gap: 6px;
+  height: 52px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
   color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 11px;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
 }
 
 .tool-btn:hover {
+  border-color: var(--border-subtle);
   background: var(--bg-subtle);
   color: var(--text-primary);
 }

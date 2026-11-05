@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { useNetworkStore } from '@/stores/network'
 import { fetchIpInfo, type IpInfo } from '@/utils/ipInfo'
+import Icon from '@/components/ui/Icon.vue'
 
 const { copy, copied } = useClipboard()
 const networkStore = useNetworkStore()
@@ -89,179 +90,138 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-card flex-1">
-    <div class="flex items-center justify-between mb-3">
-      <div class="flex items-center gap-2">
-        <div class="w-5 h-5 flex items-center justify-center" style="color: var(--text-secondary)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-        </div>
-        <h3 class="text-[14px] font-semibold tracking-tight" style="color: var(--text-primary)">
-          出口地址
-        </h3>
-      </div>
-      <span v-if="copied" class="text-[11px]" style="color: var(--color-success)">已复制</span>
-    </div>
+  <section class="np-card egress-card">
+    <header class="np-panel-head">
+      <h2 class="np-panel-title">出口地址</h2>
+      <span v-if="copied" class="copied">已复制</span>
+    </header>
 
-    <div v-if="loading" class="flex items-center gap-2 py-2">
-      <div
-        class="w-3 h-3 rounded-full np-spin"
-        style="border: 1.5px solid var(--border); border-top-color: var(--text-primary)"
-      />
-      <span class="text-[12px]" style="color: var(--text-muted)">正在检测...</span>
+    <div v-if="loading" class="loading">
+      <span class="np-skel" style="width: 62%" />
+      <span class="np-skel" style="width: 38%" />
     </div>
 
     <template v-else>
-      <div class="ip-row" :class="{ 'is-empty': !exitInfo }" @click="copyIp">
-        <div class="ip-main">
-          <span class="ip-label">出口</span>
-          <span class="ip-address" :title="exitInfo?.ip || ''">
-            {{ exitInfo ? exitInfo.displayAddress : '未获取到出口信息' }}
-          </span>
-        </div>
-        <span v-if="exitInfo" class="ip-copy">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="9" width="13" height="13" rx="2" />
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-          </svg>
+      <button class="ip-row" type="button" :disabled="!exitInfo" @click="copyIp">
+        <span class="ip-text" :title="exitInfo?.ip || ''">
+          {{ exitInfo ? exitInfo.displayAddress : '未获取到出口信息' }}
         </span>
-      </div>
+        <Icon v-if="exitInfo" name="copy" :size="14" class="copy-icon" />
+      </button>
 
-      <div class="latency-grid">
-        <div class="latency-item">
-          <span class="latency-label">国内</span>
-          <span class="ip-latency" :class="`latency-${localLatency.level || 'none'}`">{{ localLatency.ms }} ms</span>
+      <dl class="latency">
+        <div>
+          <dt>国内</dt>
+          <dd :class="`latency-${localLatency.level || 'none'}`">
+            {{ localLatency.ms }}<em v-if="localLatency.level">ms</em>
+          </dd>
         </div>
-        <div class="latency-item">
-          <span class="latency-label">海外</span>
-          <span class="ip-latency" :class="`latency-${overseasLatency.level || 'none'}`">{{ overseasLatency.ms }} ms</span>
+        <div>
+          <dt>海外</dt>
+          <dd :class="`latency-${overseasLatency.level || 'none'}`">
+            {{ overseasLatency.ms }}<em v-if="overseasLatency.level">ms</em>
+          </dd>
         </div>
-      </div>
+      </dl>
     </template>
-  </div>
+  </section>
 </template>
 
 <style scoped>
+.egress-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+.copied {
+  color: var(--tone-good);
+  font-size: 11px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 0;
+}
+
 .ip-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 40px;
-  padding: 8px 10px;
-  border-radius: 7px;
-  background: var(--bg-subtle);
+  width: 100%;
+  min-height: 32px;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
   cursor: pointer;
-  transition: background 0.15s ease;
 }
 
-.ip-row:hover {
-  background: var(--bg-input-hover);
-}
-
-.ip-row.is-empty {
+.ip-row:disabled {
   cursor: default;
 }
 
-.ip-main {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-width: 0;
-  flex: 1;
-}
-
-.ip-label {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 18px;
-  flex: 0 0 auto;
-  border-radius: 5px;
-  background: var(--bg-card);
-  color: var(--text-muted);
-  font-size: 10px;
-  font-weight: 750;
-}
-
-.ip-address {
+.ip-text {
   min-width: 0;
   overflow: hidden;
   color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 550;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.ip-copy {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 auto;
+.copy-icon {
   color: var(--text-muted);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
 }
 
-.ip-copy svg {
-  width: 100%;
-  height: 100%;
+.ip-row:hover .copy-icon,
+.ip-row:focus-visible .copy-icon {
+  opacity: 1;
 }
 
-.latency-grid {
+.latency {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  margin-top: 6px;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
 }
 
-.latency-item {
+.latency dt {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.latency dd {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 7px;
-  background: var(--bg-subtle);
-}
-
-.latency-label {
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.ip-latency {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 54px;
-  height: 20px;
-  border-radius: 6px;
-  background: var(--bg-card);
+  align-items: baseline;
+  gap: 3px;
+  margin: 2px 0 0;
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 750;
+  font-size: 15px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
+  line-height: 1.2;
 }
 
-.latency-good {
-  background: rgba(80, 227, 164, 0.12);
-  color: #16a34a;
+.latency dd em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.7;
 }
 
-.latency-ok {
-  background: rgba(245, 166, 35, 0.14);
-  color: #d97706;
-}
-
-.latency-bad {
-  background: rgba(238, 0, 0, 0.08);
-  color: #dc2626;
-}
-
-.latency-none {
-  color: var(--text-muted);
-}
+.latency-good { color: var(--tone-good); }
+.latency-ok { color: var(--tone-warn); }
+.latency-bad { color: var(--tone-bad); }
+.latency-none { color: var(--text-muted); }
 </style>

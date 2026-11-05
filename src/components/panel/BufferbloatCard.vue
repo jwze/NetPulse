@@ -14,75 +14,91 @@ const gradeLabel = computed(() => {
 })
 const toneClass = computed(() => (bloat.value.tone ? `tone-${bloat.value.tone}` : 'tone-none'))
 
+const statusText = computed(() => {
+  if (bloat.value.active) return '采样中'
+  return hasResult.value ? '已完成' : '待测'
+})
+
 const footText = computed(() => {
-  if (bloat.value.active) return '正在压满带宽，同时持续探测往返延迟…'
-  if (!hasResult.value) return '开始测速时会同步探测：先测空闲延迟，再测满载时的排队延迟。'
-  return `增量越小越好。视频会议与在线游戏最在意这一项，${bloat.value.target ? `探测目标 ${bloat.value.target}` : '结果仅供参考'}。`
+  if (bloat.value.active) return '正在压满带宽，同时每 500ms 探测一次往返延迟'
+  if (!hasResult.value) return '开始测速时会同步探测：先取空闲延迟基线，再测满载时的排队延迟'
+  return `增量越小越好，视频会议与在线游戏最在意这一项${bloat.value.target ? ` · 探测目标 ${bloat.value.target}` : ''}`
 })
 
 function msText(value: number | null) {
-  return value === null ? '—' : `${Math.round(value)} ms`
+  return value === null ? '—' : `${Math.round(value)}`
 }
 
 function deltaText(value: number | null) {
   if (value === null) return '—'
-  return `${value > 0 ? '+' : ''}${Math.round(value)} ms`
+  return `${value > 0 ? '+' : ''}${Math.round(value)}`
 }
 </script>
 
 <template>
   <section class="np-card bloat-card">
-    <header class="bloat-head">
-      <div class="bloat-title">
-        <span class="bloat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12h4l2.5-7 4 14 2.5-7h5" />
-          </svg>
-        </span>
-        <h3>满载延迟</h3>
-        <span class="bloat-sub">Bufferbloat</span>
-      </div>
-      <span class="np-chip" :class="{ 'np-chip-success': bloat.active }">
-        <span v-if="bloat.active" class="np-pulse-dot chip-dot" />
-        {{ bloat.active ? '采样中' : hasResult ? '已完成' : '待测' }}
+    <header class="np-panel-head">
+      <h2 class="np-panel-title">
+        满载延迟
+        <span class="sub">Bufferbloat</span>
+      </h2>
+      <span class="status" :class="{ live: bloat.active }">
+        <span v-if="bloat.active" class="np-live-dot" />
+        {{ statusText }}
       </span>
     </header>
 
     <div class="bloat-body">
-      <div class="grade-box" :class="toneClass">
+      <div class="grade" :class="toneClass">
         <span class="grade-key">{{ hasResult ? bloat.grade : '—' }}</span>
         <span class="grade-label">{{ gradeLabel }}</span>
       </div>
 
-      <dl class="bloat-metrics">
+      <dl class="metrics">
         <div>
           <dt>空闲延迟</dt>
-          <dd>{{ msText(bloat.idleMs) }}</dd>
+          <dd>{{ msText(bloat.idleMs) }}<em>ms</em></dd>
         </div>
         <div>
           <dt>满载延迟</dt>
-          <dd>{{ msText(bloat.loadedMs) }}</dd>
+          <dd>{{ msText(bloat.loadedMs) }}<em>ms</em></dd>
         </div>
         <div>
           <dt>增量</dt>
-          <dd :class="toneClass">{{ deltaText(bloat.increaseMs) }}</dd>
+          <dd :class="toneClass">{{ deltaText(bloat.increaseMs) }}<em>ms</em></dd>
         </div>
       </dl>
     </div>
 
-    <div class="bloat-scale" role="img" aria-label="Bufferbloat 评级刻度">
-      <span
-        v-for="(item, index) in BLOAT_THRESHOLDS"
-        :key="item.key"
-        class="scale-seg"
-        :class="[`seg-${item.tone}`, { active: index === currentIndex }]"
-      >
-        <b>{{ item.key }}</b>
-        <em>{{ item.hint }}</em>
-      </span>
+    <div class="ruler" role="img" aria-label="Bufferbloat 评级刻度，A+ 到 F">
+      <div class="ruler-track">
+        <span
+          v-for="(item, index) in BLOAT_THRESHOLDS"
+          :key="item.key"
+          class="seg"
+          :class="[`seg-${item.tone}`, { active: index === currentIndex }]"
+        />
+        <span
+          v-if="currentIndex >= 0"
+          class="cursor"
+          :class="`seg-${BLOAT_THRESHOLDS[currentIndex].tone}`"
+          :style="{ left: `calc(${(currentIndex + 0.5) / BLOAT_THRESHOLDS.length * 100}% )` }"
+        />
+      </div>
+      <div class="ruler-labels">
+        <span
+          v-for="(item, index) in BLOAT_THRESHOLDS"
+          :key="item.key"
+          class="tick"
+          :class="{ active: index === currentIndex, [`seg-${item.tone}`]: true }"
+        >
+          <b>{{ item.key }}</b>
+          <em>{{ item.hint }}</em>
+        </span>
+      </div>
     </div>
 
-    <p class="bloat-foot">{{ footText }}</p>
+    <p class="foot">{{ footText }}</p>
   </section>
 </template>
 
@@ -90,280 +106,193 @@ function deltaText(value: number | null) {
 .bloat-card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 18px 20px;
+  gap: 16px;
+  padding: 20px;
 }
 
-.bloat-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+.sub {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
-.bloat-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.bloat-icon {
+.status {
   display: inline-flex;
-  width: 20px;
-  height: 20px;
-  color: var(--text-secondary);
-  flex: 0 0 auto;
-}
-
-.bloat-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.bloat-title h3 {
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-.bloat-sub {
+  align-items: center;
+  gap: 6px;
   color: var(--text-muted);
   font-size: 11px;
   white-space: nowrap;
 }
 
-.chip-dot {
-  width: 6px;
-  height: 6px;
+.status.live {
+  color: var(--trace);
 }
 
 .bloat-body {
   display: flex;
-  align-items: stretch;
-  gap: 18px;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
 }
 
-.grade-box {
+.grade {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   gap: 2px;
-  min-width: 84px;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-left-width: 3px;
-  border-radius: 6px;
-  background: var(--bg-subtle);
-}
-
-.grade-box.tone-good {
-  border-left-color: #16a34a;
-}
-
-.grade-box.tone-ok {
-  border-left-color: #d97706;
-}
-
-.grade-box.tone-bad {
-  border-left-color: #dc2626;
-}
-
-.grade-box.tone-none {
-  border-left-color: var(--border);
+  min-width: 76px;
 }
 
 .grade-key {
-  color: var(--text-primary);
+  color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1.05;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1;
   letter-spacing: -0.04em;
 }
 
-.grade-box.tone-good .grade-key {
-  color: #16a34a;
-}
-
-.grade-box.tone-ok .grade-key {
-  color: #d97706;
-}
-
-.grade-box.tone-bad .grade-key {
-  color: #dc2626;
-}
-
-.grade-box.tone-none .grade-key {
-  color: var(--text-muted);
-}
+.grade.tone-good .grade-key { color: var(--tone-good); }
+.grade.tone-ok .grade-key { color: var(--tone-warn); }
+.grade.tone-bad .grade-key { color: var(--tone-bad); }
 
 .grade-label {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
-.bloat-metrics {
-  flex: 1;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0;
-  align-content: center;
+.metrics {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
 }
 
-.bloat-metrics > div {
-  min-width: 0;
-}
-
-.bloat-metrics dt {
+.metrics dt {
   color: var(--text-muted);
   font-size: 11px;
   line-height: 1.4;
 }
 
-.bloat-metrics dd {
-  margin: 2px 0 0;
+.metrics dd {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin: 4px 0 0;
   color: var(--text-primary);
   font-family: var(--font-mono);
-  font-size: 15px;
-  font-weight: 650;
+  font-size: 18px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+  line-height: 1.1;
 }
 
-.bloat-metrics dd.tone-good {
-  color: #16a34a;
+.metrics dd em {
+  color: var(--text-muted);
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 400;
 }
 
-.bloat-metrics dd.tone-ok {
-  color: #d97706;
-}
-
-.bloat-metrics dd.tone-bad {
-  color: #dc2626;
-}
-
-.dark .bloat-metrics dd.tone-good {
-  color: #50E3A4;
-}
-
-.dark .bloat-metrics dd.tone-ok {
-  color: #F5A623;
-}
-
-.dark .bloat-metrics dd.tone-bad {
-  color: #FF5C4E;
-}
-
-.bloat-scale {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 3px;
-}
-
-.scale-seg {
+.ruler {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 6px 2px 5px;
-  border-radius: 4px;
-  background: var(--bg-subtle);
+  gap: 6px;
+}
+
+.ruler-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+  height: 8px;
+}
+
+.seg {
+  height: 8px;
+  border-radius: 1px;
+  transition: background-color var(--dur) var(--ease);
+}
+
+/* 刻度本身按档位淡淡分段，测完才知道落点 */
+.seg.seg-good { background: color-mix(in srgb, var(--tone-good) 16%, var(--bg-subtle)); }
+.seg.seg-ok { background: color-mix(in srgb, var(--tone-warn) 16%, var(--bg-subtle)); }
+.seg.seg-bad { background: color-mix(in srgb, var(--tone-bad) 14%, var(--bg-subtle)); }
+
+.seg.active.seg-good { background: var(--tone-good); }
+.seg.active.seg-ok { background: var(--tone-warn); }
+.seg.active.seg-bad { background: var(--tone-bad); }
+
+.cursor {
+  position: absolute;
+  top: -7px;
+  width: 1px;
+  height: 6px;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  transition: left var(--dur) var(--ease);
+}
+
+.cursor.seg-good { background: var(--tone-good); }
+.cursor.seg-ok { background: var(--tone-warn); }
+.cursor.seg-bad { background: var(--tone-bad); }
+
+.ruler-labels {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.tick {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
   color: var(--text-muted);
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.scale-seg b {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.scale-seg em {
-  font-style: normal;
-  font-size: 9px;
-  line-height: 1.1;
-  opacity: 0.75;
   white-space: nowrap;
+  overflow: hidden;
 }
 
-.scale-seg.active.seg-good {
-  background: rgba(22, 163, 74, 0.12);
-  color: #16a34a;
-  transform: translateY(-1px);
+.tick b {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
 }
 
-.scale-seg.active.seg-ok {
-  background: rgba(217, 119, 6, 0.12);
-  color: #b45309;
-  transform: translateY(-1px);
+.tick em {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0;
+  opacity: 0.7;
 }
 
-.scale-seg.active.seg-bad {
-  background: rgba(220, 38, 38, 0.1);
-  color: #dc2626;
-  transform: translateY(-1px);
+.tick.active.seg-good { color: var(--tone-good); }
+.tick.active.seg-ok { color: var(--tone-warn); }
+.tick.active.seg-bad { color: var(--tone-bad); }
+
+.tick.active b {
+  font-weight: 500;
 }
 
-.bloat-foot {
+.foot {
   color: var(--text-muted);
   font-size: 11px;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
-.dark .grade-box.tone-good .grade-key,
-.dark .scale-seg.active.seg-good {
-  color: #50E3A4;
-}
-
-.dark .grade-box.tone-ok .grade-key,
-.dark .scale-seg.active.seg-ok {
-  color: #F5A623;
-}
-
-.dark .grade-box.tone-bad .grade-key,
-.dark .scale-seg.active.seg-bad {
-  color: #FF5C4E;
-}
-
-.dark .scale-seg.active.seg-good {
-  background: rgba(80, 227, 164, 0.12);
-}
-
-.dark .scale-seg.active.seg-ok {
-  background: rgba(245, 166, 35, 0.12);
-}
-
-.dark .scale-seg.active.seg-bad {
-  background: rgba(255, 92, 78, 0.12);
-}
-
-@media (max-width: 520px) {
+@media (max-width: 640px) {
   .bloat-body {
-    gap: 12px;
+    gap: 20px;
   }
 
-  .grade-box {
-    min-width: 72px;
-    padding: 8px 10px;
+  .metrics {
+    gap: 24px;
   }
 
-  .grade-key {
-    font-size: 22px;
-  }
-
-  .bloat-metrics dd {
-    font-size: 13px;
-  }
-
-  .scale-seg em {
+  .tick em {
     display: none;
   }
 }

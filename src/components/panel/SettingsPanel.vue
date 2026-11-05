@@ -248,7 +248,7 @@ const emit = defineEmits<{
 .subpanel-titlebar h3 {
   color: var(--text-primary);
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1.25;
 }
@@ -275,7 +275,7 @@ const emit = defineEmits<{
   min-height: 72px;
   padding: 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   background: var(--bg-subtle);
 }
 
@@ -283,7 +283,7 @@ const emit = defineEmits<{
   display: block;
   color: var(--text-primary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.3;
 }
 
@@ -298,7 +298,7 @@ const emit = defineEmits<{
 .cron-box {
   padding: 13px;
   border: 1px solid rgba(0, 112, 243, 0.16);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   background: rgba(0, 112, 243, 0.04);
 }
 
@@ -306,7 +306,7 @@ const emit = defineEmits<{
   margin-bottom: 10px;
   color: var(--color-info);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 500;
   letter-spacing: 0;
 }
 
@@ -321,7 +321,7 @@ const emit = defineEmits<{
   margin-bottom: 5px;
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .cron-span-2 {
@@ -356,12 +356,12 @@ const emit = defineEmits<{
   justify-content: center;
   gap: 7px;
   height: 38px;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
@@ -393,7 +393,7 @@ const emit = defineEmits<{
 .rotation-box {
   padding: 13px;
   border: 1px solid rgba(16, 185, 129, 0.18);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   background: rgba(16, 185, 129, 0.04);
 }
 
@@ -401,7 +401,7 @@ const emit = defineEmits<{
   margin-bottom: 10px;
   color: #059669;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 500;
 }
 
 .rotation-select {
@@ -413,12 +413,12 @@ const emit = defineEmits<{
   margin-bottom: 5px;
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .rotation-list {
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   overflow: hidden;
   background: var(--bg-card);
 }
@@ -460,7 +460,7 @@ const emit = defineEmits<{
   background: var(--bg-subtle);
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 500;
 }
 
 .rotation-row + .rotation-row {
@@ -484,7 +484,7 @@ const emit = defineEmits<{
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;

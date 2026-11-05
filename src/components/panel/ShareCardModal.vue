@@ -122,7 +122,7 @@ watch(() => props.show, (visible) => {
   width: min(920px, 100%);
   max-height: calc(100vh - 40px);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-lg);
   background: var(--bg-card);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
@@ -140,7 +140,7 @@ header {
 .share-head-text h3 {
   color: var(--text-primary);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 
@@ -149,7 +149,7 @@ header button {
   width: 30px;
   height: 30px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   background: var(--bg-card);
   color: var(--text-muted);
   font-size: 16px;
@@ -175,7 +175,7 @@ header button:hover {
   width: 100%;
   max-width: 860px;
   height: auto;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
@@ -200,9 +200,9 @@ footer button {
   min-width: 78px;
   padding: 0 14px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }

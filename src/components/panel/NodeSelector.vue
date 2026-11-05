@@ -5,6 +5,7 @@ import { useNodesStore } from '@/stores/nodes'
 import { useSettingsStore } from '@/stores/settings'
 import { useClipboard } from '@vueuse/core'
 import { usePanelStore } from '@/stores/panel'
+import Icon from '@/components/ui/Icon.vue'
 
 const nodesStore = useNodesStore()
 const settings = useSettingsStore()
@@ -59,41 +60,66 @@ function copyUrl() {
 </script>
 
 <template>
-  <div>
-    <div class="flex gap-2 min-w-0">
-      <NSelect
-        v-model:value="selectedValue"
-        :options="selectOptions"
-        :placeholder="settings.groupMode ? '选择节点组...' : '选择节点...'"
-        :disabled="panel.isChecking"
-        class="flex-1 min-w-0"
-        size="medium"
-      />
-      <NTooltip trigger="hover">
-        <template #trigger>
-          <button class="np-btn-ghost shrink-0" :disabled="settings.groupMode" @click="copyUrl" aria-label="复制链接">
-            <svg v-if="!copied" class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
-            <svg v-else class="w-[14px] h-[14px]" style="color: var(--color-success)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </button>
-        </template>
-        {{ settings.groupMode ? '节点联测不提供单一链接' : copied ? '已复制' : '复制链接' }}
-      </NTooltip>
-      <NTooltip trigger="hover">
-        <template #trigger>
-          <button class="np-btn-ghost shrink-0" @click="emit('editNodes')" aria-label="自定义节点">
-            <svg class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-            </svg>
-          </button>
-        </template>
-        自定义节点
-      </NTooltip>
+  <div class="field">
+    <div class="field-head">
+      <span class="np-label">测速节点</span>
+      <div class="field-actions">
+        <NTooltip trigger="hover">
+          <template #trigger>
+            <button class="np-btn-ghost small" :disabled="settings.groupMode" @click="copyUrl" aria-label="复制节点链接">
+              <Icon :name="copied ? 'check' : 'copy'" :size="14" />
+            </button>
+          </template>
+          {{ settings.groupMode ? '节点联测不提供单一链接' : copied ? '已复制' : '复制链接' }}
+        </NTooltip>
+        <NTooltip trigger="hover">
+          <template #trigger>
+            <button class="np-btn-ghost small" @click="emit('editNodes')" aria-label="自定义节点">
+              <Icon name="edit" :size="14" />
+            </button>
+          </template>
+          自定义节点
+        </NTooltip>
+      </div>
     </div>
+
+    <NSelect
+      v-model:value="selectedValue"
+      :options="selectOptions"
+      :placeholder="settings.groupMode ? '选择节点组' : '选择节点'"
+      :disabled="panel.isChecking"
+      size="medium"
+    />
   </div>
 </template>
+
+<style scoped>
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.field-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.small {
+  width: 24px;
+  height: 24px;
+}
+
+.field :deep(.n-select) {
+  width: 100%;
+}
+</style>

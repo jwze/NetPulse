@@ -4,9 +4,10 @@ import { NSelect, useMessage } from 'naive-ui'
 import { useNodesStore } from '@/stores/nodes'
 import { usePanelStore } from '@/stores/panel'
 import { useSettingsStore } from '@/stores/settings'
+import { useNetworkStore } from '@/stores/network'
 import { useSpeedRunner } from '@/composables/useSpeedRunner'
+import { useFormatter } from '@/composables/useFormatter'
 import { validateSpeedNodeUrl } from '@/utils/nodeConnectivity'
-import { brand } from '@/config/brand'
 import NetworkPanel from '@/components/panel/NetworkPanel.vue'
 import RealtimeChart from '@/components/chart/RealtimeChart.vue'
 import ExitIpInfo from '@/components/ip/ExitIpInfo.vue'
@@ -14,11 +15,15 @@ import StatsRow from '@/components/panel/StatsRow.vue'
 import BufferbloatCard from '@/components/panel/BufferbloatCard.vue'
 import ShareCardModal from '@/components/panel/ShareCardModal.vue'
 import ScreenSaver from '@/components/screensaver/ScreenSaver.vue'
+import PulseLine from '@/components/ui/PulseLine.vue'
+import Icon from '@/components/ui/Icon.vue'
 
 const nodesStore = useNodesStore()
 const panel = usePanelStore()
 const settings = useSettingsStore()
+const networkStore = useNetworkStore()
 const message = useMessage()
+const { formatSpeed, formatBandwidth } = useFormatter()
 
 watch(() => panel.lastError, (err) => {
   if (err) message.error(err)
@@ -60,10 +65,32 @@ const limitUnitOptions = computed(() => (
 
 const runner = useSpeedRunner()
 
-const statusChipClass = computed(() => panel.isRunning ? 'np-chip-success' : '')
 const statusLabel = computed(() => {
-  if (panel.isChecking) return '检测中'
-  return panel.isRunning ? '运行中' : '待命'
+  if (panel.isChecking) return '检测节点中'
+  return panel.isRunning ? '测速中' : '待命'
+})
+
+/** 大读数：数字走等宽，单位退到小字（格式化结果形如 12.3MB/s） */
+const speedParts = computed(() => {
+  const text = formatSpeed(panel.speed)
+  if (text === '-') return { value: '0', unit: 'B/s' }
+  const matched = text.match(/^([\d.]+)(.*)$/)
+  if (!matched) return { value: text, unit: '' }
+  return { value: matched[1], unit: matched[2] }
+})
+
+const speedBits = computed(() => (panel.speed > 0 ? `≈ ${formatBandwidth(panel.speed * 8)}` : '尚未开始'))
+
+const latencyNow = computed(() => panel.latencyNow || networkStore.localLatencyMs || 0)
+
+const nodeLabel = computed(() => {
+  if (settings.groupMode) return settings.groupValue || '节点组'
+  for (const nodes of Object.values(nodesStore.groupedNodes)) {
+    const hit = nodes.find(node => node.url === settings.urlValue)
+    if (hit) return hit.title
+  }
+  if (settings.urlValue) return settings.urlValue.replace(/^https?:\/\//, '').split('/')[0]
+  return '默认节点'
 })
 
 function handleToggleRun() {
@@ -144,22 +171,51 @@ async function handlePaste(e: ClipboardEvent) {
 </script>
 
 <template>
-  <div class="np-shell pt-5 pb-14">
-    <!-- Hero strip -->
-    <section class="hero-strip">
-      <div>
-        <h1 class="hero-title">{{ brand.name }}</h1>
+  <div class="np-shell page">
+    <header class="page-head">
+      <div class="page-head-main">
+        <h1 class="np-page-title">测速台</h1>
+        <p class="np-page-sub">浏览器内并发下载，逐秒描出真实吞吐；节点与结果只留在本机</p>
       </div>
-      <div class="np-chip status-pill" :class="statusChipClass">
-        <span v-if="panel.isRunning" class="np-pulse-dot" />
-        <span v-else class="status-dot" />
-        {{ statusLabel }}
-      </div>
-    </section>
 
-    <!-- Bento grid -->
-    <div class="home-bento">
-      <div class="bento-panel min-w-0">
+      <div class="run-state" :class="{ live: panel.isRunning }">
+        <PulseLine :live="panel.isRunning" :width="48" :height="14" />
+        <span class="state-text">{{ statusLabel }}</span>
+        <span class="state-time">{{ panel.runTimeShow }}</span>
+      </div>
+    </header>
+
+    <div class="home-grid">
+      <section class="np-card instrument">
+        <header class="instrument-head">
+          <span class="np-label">{{ panel.isRunning ? '实时速率' : '当前速率' }}</span>
+          <span class="node-name" :title="nodeLabel">{{ nodeLabel }}</span>
+        </header>
+
+        <div class="readout">
+          <p class="big" :class="{ live: panel.isRunning, idle: !panel.isRunning }">
+            <span class="big-value">{{ speedParts.value }}</span>
+            <span class="big-unit">{{ speedParts.unit }}</span>
+          </p>
+          <div class="readout-meta">
+            <span class="bitrate">{{ speedBits }}</span>
+            <span class="latency">
+              延迟
+              <b>{{ latencyNow ? Math.round(latencyNow) : '—' }}</b>
+              ms
+            </span>
+          </div>
+        </div>
+
+        <RealtimeChart ref="chartRef" />
+
+        <StatsRow
+          @set-flow-max="handleSetFlowMax"
+          @set-limit-max="handleSetLimitMax"
+        />
+      </section>
+
+      <div class="home-side">
         <NetworkPanel
           @toggle-run="handleToggleRun"
           @open-screen="handleOpenScreen"
@@ -167,21 +223,10 @@ async function handlePaste(e: ClipboardEvent) {
           @set-limit-max="handleSetLimitMax"
           @open-card="cardOpen = true"
         />
-      </div>
-
-      <div class="bento-sidebar min-w-0">
-        <StatsRow
-          @set-flow-max="handleSetFlowMax"
-          @set-limit-max="handleSetLimitMax"
-        />
         <ExitIpInfo />
       </div>
 
-      <div class="bento-chart min-w-0">
-        <RealtimeChart ref="chartRef" />
-      </div>
-
-      <div class="bento-bloat min-w-0">
+      <div class="home-wide">
         <BufferbloatCard />
       </div>
     </div>
@@ -193,25 +238,28 @@ async function handlePaste(e: ClipboardEvent) {
       <Transition name="modal-fade">
         <div v-if="limitDialog" class="limit-backdrop" @click.self="limitDialog = null">
           <section class="limit-modal">
-            <header>
+            <header class="limit-head">
               <h3>{{ limitDialog === 'flow' ? '设置流量上限' : '设置带宽上限' }}</h3>
-              <button @click="limitDialog = null">×</button>
+              <button class="np-btn-ghost" aria-label="关闭" @click="limitDialog = null">
+                <Icon name="x" :size="14" />
+              </button>
             </header>
             <div class="limit-body">
-              <label>{{ limitDialog === 'flow' ? '流量数值' : '速率数值' }}</label>
-              <input v-model.number="limitValue" type="number" min="0" placeholder="留空则无上限" />
-              <label>单位</label>
+              <label for="limit-value">{{ limitDialog === 'flow' ? '流量数值' : '速率数值' }}</label>
+              <input id="limit-value" v-model.number="limitValue" type="number" min="0" placeholder="留空则无上限" />
+              <label for="limit-unit">单位</label>
               <NSelect
+                id="limit-unit"
                 v-model:value="limitUnit"
                 :options="limitUnitOptions"
                 class="limit-unit-select"
                 size="medium"
               />
-              <p v-if="limitDialog === 'speed'">浏览器限速只能限制平均速度，峰值可能仍有波动。</p>
+              <p v-if="limitDialog === 'speed'">浏览器限速只能限制平均速度，峰值可能仍有波动</p>
             </div>
-            <footer>
-              <button class="ghost" @click="limitDialog = null">取消</button>
-              <button class="primary" @click="saveLimit">保存</button>
+            <footer class="limit-foot">
+              <button class="np-btn-quiet" @click="limitDialog = null">取消</button>
+              <button class="np-btn-primary" @click="saveLimit">保存</button>
             </footer>
           </section>
         </div>
@@ -221,102 +269,189 @@ async function handlePaste(e: ClipboardEvent) {
 </template>
 
 <style scoped>
-.hero-title {
-  color: var(--text-primary);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
+.page {
+  padding-top: 24px;
+  padding-bottom: 64px;
 }
 
-.home-bento {
-  display: grid;
-  grid-template-columns: 1fr;
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
-.bento-sidebar {
-  display: contents;
+.page-head-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
-.bento-sidebar > :last-child {
-  order: 5;
+.run-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: nowrap;
 }
 
-.bento-chart {
-  order: 3;
+.run-state.live {
+  color: var(--text-secondary);
 }
 
-.bento-bloat {
-  order: 4;
+.state-text {
+  font-size: 12px;
+}
+
+.state-time {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
 }
 
 @media (min-width: 1024px) {
-  .home-bento {
-    grid-template-columns: 7fr 5fr;
-  }
-
-  .bento-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .bento-sidebar > :last-child {
-    order: unset;
-    flex: 1;
-  }
-
-  .bento-chart {
-    grid-column: 1 / -1;
-    order: unset;
-  }
-
-  .bento-bloat {
-    grid-column: 1 / -1;
-    order: unset;
+  .home-grid {
+    grid-template-columns: minmax(0, 1fr) 360px;
   }
 }
 
-.status-pill {
-  margin-top: 12px;
-  min-height: 26px;
-  padding: 5px 10px;
-  border-radius: 7px;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-  background: var(--bg-card);
-  box-shadow: none;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  background: var(--text-muted);
-}
-
-@media (max-width: 520px) {
-  .hero-strip {
-    align-items: flex-start;
-  }
-
-  .status-pill {
-    margin-top: 2px;
-  }
-}
-
-.hero-strip {
+.home-side {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.home-wide {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+/* ---------- 读数仪器 ---------- */
+
+.instrument {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  padding: 20px 20px 16px;
+}
+
+.instrument-head {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  margin-top: 3px;
-  margin-bottom: 14px;
+  min-width: 0;
 }
+
+.node-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.readout {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.big {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  line-height: 0.9;
+  transition: color var(--dur) var(--ease);
+}
+
+.big.live {
+  color: var(--trace);
+}
+
+.big.idle {
+  color: var(--text-muted);
+}
+
+.big-value {
+  font-size: 56px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+.big-unit {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.readout-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-bottom: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.bitrate {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.latency {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.latency b {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .big-value {
+    font-size: 40px;
+  }
+
+  .readout {
+    gap: 12px;
+  }
+
+  .readout-meta {
+    gap: 14px;
+  }
+}
+
+/* ---------- 上限弹窗 ---------- */
 
 .limit-backdrop {
   position: fixed;
@@ -326,67 +461,67 @@ async function handlePaste(e: ClipboardEvent) {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(9, 11, 12, 0.36);
 }
 
 .limit-modal {
   width: min(360px, 100%);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-lg);
   background: var(--bg-card);
   box-shadow: var(--shadow-lg);
 }
 
-.limit-modal header,
-.limit-modal footer {
+.limit-head,
+.limit-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   padding: 14px 16px;
 }
 
-.limit-modal header {
-  border-bottom: 1px solid var(--border);
+.limit-head {
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.limit-modal h3 {
-  color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 700;
+.limit-head h3 {
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.limit-modal header button {
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg-card);
+.limit-head .np-btn-ghost {
+  font-size: 11px;
   color: var(--text-muted);
-  cursor: pointer;
 }
 
 .limit-body {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   padding: 16px;
 }
 
 .limit-body label {
-  color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 .limit-body input {
-  height: 38px;
+  height: 36px;
+  padding: 0 10px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   background: var(--bg-input);
   color: var(--text-primary);
-  padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
   outline: none;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.limit-body input:focus {
+  border-color: var(--text-primary);
 }
 
 .limit-unit-select {
@@ -394,41 +529,26 @@ async function handlePaste(e: ClipboardEvent) {
 }
 
 .limit-body p {
-  margin-top: 4px;
+  margin-top: 2px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.5;
 }
 
-.limit-modal footer {
+.limit-foot {
   justify-content: flex-end;
   border-top: 1px solid var(--border-subtle);
 }
 
-.limit-modal footer button {
-  height: 34px;
-  min-width: 76px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.limit-modal .ghost {
-  background: var(--bg-card);
-  color: var(--text-secondary);
-}
-
-.limit-modal .primary {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: var(--accent-on-primary);
+.limit-foot .np-btn-primary {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
 }
 
 .modal-fade-enter-active,
 .modal-fade-leave-active {
-  transition: opacity 0.16s ease;
+  transition: opacity var(--dur-fast) var(--ease);
 }
 
 .modal-fade-enter-from,
