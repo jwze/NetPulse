@@ -113,20 +113,20 @@ onMounted(() => {
         </div>
       </div>
 
-      <dl class="np-kv-list">
-        <div class="np-kv">
+      <dl class="ip-facts">
+        <div class="ip-fact">
           <dt>归属</dt>
           <dd>{{ info?.displayAddress || '—' }}</dd>
         </div>
-        <div v-if="info?.asn" class="np-kv">
+        <div v-if="info?.asn" class="ip-fact">
           <dt>ASN</dt>
           <dd>AS{{ info.asn }}<span v-if="info.asnOrg" class="kv-sub"> · {{ info.asnOrg }}</span></dd>
         </div>
-        <div class="np-kv">
+        <div class="ip-fact">
           <dt>时区</dt>
           <dd>{{ info?.timezone ? `${info.timezone} ${info.utcOffset}` : '—' }}</dd>
         </div>
-        <div class="np-kv">
+        <div class="ip-fact">
           <dt>数据来源</dt>
           <dd>{{ info?.source || '—' }}</dd>
         </div>
@@ -238,7 +238,37 @@ onMounted(() => {
 .kv-sub {
   color: var(--text-muted);
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 400;
+}
+
+/* 四个归属字段排成 2×2，避免标签与值被拉到两端 */
+.ip-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 28px;
+  margin: 0;
+}
+
+.ip-fact dt {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.ip-fact dd {
+  margin: 3px 0 0;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .ip-facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
 }
 
 .stack-row {

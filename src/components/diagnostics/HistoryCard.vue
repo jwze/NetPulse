@@ -73,9 +73,15 @@ function handleClear() {
       </li>
     </ul>
 
-    <p v-else class="hist-empty">
-      还没有记录。跑一次测速、上传测试或链路质量测试后，结果会自动记在这里，最多保留 50 条，只存在本机浏览器。
-    </p>
+    <div v-else class="hist-empty">
+      <div class="hist-cols">
+        <span>类型</span>
+        <span>结果</span>
+        <span>明细</span>
+        <span>时间</span>
+      </div>
+      <p class="hist-empty-text">还没有记录，跑一次测速或检测就会写在这里。最多 50 条，只存在本机。</p>
+    </div>
   </DiagCard>
 </template>
 
@@ -156,7 +162,23 @@ function handleClear() {
   font-variant-numeric: tabular-nums;
 }
 
-.hist-empty {
+/* 空记录：先给列名，让这块地方看起来是日志本而不是空白 */
+.hist-cols {
+  display: flex;
+  gap: 12px;
+  padding: 6px 0 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.hist-cols span:nth-child(1) { flex: 0 0 auto; width: 24px; }
+.hist-cols span:nth-child(2) { flex: 0 0 auto; }
+.hist-cols span:nth-child(3) { flex: 1 1 auto; }
+.hist-cols span:nth-child(4) { flex: 0 0 auto; }
+
+.hist-empty-text {
+  margin-top: 12px;
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.65;
