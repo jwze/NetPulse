@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart } from 'echarts/charts'
@@ -62,6 +62,22 @@ function tooltipFormatter(params: any[]) {
 
 const hasData = computed(() => speedData.value.some(([, value]) => value > 0))
 
+/** 窄屏时分秒挤成一团，时间轴只留到分钟 */
+const narrow = ref(false)
+
+function syncNarrow() {
+  narrow.value = window.innerWidth < 720
+}
+
+onMounted(() => {
+  syncNarrow()
+  window.addEventListener('resize', syncNarrow)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', syncNarrow)
+})
+
 const option = computed(() => {
   const isDark = appStore.isDark
   const axisColor = isDark ? '#677678' : '#78878A'
@@ -93,7 +109,10 @@ const option = computed(() => {
         hideOverlap: true,
         formatter: (value: number) => {
           const date = new Date(value)
-          return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`
+          const hh = String(date.getHours()).padStart(2, '0')
+          const mm = String(date.getMinutes()).padStart(2, '0')
+          if (narrow.value) return `${hh}:${mm}`
+          return `${hh}:${mm}:${String(date.getSeconds()).padStart(2, '0')}`
         },
       },
       axisTick: { show: false },

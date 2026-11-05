@@ -396,9 +396,11 @@ async function handlePaste(e: ClipboardEvent) {
 }
 
 .big-value {
+  font-family: 'Consolas', 'DejaVu Sans Mono', ui-monospace, monospace;
   font-size: 56px;
-  font-weight: 500;
-  letter-spacing: -0.045em;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums slashed-zero;
 }
 
 .big-unit {
