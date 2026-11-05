@@ -75,7 +75,6 @@ onMounted(() => {
 <template>
   <DiagCard
     title="出口地址"
-    icon="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
   >
     <template #action>
       <button class="np-btn-ghost" aria-label="刷新出口信息" :disabled="loading" @click="refresh">
@@ -168,14 +167,8 @@ onMounted(() => {
 
 .skeleton-bar {
   height: 22px;
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
-  animation: np-skeleton 1.4s ease-in-out infinite;
-}
-
-@keyframes np-skeleton {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
 }
 
 .ip-error {
@@ -212,8 +205,8 @@ onMounted(() => {
   padding: 0;
   color: var(--text-primary);
   font-family: var(--font-mono);
-  font-size: clamp(15px, 4.2vw, 20px);
-  font-weight: 700;
+  font-size: clamp(15px, 3.4vw, 19px);
+  font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.25;
   text-align: left;
@@ -222,7 +215,9 @@ onMounted(() => {
 }
 
 .ip-value:hover {
-  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--border-strong);
 }
 
 .ip-copied {
@@ -259,14 +254,14 @@ onMounted(() => {
   gap: 8px;
   min-width: 0;
   padding: 8px 10px;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  background: transparent;
 }
 
 .stack-item.is-current {
   border-color: var(--border);
-  background: var(--bg-card);
+  background: var(--bg-subtle);
 }
 
 .stack-label {
@@ -275,18 +270,15 @@ onMounted(() => {
   gap: 4px;
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 400;
   white-space: nowrap;
 }
 
 .stack-label em {
-  padding: 0 4px;
-  border-radius: 3px;
-  background: var(--bg-subtle);
-  color: var(--text-secondary);
-  font-size: 9px;
+  color: var(--tone-good);
+  font-size: 10px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.6;
 }
 
@@ -296,8 +288,8 @@ onMounted(() => {
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-size: 11.5px;
-  font-weight: 650;
+  font-size: 11px;
+  font-weight: 500;
   line-height: 1.35;
   text-align: left;
   overflow-wrap: anywhere;
@@ -305,12 +297,13 @@ onMounted(() => {
 }
 
 .stack-addr:hover {
-  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .stack-ms {
   color: var(--text-muted);
-  font-size: 10.5px;
+  font-size: 10px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -318,7 +311,7 @@ onMounted(() => {
 .stack-value {
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 

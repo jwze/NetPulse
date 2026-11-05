@@ -38,7 +38,7 @@ defineProps<{
 
 .pane-hint {
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: 11px;
   line-height: 1.5;
 }
 

@@ -209,7 +209,7 @@ onUnmounted(() => {
   font-family: var(--font-mono);
   margin-top: 22px;
   font-size: clamp(44px, 7vw, 80px);
-  font-weight: 750;
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1;
 }
@@ -255,14 +255,14 @@ onUnmounted(() => {
 .screen-stat span {
   color: rgba(255, 255, 255, 0.52);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .screen-stat strong {
   color: rgba(255, 255, 255, 0.92);
   font-family: var(--font-mono);
   font-size: 26px;
-  font-weight: 750;
+  font-weight: 500;
   line-height: 1.1;
   overflow-wrap: anywhere;
 }
@@ -347,7 +347,7 @@ onUnmounted(() => {
 
   .screen-stat span {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     color: rgba(255, 255, 255, 0.72);
   }
 

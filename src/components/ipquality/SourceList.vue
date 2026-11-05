@@ -55,45 +55,43 @@ const checked = computed(() => props.dnsbl.filter(item => item.listed !== null).
 </script>
 
 <template>
-  <section class="np-card np-panel iq-sources">
+  <section class="np-card np-panel sources">
     <header class="np-panel-head">
-      <h2>来源明细</h2>
-      <span class="np-panel-meta font-mono">{{ done }}/{{ total }}</span>
+      <h2 class="np-panel-title">来源明细</h2>
+      <span class="np-panel-meta">{{ done }} / {{ total }}</span>
     </header>
 
-    <ul class="iq-rows">
-      <li v-for="row in rows" :key="row.id" class="iq-row" :class="{ 'is-pending': row.pending }">
-        <span class="iq-status" :class="row.pending ? '' : row.error ? 'is-fail' : 'is-ok'">
-          {{ row.pending ? '·' : row.error ? '✕' : '✓' }}
-        </span>
-        <div class="iq-row-body">
-          <div class="iq-row-top">
-            <a v-if="row.site && !row.error" class="iq-row-name" :href="row.site" target="_blank" rel="noreferrer noopener">{{ row.name }}</a>
-            <span v-else class="iq-row-name">{{ row.name }}</span>
+    <ul class="rows">
+      <li v-for="row in rows" :key="row.id" class="row" :class="{ 'is-pending': row.pending }">
+        <span class="dot" :class="row.pending ? 'is-wait' : row.error ? 'is-fail' : 'is-ok'" />
+        <div class="row-body">
+          <div class="row-top">
+            <a v-if="row.site && !row.error" class="row-name" :href="row.site" target="_blank" rel="noreferrer noopener">{{ row.name }}</a>
+            <span v-else class="row-name">{{ row.name }}</span>
             <template v-if="row.pending">
-              <span class="np-skel iq-pending-bar" />
+              <span class="np-skel pending-bar" />
             </template>
             <template v-else>
-              <span v-for="flag in row.flags" :key="flag" class="iq-flag">{{ flag }}</span>
-              <span class="iq-ms font-mono">{{ row.error ? '' : `${row.ms} ms` }}</span>
+              <span v-for="flag in row.flags" :key="flag" class="flag">{{ flag }}</span>
+              <span class="ms">{{ row.error ? '' : `${row.ms} ms` }}</span>
             </template>
           </div>
-          <p v-if="!row.pending" class="iq-row-facts">{{ row.error ? '没有返回结果' : row.facts || '没有更多字段' }}</p>
+          <p v-if="!row.pending" class="row-facts">{{ row.error ? '没有返回结果' : row.facts || '没有更多字段' }}</p>
         </div>
       </li>
     </ul>
 
-    <div class="iq-dnsbl">
-      <div class="iq-subhead">
+    <div class="dnsbl">
+      <div class="subhead">
         <span>邮件黑名单</span>
-        <span class="font-mono">{{ dnsbl.filter(item => item.listed).length }}/{{ checked }}</span>
+        <span class="count">{{ dnsbl.filter(item => item.listed).length }} / {{ checked }}</span>
       </div>
-      <p v-if="checked === 0" class="iq-bl-note">IPv6 地址不参与邮件黑名单查询。</p>
-      <div v-else class="iq-bl">
+      <p v-if="checked === 0" class="bl-note">IPv6 地址不参与邮件黑名单查询</p>
+      <div v-else class="bl">
         <span
           v-for="item in dnsbl"
           :key="item.id"
-          class="iq-bl-item"
+          class="bl-item"
           :class="item.listed === null ? 'is-unknown' : item.listed ? 'is-listed' : 'is-clear'"
         >{{ item.name }}</span>
       </div>
@@ -102,92 +100,89 @@ const checked = computed(() => props.dnsbl.filter(item => item.listed !== null).
 </template>
 
 <style scoped>
-.iq-sources {
+.sources {
   min-width: 0;
 }
 
-.iq-rows {
+.rows {
   display: flex;
   flex-direction: column;
   list-style: none;
 }
 
-.iq-row {
+.row {
   display: flex;
-  gap: 8px;
-  min-height: 52px;
-  padding: 8px 0;
+  gap: 10px;
+  min-height: 48px;
+  padding: 9px 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 
-.iq-row:last-child {
+.row:last-child {
   border-bottom: none;
 }
 
-.iq-row.is-pending {
-  opacity: 0.6;
+.row.is-pending {
+  opacity: 0.55;
 }
 
-.iq-pending-bar {
+.dot {
+  width: 5px;
+  height: 5px;
+  margin-top: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.dot.is-ok { background: var(--tone-good); }
+.dot.is-fail { background: var(--border-strong); }
+.dot.is-wait { background: var(--border); }
+
+.pending-bar {
   margin-left: auto;
-  width: 72px;
+  width: 64px;
   height: 8px;
   align-self: center;
 }
 
-.iq-status {
-  width: 14px;
-  flex: 0 0 auto;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 18px;
-}
-
-.iq-status.is-ok { color: #16a34a; }
-.iq-status.is-fail { color: var(--text-muted); }
-
-.dark .iq-status.is-ok { color: #50E3A4; }
-
-.iq-row-body {
+.row-body {
   min-width: 0;
   flex: 1;
 }
 
-.iq-row-top {
+.row-top {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.iq-row-name {
+.row-name {
   color: var(--text-primary);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
 }
 
-a.iq-row-name:hover {
+a.row-name:hover {
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.iq-flag {
-  padding: 0 5px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  color: #b45309;
+.flag {
+  color: var(--tone-warn);
   font-size: 10px;
 }
 
-.dark .iq-flag { color: #F5A623; }
-
-.iq-ms {
+.ms {
   margin-left: auto;
   color: var(--text-muted);
+  font-family: var(--font-mono);
   font-size: 10px;
+  font-variant-numeric: tabular-nums;
 }
 
-.iq-row-facts {
+.row-facts {
   margin-top: 2px;
   color: var(--text-muted);
   font-size: 11px;
@@ -195,45 +190,44 @@ a.iq-row-name:hover {
   overflow-wrap: anywhere;
 }
 
-.iq-dnsbl {
-  padding-top: 10px;
+.dnsbl {
+  padding-top: 12px;
   border-top: 1px solid var(--border-subtle);
 }
 
-.iq-subhead {
+.subhead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   color: var(--text-secondary);
   font-size: 11px;
-  font-weight: 600;
 }
 
-.iq-bl-note {
+.count {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.bl-note {
   margin-top: 6px;
   color: var(--text-muted);
   font-size: 11px;
 }
 
-.iq-bl {
+.bl {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 7px;
+  gap: 4px 12px;
+  margin-top: 8px;
 }
 
-.iq-bl-item {
-  padding: 2px 6px;
-  border: 1px solid var(--border);
-  border-radius: 3px;
+.bl-item {
   color: var(--text-muted);
   font-size: 10px;
 }
 
-.iq-bl-item.is-clear { color: #16a34a; border-color: rgba(22, 163, 74, 0.3); }
-.iq-bl-item.is-listed { color: #dc2626; border-color: rgba(220, 38, 38, 0.35); background: rgba(220, 38, 38, 0.06); }
-.iq-bl-item.is-unknown { opacity: 0.55; }
-
-.dark .iq-bl-item.is-clear { color: #50E3A4; }
-.dark .iq-bl-item.is-listed { color: #FF5C4E; }
+.bl-item.is-clear { color: var(--text-secondary); }
+.bl-item.is-listed { color: var(--tone-bad); }
+.bl-item.is-unknown { opacity: 0.5; }
 </style>

@@ -94,7 +94,7 @@ const doneOf = (cat: string) =>
   height: 28px;
   padding: 0 10px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: transparent;
   color: var(--text-muted);
   font-size: 12px;
@@ -117,7 +117,7 @@ const doneOf = (cat: string) =>
   border-color: var(--border);
   background: var(--bg-subtle);
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .un-tab-count {
@@ -156,14 +156,14 @@ const doneOf = (cat: string) =>
   background: var(--text-muted);
 }
 
-.un-dot.is-good { background: #16a34a; }
-.un-dot.is-bad { background: #dc2626; }
-.un-dot.is-ok { background: #d97706; }
+.un-dot.is-good { background: var(--tone-good); }
+.un-dot.is-bad { background: var(--tone-bad); }
+.un-dot.is-ok { background: var(--tone-warn); }
 .un-dot.is-muted { background: var(--text-muted); }
 
-.dark .un-dot.is-good { background: #50E3A4; }
-.dark .un-dot.is-bad { background: #FF5C4E; }
-.dark .un-dot.is-ok { background: #F5A623; }
+.dark .un-dot.is-good { background: var(--tone-good); }
+.dark .un-dot.is-bad { background: var(--tone-bad); }
+.dark .un-dot.is-ok { background: var(--tone-warn); }
 
 .un-name {
   color: var(--text-primary);
@@ -186,12 +186,12 @@ const doneOf = (cat: string) =>
 }
 
 .un-why {
-  color: #b45309;
+  color: var(--tone-warn);
   font-size: 10px;
   white-space: nowrap;
 }
 
-.dark .un-why { color: #F5A623; }
+.dark .un-why { color: var(--tone-warn); }
 
 .un-how {
   color: var(--text-muted);
@@ -204,19 +204,19 @@ const doneOf = (cat: string) =>
   align-items: center;
   justify-content: center;
   height: 20px;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
-.un-badge.is-good { background: rgba(22, 163, 74, 0.1); color: #16a34a; }
-.un-badge.is-bad { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
-.un-badge.is-ok { background: rgba(217, 119, 6, 0.12); color: #b45309; }
+.un-badge.is-good { background: var(--tone-good-bg); color: var(--tone-good); }
+.un-badge.is-bad { background: var(--tone-bad-bg); color: var(--tone-bad); }
+.un-badge.is-ok { background: var(--tone-warn-bg); color: var(--tone-warn); }
 .un-badge.is-muted { background: var(--bg-subtle); color: var(--text-muted); }
 
-.dark .un-badge.is-good { color: #50E3A4; }
-.dark .un-badge.is-bad { color: #FF5C4E; }
-.dark .un-badge.is-ok { color: #F5A623; }
+.dark .un-badge.is-good { color: var(--tone-good); }
+.dark .un-badge.is-bad { color: var(--tone-bad); }
+.dark .un-badge.is-ok { color: var(--tone-warn); }
 
 @media (min-width: 960px) {
   .un-rows {

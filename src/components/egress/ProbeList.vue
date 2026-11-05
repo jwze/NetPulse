@@ -83,7 +83,7 @@ const groups = computed(() =>
   margin-bottom: 12px;
   padding: 0 10px 4px;
   border: 1px solid var(--border-subtle);
-  border-radius: 5px;
+  border-radius: var(--r-xs);
 }
 
 .eg-group:last-child {
@@ -101,7 +101,7 @@ const groups = computed(() =>
 .eg-group-label {
   color: var(--text-secondary);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.02em;
 }
 
@@ -154,11 +154,11 @@ const groups = computed(() =>
   min-width: 20px;
   height: 16px;
   padding: 0 4px;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
   color: var(--text-secondary);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .eg-row-ms {
@@ -172,13 +172,13 @@ const groups = computed(() =>
 .eg-row.is-fail .eg-row-ms { color: var(--text-muted); }
 .eg-row.is-fail .eg-row-name { color: var(--text-secondary); }
 
-.eg-row.is-odd { background: rgba(217, 119, 6, 0.06); }
-.eg-row.is-odd .eg-letter-chip { background: rgba(217, 119, 6, 0.14); color: #b45309; }
-.eg-row.is-leak { background: rgba(220, 38, 38, 0.06); }
-.eg-row.is-leak .eg-letter-chip { background: rgba(220, 38, 38, 0.14); color: #dc2626; }
+.eg-row.is-odd { background: var(--tone-warn-bg); }
+.eg-row.is-odd .eg-letter-chip { background: var(--tone-warn-bg); color: var(--tone-warn); }
+.eg-row.is-leak { background: var(--tone-bad-bg); }
+.eg-row.is-leak .eg-letter-chip { background: var(--tone-bad-bg); color: var(--tone-bad); }
 
-.dark .eg-row.is-odd .eg-letter-chip { color: #F5A623; }
-.dark .eg-row.is-leak .eg-letter-chip { color: #FF5C4E; }
+.dark .eg-row.is-odd .eg-letter-chip { color: var(--tone-warn); }
+.dark .eg-row.is-leak .eg-letter-chip { color: var(--tone-bad); }
 
 @media (min-width: 720px) {
   .eg-groups {

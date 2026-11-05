@@ -293,7 +293,7 @@ onUnmounted(() => {
   bottom: 0;
   transform: translateX(-50%);
   color: var(--text-muted);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .lat-axis-ms,
@@ -313,7 +313,7 @@ onUnmounted(() => {
   gap: 8px;
   margin: 10px 0 2px;
   padding: 5px 10px;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
 }
 
@@ -324,7 +324,7 @@ onUnmounted(() => {
 .lat-group-label {
   color: var(--text-secondary);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.06em;
 }
 
@@ -387,19 +387,19 @@ onUnmounted(() => {
 }
 
 .is-slower {
-  color: #dc2626;
+  color: var(--tone-bad);
 }
 
 .is-faster {
-  color: #16a34a;
+  color: var(--tone-good);
 }
 
 .dark .is-slower {
-  color: #f87171;
+  color: var(--tone-bad);
 }
 
 .dark .is-faster {
-  color: #4ade80;
+  color: var(--tone-good);
 }
 
 @media (max-width: 640px) {

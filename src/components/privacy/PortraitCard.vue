@@ -47,15 +47,15 @@ defineProps<{
 .pv-sentence {
   min-height: 76px;
   color: var(--text-secondary);
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 2;
 }
 
 .pv-sentence b {
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 500;
   padding: 1px 4px;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
 }
 
@@ -79,7 +79,7 @@ defineProps<{
 .pv-labels li {
   padding: 2px 7px;
   border: 1px solid var(--border-subtle);
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   color: var(--text-secondary);
   font-size: 10px;
 }

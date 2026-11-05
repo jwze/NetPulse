@@ -135,7 +135,6 @@ onBeforeUnmount(() => {
 <template>
   <DiagCard
     title="多节点对比"
-    icon="M3 17h4v4H3zM10 9h4v12h-4zM17 3h4v18h-4z"
   >
     <template #action>
       <button class="np-btn-primary mn-btn" :disabled="selected.length < 2 && !running" @click="start">
@@ -244,7 +243,7 @@ onBeforeUnmount(() => {
   min-width: 0;
   color: var(--text-primary);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -254,7 +253,7 @@ onBeforeUnmount(() => {
   flex: 0 0 auto;
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
@@ -277,11 +276,11 @@ onBeforeUnmount(() => {
 }
 
 .fill-ok {
-  background: #F5A623;
+  background: var(--tone-warn);
 }
 
 .fill-bad {
-  background: #EE0000;
+  background: var(--tone-bad);
   opacity: 0.5;
 }
 
@@ -308,6 +307,6 @@ onBeforeUnmount(() => {
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
 }
 </style>

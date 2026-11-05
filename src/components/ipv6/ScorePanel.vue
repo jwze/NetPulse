@@ -74,7 +74,7 @@ function ipText(fam: 4 | 6): string {
         <span class="ring-num"><b>{{ score ?? '–' }}</b><i>/10</i></span>
       </div>
       <div class="score-r">
-        <h2 class="score-head" :class="verdict ? `s-${tone}` : ''">
+        <h2 class="score-head">
           {{ verdict ? HEAD_TEXT[verdict.head] : (running ? '正在测试…' : '尚未测试') }}
         </h2>
         <p class="score-probs">{{ problemText }}</p>
@@ -205,7 +205,7 @@ function ipText(fam: 4 | 6): string {
 
 .ring-num b {
   font-size: 40px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 116px;
 }
@@ -223,7 +223,7 @@ function ipText(fam: 4 | 6): string {
 .score-head {
   color: var(--text-primary);
   font-size: 19px;
-  font-weight: 650;
+  font-weight: 500;
   line-height: 1.35;
   letter-spacing: -0.02em;
 }
@@ -244,7 +244,7 @@ function ipText(fam: 4 | 6): string {
 .addr-head h3 {
   color: var(--text-secondary);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.04em;
 }
 
@@ -277,7 +277,7 @@ function ipText(fam: 4 | 6): string {
   flex: 0 0 36px;
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .addr-body {
@@ -290,7 +290,7 @@ function ipText(fam: 4 | 6): string {
 .addr-ip {
   color: var(--text-primary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   overflow-wrap: anywhere;
   cursor: pointer;
 }
@@ -300,11 +300,11 @@ function ipText(fam: 4 | 6): string {
 }
 
 .addr-ip.is-copied {
-  color: #16a34a;
+  color: var(--tone-good);
 }
 
 .dark .addr-ip.is-copied {
-  color: #50e3a4;
+  color: var(--tone-good);
 }
 
 .addr-none {
@@ -319,17 +319,17 @@ function ipText(fam: 4 | 6): string {
   overflow-wrap: anywhere;
 }
 
-.s-great { color: #16a34a; }
-.s-good { color: #2563eb; }
-.s-ok { color: #7c3aed; }
-.s-warn { color: #d97706; }
-.s-bad { color: #dc2626; }
+.s-great { color: var(--tone-good); }
+.s-good { color: var(--tone-good); }
+.s-ok { color: var(--tone-warn); }
+.s-warn { color: var(--tone-warn); }
+.s-bad { color: var(--tone-bad); }
 
-.dark .s-great { color: #50e3a4; }
-.dark .s-good { color: #60a5fa; }
-.dark .s-ok { color: #a78bfa; }
-.dark .s-warn { color: #f5a623; }
-.dark .s-bad { color: #ff5c4e; }
+.dark .s-great { color: var(--tone-good); }
+.dark .s-good { color: var(--tone-good); }
+.dark .s-ok { color: var(--tone-warn); }
+.dark .s-warn { color: var(--tone-warn); }
+.dark .s-bad { color: var(--tone-bad); }
 
 @media (max-width: 520px) {
   .score-top {

@@ -49,7 +49,6 @@ onMounted(() => {
 <template>
   <DiagCard
     title="网络拓扑"
-    icon="M12 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM12 6v5M12 11l-5.5 4M12 11l5.5 4M6 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM18 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"
   >
     <template #action>
       <button class="np-btn-ghost" aria-label="重新探测" :disabled="running" @click="run">
@@ -179,7 +178,7 @@ onMounted(() => {
 .skeleton-bar {
   display: block;
   height: 12px;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
   animation: rtc-fade 1.4s ease-in-out infinite;
 }

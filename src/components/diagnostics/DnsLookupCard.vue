@@ -74,7 +74,6 @@ onBeforeUnmount(() => controller?.abort())
 <template>
   <DiagCard
     title="DNS 解析对比"
-    icon="M3 12h18 M12 3a15 15 0 0 1 0 18 M12 3a15 15 0 0 0 0 18 M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"
   >
     <template #action>
       <button class="np-btn-primary dns-run" :disabled="loading" @click="run">
@@ -166,8 +165,8 @@ onBeforeUnmount(() => controller?.abort())
   height: 30px;
   padding: 0 14px;
   font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
+  font-weight: 500;
+  border-radius: var(--r-sm);
 }
 
 .dns-spinner {
@@ -191,7 +190,7 @@ onBeforeUnmount(() => controller?.abort())
   height: 34px;
   padding: 0 10px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: var(--bg-input);
   color: var(--text-primary);
   font-family: var(--font-mono);
@@ -210,7 +209,7 @@ onBeforeUnmount(() => controller?.abort())
   gap: 2px;
   padding: 2px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: var(--bg-subtle);
 }
 
@@ -219,12 +218,12 @@ onBeforeUnmount(() => controller?.abort())
   height: 26px;
   padding: 0 6px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: transparent;
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.12s ease, color 0.12s ease;
 }
@@ -254,7 +253,7 @@ onBeforeUnmount(() => controller?.abort())
 .preset {
   padding: 2px 7px;
   border: 1px dashed var(--border);
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-mono);
@@ -292,7 +291,7 @@ onBeforeUnmount(() => controller?.abort())
 .dns-item {
   padding: 10px 12px;
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: var(--bg-subtle);
 }
 
@@ -313,7 +312,7 @@ onBeforeUnmount(() => controller?.abort())
 .dns-provider {
   color: var(--text-primary);
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 500;
 }
 
 .dns-hint {
@@ -357,7 +356,7 @@ onBeforeUnmount(() => controller?.abort())
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .answer-data {
@@ -366,7 +365,7 @@ onBeforeUnmount(() => controller?.abort())
   overflow: hidden;
   color: var(--text-primary);
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -382,7 +381,7 @@ onBeforeUnmount(() => controller?.abort())
 .dns-tip {
   margin-top: 8px;
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: 11px;
   line-height: 1.6;
 }
 </style>

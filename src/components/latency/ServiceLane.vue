@@ -62,7 +62,7 @@ const hint = computed(() => {
   gap: 10px;
   height: 30px;
   padding: 0 10px;
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   font-size: 12px;
   color: var(--text-secondary);
   --tone: var(--text-muted);
@@ -72,18 +72,18 @@ const hint = computed(() => {
   background: var(--bg-subtle);
 }
 
-.tone-great { --tone: #16a34a; }
-.tone-good { --tone: #2563eb; }
-.tone-ok { --tone: #7c3aed; }
-.tone-warn { --tone: #d97706; }
-.tone-bad { --tone: #dc2626; }
+.tone-great { --tone: var(--tone-good); }
+.tone-good { --tone: var(--tone-good); }
+.tone-ok { --tone: var(--tone-warn); }
+.tone-warn { --tone: var(--tone-warn); }
+.tone-bad { --tone: var(--tone-bad); }
 .tone-muted { --tone: var(--text-muted); }
 
-.dark .tone-great { --tone: #4ade80; }
-.dark .tone-good { --tone: #60a5fa; }
-.dark .tone-ok { --tone: #a78bfa; }
-.dark .tone-warn { --tone: #fbbf24; }
-.dark .tone-bad { --tone: #f87171; }
+.dark .tone-great { --tone: var(--tone-good); }
+.dark .tone-good { --tone: var(--tone-good); }
+.dark .tone-ok { --tone: var(--tone-warn); }
+.dark .tone-warn { --tone: var(--tone-warn); }
+.dark .tone-bad { --tone: var(--tone-bad); }
 
 .lane-name {
   display: flex;
@@ -104,7 +104,7 @@ const hint = computed(() => {
   flex: 0 0 auto;
   padding: 1px 4px;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   color: var(--text-muted);
   font-size: 10px;
   line-height: 1.2;
@@ -113,7 +113,7 @@ const hint = computed(() => {
 .lane-track {
   position: relative;
   height: 8px;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
 }
 
@@ -143,7 +143,7 @@ const hint = computed(() => {
   top: -2px;
   width: 3px;
   height: 12px;
-  border-radius: 2px;
+  border-radius: var(--r-xs);
   background: var(--tone);
   transform: translateX(-1.5px);
 }
@@ -151,7 +151,7 @@ const hint = computed(() => {
 .lane-ms {
   text-align: right;
   color: var(--tone);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }

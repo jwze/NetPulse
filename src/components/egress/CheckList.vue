@@ -134,18 +134,18 @@ const icon = (tone: string) => (tone === 'bad' ? '✕' : tone === 'warn' ? '!' :
   background: var(--text-muted);
 }
 
-.eg-dot.is-bad { background: #dc2626; }
-.eg-dot.is-ok, .eg-dot.is-good { background: #16a34a; }
-.eg-dot.is-warn { background: #d97706; }
+.eg-dot.is-bad { background: var(--tone-bad); }
+.eg-dot.is-ok, .eg-dot.is-good { background: var(--tone-good); }
+.eg-dot.is-warn { background: var(--tone-warn); }
 
-.dark .eg-dot.is-bad { background: #FF5C4E; }
-.dark .eg-dot.is-ok, .dark .eg-dot.is-good { background: #50E3A4; }
-.dark .eg-dot.is-warn { background: #F5A623; }
+.dark .eg-dot.is-bad { background: var(--tone-bad); }
+.dark .eg-dot.is-ok, .dark .eg-dot.is-good { background: var(--tone-good); }
+.dark .eg-dot.is-warn { background: var(--tone-warn); }
 
 .eg-verdict-text h3 {
   color: var(--text-primary);
   font-size: 19px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.025em;
   line-height: 1.25;
 }
@@ -190,21 +190,21 @@ const icon = (tone: string) => (tone === 'bad' ? '✕' : tone === 'warn' ? '!' :
   border-radius: 50%;
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
-.eg-badge.is-bad { background: rgba(220, 38, 38, 0.12); color: #dc2626; }
-.eg-badge.is-warn { background: rgba(217, 119, 6, 0.14); color: #b45309; }
-.eg-badge.is-good { background: rgba(22, 163, 74, 0.12); color: #16a34a; }
+.eg-badge.is-bad { background: var(--tone-bad-bg); color: var(--tone-bad); }
+.eg-badge.is-warn { background: var(--tone-warn-bg); color: var(--tone-warn); }
+.eg-badge.is-good { background: var(--tone-good-bg); color: var(--tone-good); }
 .eg-badge.is-info { background: var(--bg-subtle); color: var(--text-muted); }
 
-.dark .eg-badge.is-bad { color: #FF5C4E; }
-.dark .eg-badge.is-warn { color: #F5A623; }
-.dark .eg-badge.is-good { color: #50E3A4; }
+.dark .eg-badge.is-bad { color: var(--tone-bad); }
+.dark .eg-badge.is-warn { color: var(--tone-warn); }
+.dark .eg-badge.is-good { color: var(--tone-good); }
 
 .eg-check-title {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
 }
 

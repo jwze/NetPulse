@@ -52,13 +52,13 @@ function handleClear() {
 </script>
 
 <template>
-  <DiagCard title="历史记录" :hint="`${history.entries.length}/50`" icon="M12 8v5l3 2 M3 12a9 9 0 1 0 3-6.7 M3 4v4h4">
+  <DiagCard title="历史记录" :hint="`${history.entries.length} / 50`">
     <template #action>
-      <button class="np-btn-ghost hist-btn" :disabled="!history.entries.length" @click="history.exportCsv()">CSV</button>
-      <button class="np-btn-ghost hist-btn" :disabled="!history.entries.length" @click="history.exportJson()">JSON</button>
+      <button class="np-btn-ghost text-btn" :disabled="!history.entries.length" @click="history.exportCsv()">CSV</button>
+      <button class="np-btn-ghost text-btn" :disabled="!history.entries.length" @click="history.exportJson()">JSON</button>
       <button
         v-if="history.entries.length"
-        class="np-btn-ghost hist-btn"
+        class="np-btn-ghost text-btn"
         :class="{ 'is-danger': confirming }"
         @click="handleClear"
       >{{ confirming ? '确认清空' : '清空' }}</button>
@@ -66,11 +66,9 @@ function handleClear() {
 
     <ul v-if="visible.length" class="hist-list">
       <li v-for="item in visible" :key="item.id" class="hist-item">
-        <span class="hist-kind" :class="`kind-${item.kind}`">{{ KIND_LABEL[item.kind] }}</span>
-        <div class="hist-main">
-          <span class="hist-value">{{ primary(item) }}</span>
-          <span class="hist-sub">{{ secondary(item) }}</span>
-        </div>
+        <span class="hist-kind">{{ KIND_LABEL[item.kind] }}</span>
+        <span class="hist-value">{{ primary(item) }}</span>
+        <span class="hist-sub">{{ secondary(item) }}</span>
         <time class="hist-time">{{ timeText(item.ts) }}</time>
       </li>
     </ul>
@@ -82,29 +80,31 @@ function handleClear() {
 </template>
 
 <style scoped>
-.hist-btn {
+.text-btn {
   width: auto;
-  height: 26px;
-  padding: 0 8px;
-  border: 1px solid var(--border);
-  font-size: 11px;
-  font-weight: 600;
+  height: 24px;
+  padding: 0 6px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0;
 }
 
-.hist-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.text-btn:hover:not(:disabled) {
+  border-color: var(--border);
+  color: var(--text-primary);
+  background: var(--bg-subtle);
 }
 
-.hist-btn.is-danger {
-  border-color: var(--color-danger);
-  color: var(--color-danger);
+.text-btn.is-danger {
+  color: var(--tone-bad);
 }
 
 .hist-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -112,9 +112,9 @@ function handleClear() {
 
 .hist-item {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -124,53 +124,23 @@ function handleClear() {
 
 .hist-kind {
   flex: 0 0 auto;
-  width: 36px;
-  padding: 2px 0;
-  border-radius: 4px;
-  background: var(--bg-subtle);
-  color: var(--text-secondary);
-  font-size: 10px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.kind-download {
-  color: #1B9C67;
-  background: rgba(80, 227, 164, 0.12);
-}
-
-.kind-upload {
-  color: #0070F3;
-  background: rgba(0, 112, 243, 0.1);
-}
-
-.kind-quality {
-  color: #d97706;
-  background: rgba(245, 166, 35, 0.12);
-}
-
-.dark .kind-download { color: #50E3A4; }
-.dark .kind-upload { color: #6BA8FF; }
-.dark .kind-quality { color: #F5A623; }
-
-.hist-main {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex: 1 1 auto;
-  min-width: 0;
+  width: 24px;
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 .hist-value {
   color: var(--text-primary);
   font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .hist-sub {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   color: var(--text-muted);
   font-size: 11px;
@@ -181,12 +151,14 @@ function handleClear() {
 .hist-time {
   flex: 0 0 auto;
   color: var(--text-muted);
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
 }
 
 .hist-empty {
   color: var(--text-muted);
-  font-size: 11.5px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.65;
 }
 </style>

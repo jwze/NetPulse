@@ -36,7 +36,7 @@ const router = useRouter()
 
 .not-found-inner h1 {
   font-size: 64px;
-  font-weight: 800;
+  font-weight: 500;
   letter-spacing: -0.04em;
   color: var(--text-primary);
   line-height: 1;

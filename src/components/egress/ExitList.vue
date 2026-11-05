@@ -79,7 +79,7 @@ const rows = computed(() =>
   gap: 10px;
   padding: 10px;
   border: 1px solid var(--border-subtle);
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
 }
 
@@ -90,24 +90,24 @@ const rows = computed(() =>
   width: 28px;
   height: 28px;
   flex: 0 0 auto;
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .eg-letter.is-local {
-  background: rgba(22, 163, 74, 0.12);
-  color: #16a34a;
+  background: var(--tone-good-bg);
+  color: var(--tone-good);
 }
 
 .eg-letter.is-proxy {
-  background: rgba(217, 119, 6, 0.14);
-  color: #b45309;
+  background: var(--tone-warn-bg);
+  color: var(--tone-warn);
 }
 
-.dark .eg-letter.is-local { color: #50E3A4; }
-.dark .eg-letter.is-proxy { color: #F5A623; }
+.dark .eg-letter.is-local { color: var(--tone-good); }
+.dark .eg-letter.is-proxy { color: var(--tone-warn); }
 
 .eg-body {
   min-width: 0;
@@ -124,7 +124,7 @@ const rows = computed(() =>
 .eg-place {
   color: var(--text-primary);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .eg-kind {
@@ -135,7 +135,7 @@ const rows = computed(() =>
 .eg-flag {
   padding: 1px 5px;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   color: var(--text-muted);
   font-size: 10px;
 }

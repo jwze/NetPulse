@@ -30,43 +30,44 @@ const parts = computed(() =>
 </script>
 
 <template>
-  <section class="np-card np-panel iq-score">
+  <section class="np-card np-panel score">
     <header class="np-panel-head">
-      <h2>评分</h2>
-      <span v-if="assessment" class="np-panel-meta font-mono iq-ip">{{ ip }}</span>
-      <span v-else class="np-panel-meta">{{ running ? '查询中…' : '等待查询' }}</span>
+      <h2 class="np-panel-title">评分</h2>
+      <span v-if="assessment" class="np-panel-meta score-ip">{{ ip }}</span>
+      <span v-else class="np-panel-meta">{{ running ? '查询中' : '等待查询' }}</span>
     </header>
 
-    <div v-if="assessment" class="iq-main">
-      <div class="iq-grade" :class="`tone-${tone}`">{{ assessment.grade }}</div>
-      <div class="iq-main-text">
-        <p class="iq-number"><b>{{ assessment.score }}</b><span>/100</span></p>
-        <p class="iq-place">{{ place || '位置未知' }}<template v-if="isOwn"> · 本机出口</template></p>
-        <p class="iq-org">{{ assessment.summary.org || '未知网络' }}<template v-if="assessment.summary.asn"> · AS{{ assessment.summary.asn }}</template></p>
-        <p v-if="assessment.summary.type" class="iq-type">{{ TYPE_TEXT[assessment.summary.type] }}</p>
+    <div v-if="assessment" class="main">
+      <p class="num-line" :class="`tone-${tone}`">
+        <span class="num">{{ assessment.score }}</span>
+        <span class="max">/100</span>
+        <span class="grade">{{ assessment.grade }}</span>
+      </p>
+      <p class="place">{{ place || '位置未知' }}<template v-if="isOwn"> · 本机出口</template></p>
+      <p class="org">{{ assessment.summary.org || '未知网络' }}<template v-if="assessment.summary.asn"> · AS{{ assessment.summary.asn }}</template></p>
+      <p v-if="assessment.summary.type" class="type">{{ TYPE_TEXT[assessment.summary.type] }}</p>
+    </div>
+
+    <div v-else class="main is-idle">
+      <p class="num-line">
+        <span class="num">—</span>
+        <span class="max">/100</span>
+      </p>
+      <p class="place">{{ running ? '正在询问 IP 情报来源' : '还没有查询结果' }}</p>
+      <p class="org">{{ running ? '12 个来源会同时回答' : '查本机，或在上面填一个公网地址' }}</p>
+    </div>
+
+    <div v-if="parts.length" class="parts">
+      <div v-for="part in parts" :key="part.k" class="part">
+        <span class="part-label">{{ part.label }}</span>
+        <span class="part-bar"><i :style="{ width: `${part.width}%` }" /></span>
+        <span class="part-pts">−{{ part.pts }}</span>
       </div>
     </div>
 
-    <div v-else class="iq-main is-idle">
-      <div class="iq-grade tone-none">—</div>
-      <div class="iq-main-text">
-        <p class="iq-number"><b>—</b><span>/100</span></p>
-        <p class="iq-place">{{ running ? '正在询问 IP 情报来源…' : '还没有查询结果' }}</p>
-        <p class="iq-org">{{ running ? '12 个来源会同时回答' : '查本机，或在上面填一个公网地址' }}</p>
-      </div>
-    </div>
-
-    <div v-if="parts.length" class="iq-parts">
-      <div v-for="part in parts" :key="part.k" class="iq-part">
-        <span class="iq-part-label">{{ part.label }}</span>
-        <span class="iq-part-bar"><i :style="{ width: `${part.width}%` }" /></span>
-        <span class="iq-part-pts font-mono">−{{ part.pts }}</span>
-      </div>
-    </div>
-
-    <ul v-if="assessment?.notes.length" class="iq-notes">
-      <li v-for="(note, index) in assessment.notes" :key="index" class="iq-note">
-        <span class="iq-note-dot" :class="`is-${note.lv}`" />
+    <ul v-if="assessment?.notes.length" class="notes">
+      <li v-for="(note, index) in assessment.notes" :key="index" class="note">
+        <span class="note-dot" :class="`is-${note.lv}`" />
         <span>{{ noteText(note) }}</span>
       </li>
     </ul>
@@ -74,156 +75,147 @@ const parts = computed(() =>
 </template>
 
 <style scoped>
-.iq-score {
-  min-height: 268px;
+.score {
+  min-height: 240px;
 }
 
-.iq-ip {
-  color: var(--text-muted);
-  font-size: 11px;
+.score-ip {
+  max-width: 58%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.iq-main {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-height: 68px;
-}
-
-.iq-main.is-idle {
-  opacity: 0.75;
-}
-
-.iq-grade {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 68px;
-  height: 68px;
-  flex: 0 0 auto;
-  border: 1px solid var(--border);
-  border-radius: 8px;
   font-family: var(--font-mono);
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-size: 10px;
 }
 
-.iq-grade.tone-great { color: #16a34a; border-color: rgba(22, 163, 74, 0.35); background: rgba(22, 163, 74, 0.06); }
-.iq-grade.tone-good { color: #0d9488; border-color: rgba(13, 148, 136, 0.35); background: rgba(13, 148, 136, 0.06); }
-.iq-grade.tone-ok { color: #ca8a04; border-color: rgba(202, 138, 4, 0.35); background: rgba(202, 138, 4, 0.06); }
-.iq-grade.tone-warn { color: #d97706; border-color: rgba(217, 119, 6, 0.35); background: rgba(217, 119, 6, 0.06); }
-.iq-grade.tone-bad { color: #dc2626; border-color: rgba(220, 38, 38, 0.35); background: rgba(220, 38, 38, 0.06); }
-
-.dark .iq-grade.tone-great { color: #50E3A4; }
-.dark .iq-grade.tone-good { color: #4FD1C5; }
-.dark .iq-grade.tone-ok { color: #F5A623; }
-.dark .iq-grade.tone-warn { color: #F5A623; }
-.dark .iq-grade.tone-bad { color: #FF5C4E; }
-
-.iq-main-text {
-  min-width: 0;
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.iq-number {
+.main.is-idle {
+  opacity: 0.8;
+}
+
+.num-line {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
   color: var(--text-primary);
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
-.iq-number b {
-  font-size: 26px;
-  font-weight: 700;
+.num {
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
 }
 
-.iq-number span {
+.max {
   color: var(--text-muted);
   font-size: 12px;
 }
 
-.iq-place {
-  margin-top: 3px;
+.grade {
+  margin-left: auto;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.num-line.tone-great { color: var(--tone-good); }
+.num-line.tone-good { color: var(--tone-good); }
+.num-line.tone-ok { color: var(--tone-warn); }
+.num-line.tone-warn { color: var(--tone-warn); }
+.num-line.tone-bad { color: var(--tone-bad); }
+
+.num-line.tone-none {
+  color: var(--text-muted);
+}
+
+.num-line .max {
+  color: var(--text-muted);
+}
+
+.place {
+  margin-top: 6px;
   color: var(--text-secondary);
   font-size: 12px;
 }
 
-.iq-org {
-  margin-top: 1px;
+.org {
   color: var(--text-muted);
   font-size: 11px;
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
-.iq-type {
-  margin-top: 1px;
+.type {
   color: var(--text-muted);
   font-size: 11px;
 }
 
-.iq-parts {
+.parts {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding-top: 10px;
+  gap: 8px;
+  padding-top: 12px;
   border-top: 1px solid var(--border-subtle);
 }
 
-.iq-part {
+.part {
   display: grid;
-  grid-template-columns: 90px minmax(0, 1fr) 34px;
+  grid-template-columns: 80px minmax(0, 1fr) 32px;
   align-items: center;
   gap: 8px;
 }
 
-.iq-part-label {
+.part-label {
   color: var(--text-secondary);
   font-size: 11px;
 }
 
-.iq-part-bar {
+.part-bar {
   display: block;
-  height: 4px;
-  border-radius: 2px;
+  height: 3px;
+  border-radius: 1px;
   background: var(--bg-subtle);
   overflow: hidden;
 }
 
-.iq-part-bar i {
+.part-bar i {
   display: block;
   height: 100%;
-  background: #dc2626;
-  opacity: 0.65;
+  background: var(--text-secondary);
+  opacity: 0.45;
 }
 
-.dark .iq-part-bar i {
-  background: #FF5C4E;
-}
-
-.iq-part-pts {
+.part-pts {
   color: var(--text-muted);
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
-.iq-notes {
+.notes {
   display: flex;
   flex-direction: column;
   gap: 6px;
   list-style: none;
 }
 
-.iq-note {
+.note {
   display: flex;
-  gap: 7px;
+  gap: 8px;
   color: var(--text-secondary);
   font-size: 11px;
   line-height: 1.55;
 }
 
-.iq-note-dot {
+.note-dot {
   width: 5px;
   height: 5px;
   margin-top: 6px;
@@ -232,12 +224,8 @@ const parts = computed(() =>
   background: var(--text-muted);
 }
 
-.iq-note-dot.is-good { background: #16a34a; }
-.iq-note-dot.is-warn { background: #d97706; }
-.iq-note-dot.is-bad { background: #dc2626; }
-.iq-note-dot.is-info { background: var(--text-muted); }
-
-.dark .iq-note-dot.is-good { background: #50E3A4; }
-.dark .iq-note-dot.is-warn { background: #F5A623; }
-.dark .iq-note-dot.is-bad { background: #FF5C4E; }
+.note-dot.is-good { background: var(--tone-good); }
+.note-dot.is-warn { background: var(--tone-warn); }
+.note-dot.is-bad { background: var(--tone-bad); }
+.note-dot.is-info { background: var(--border-strong); }
 </style>

@@ -80,16 +80,16 @@ const stats = computed(() => {
   --tone: var(--text-muted);
 }
 
-.tone-great { --tone: #16a34a; }
-.tone-ok { --tone: #2563eb; }
-.tone-warn { --tone: #d97706; }
-.tone-bad { --tone: #dc2626; }
+.tone-great { --tone: var(--tone-good); }
+.tone-ok { --tone: var(--tone-good); }
+.tone-warn { --tone: var(--tone-warn); }
+.tone-bad { --tone: var(--tone-bad); }
 .tone-muted { --tone: var(--text-muted); }
 
-.dark .tone-great { --tone: #4ade80; }
-.dark .tone-ok { --tone: #60a5fa; }
-.dark .tone-warn { --tone: #fbbf24; }
-.dark .tone-bad { --tone: #f87171; }
+.dark .tone-great { --tone: var(--tone-good); }
+.dark .tone-ok { --tone: var(--tone-good); }
+.dark .tone-warn { --tone: var(--tone-warn); }
+.dark .tone-bad { --tone: var(--tone-bad); }
 
 .verdict-main {
   display: flex;
@@ -110,7 +110,7 @@ const stats = computed(() => {
   min-width: 0;
   color: var(--text-primary);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.4;
   letter-spacing: -0.01em;
 }
@@ -145,7 +145,7 @@ const stats = computed(() => {
 .verdict-value {
   color: var(--text-primary);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.02em;
 }
 
@@ -182,23 +182,23 @@ const stats = computed(() => {
   gap: 6px;
   padding: 4px 8px;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
   color: var(--text-secondary);
   font-size: 11px;
 }
 
 .use-chip b {
-  font-weight: 600;
+  font-weight: 500;
 }
 
-.use-great b { color: #16a34a; }
-.use-ok b { color: #2563eb; }
-.use-slow b { color: #d97706; }
-.use-blocked b { color: #dc2626; }
+.use-great b { color: var(--tone-good); }
+.use-ok b { color: var(--tone-good); }
+.use-slow b { color: var(--tone-warn); }
+.use-blocked b { color: var(--tone-bad); }
 
-.dark .use-great b { color: #4ade80; }
-.dark .use-ok b { color: #60a5fa; }
-.dark .use-slow b { color: #fbbf24; }
-.dark .use-blocked b { color: #f87171; }
+.dark .use-great b { color: var(--tone-good); }
+.dark .use-ok b { color: var(--tone-good); }
+.dark .use-slow b { color: var(--tone-warn); }
+.dark .use-blocked b { color: var(--tone-bad); }
 </style>

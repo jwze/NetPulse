@@ -141,7 +141,7 @@ onUnmounted(() => {
   position: relative;
   padding-left: 10px;
   color: var(--text-secondary);
-  font-size: 11.5px;
+  font-size: 11px;
   line-height: 1.6;
 }
 
@@ -226,8 +226,8 @@ onUnmounted(() => {
 
 .un-how-list b {
   color: var(--text-primary);
-  font-size: 11.5px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .un-how-list span {

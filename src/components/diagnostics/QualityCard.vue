@@ -23,7 +23,8 @@ const bars = computed(() => {
   return samples.map(item => {
     if (item === null) return { height: 8, tone: 'bad', label: '超时' }
     const height = Math.max(12, Math.round((item / max) * 100))
-    const tone = item <= 60 ? 'good' : item <= 150 ? 'ok' : 'bad'
+    // 只有需要提醒的样本才上色，其余保持中性，读起来才有主次
+    const tone = item <= 60 ? 'norm' : item <= 150 ? 'ok' : 'bad'
     return { height, tone, label: `${item}ms` }
   })
 })
@@ -74,10 +75,9 @@ onBeforeUnmount(() => controller?.abort())
   <DiagCard
     title="链路质量"
     :hint="result ? result.target : ''"
-    icon="M3 12h4l2-6 4 12 3-8h5"
   >
     <template #action>
-      <button class="np-btn-primary q-btn" @click="start">
+      <button class="np-btn-quiet q-btn" @click="start">
         {{ running ? '停止' : '开始测试' }}
       </button>
     </template>
@@ -85,8 +85,8 @@ onBeforeUnmount(() => controller?.abort())
     <div v-if="running" class="q-progress">
       <div class="q-bar"><span :style="{ width: `${percent}%` }" /></div>
       <div class="q-progress-text">
-        <span>{{ progress.done }}/{{ progress.total }}</span>
-        <span class="mono">{{ progress.ms === null ? '超时' : `${progress.ms}ms` }}</span>
+        <span>{{ progress.done }} / {{ progress.total }}</span>
+        <span>{{ progress.ms === null ? '超时' : `${progress.ms} ms` }}</span>
       </div>
     </div>
 
@@ -106,7 +106,7 @@ onBeforeUnmount(() => controller?.abort())
         </div>
         <div class="q-cell">
           <span class="q-label">最低 / 最高</span>
-          <span class="q-value q-range">{{ result.min }}<small>ms</small> <span class="q-dash">/</span> {{ result.max }}<small>ms</small></span>
+          <span class="q-value q-range">{{ result.min }}<small>ms</small><span class="q-dash">/</span>{{ result.max }}<small>ms</small></span>
         </div>
       </div>
 
@@ -122,7 +122,7 @@ onBeforeUnmount(() => controller?.abort())
       </div>
 
       <p class="q-foot">
-        <span class="np-chip" :class="result.grade.tone === 'bad' ? 'np-chip-danger' : 'np-chip-success'">{{ result.grade.label }}</span>
+        <span class="q-grade" :class="`tone-${result.grade.tone}`">{{ result.grade.label }}</span>
         <span class="q-foot-text">共 {{ result.sent }} 次探测，收到 {{ result.received }} 次</span>
       </p>
     </template>
@@ -145,23 +145,21 @@ onBeforeUnmount(() => controller?.abort())
 
 <style scoped>
 .q-btn {
-  height: 30px;
-  padding: 0 14px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
+  height: 26px;
+  padding: 0 10px;
+  font-size: 11px;
 }
 
 .q-progress {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 18px 0;
+  padding: 8px 0;
 }
 
 .q-bar {
-  height: 4px;
-  border-radius: 2px;
+  height: 3px;
+  border-radius: 1px;
   background: var(--bg-subtle);
   overflow: hidden;
 }
@@ -169,8 +167,8 @@ onBeforeUnmount(() => controller?.abort())
 .q-bar span {
   display: block;
   height: 100%;
-  background: var(--color-accent);
-  transition: width 0.25s ease;
+  background: var(--trace);
+  transition: width var(--dur) linear;
 }
 
 .q-progress-text {
@@ -178,78 +176,115 @@ onBeforeUnmount(() => controller?.abort())
   align-items: center;
   justify-content: space-between;
   color: var(--text-muted);
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
 }
 
 .q-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+}
+
+@media (min-width: 720px) {
+  .q-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .q-cell {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 9px 11px;
-  border-radius: 6px;
-  background: var(--bg-subtle);
+  gap: 4px;
+  min-width: 0;
+  padding: 0 0 8px;
+}
+
+@media (min-width: 720px) {
+  .q-cell {
+    padding: 0 0 0 16px;
+    border-left: 1px solid var(--border-subtle);
+  }
+
+  .q-cell:first-child {
+    padding-left: 0;
+    border-left: none;
+  }
+}
+
+@media (max-width: 719px) {
+  .q-cell {
+    padding-bottom: 12px;
+  }
+
+  .q-cell:nth-child(even) {
+    padding-left: 16px;
+  }
 }
 
 .q-label {
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 500;
 }
 
 .q-value {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
 
 .q-value small {
-  margin-left: 1px;
-  font-size: 11px;
-  font-weight: 600;
-  opacity: 0.6;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-muted);
 }
 
 .q-range {
   font-size: 14px;
+  gap: 3px;
 }
 
 .q-idle {
   color: var(--text-muted);
-  font-weight: 600;
 }
 
 .q-dash {
-  opacity: 0.35;
+  color: var(--border-strong);
 }
 
 .q-spark {
   display: flex;
   align-items: flex-end;
   gap: 3px;
-  height: 44px;
-  padding: 0 1px;
+  height: 40px;
+  padding-top: 8px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .q-spark-bar {
   flex: 1 1 0;
   min-width: 2px;
-  border-radius: 2px 2px 0 0;
   background: currentColor;
-  opacity: 0.7;
-  transition: height 0.3s ease;
+  transition: height var(--dur) var(--ease);
 }
 
-.q-spark-bar:hover {
-  opacity: 1;
+.q-spark-bar.tone-norm {
+  color: var(--text-muted);
+  opacity: 0.45;
+}
+
+.q-spark-bar.tone-ok {
+  color: var(--tone-warn);
+}
+
+.q-spark-bar.tone-bad {
+  color: var(--tone-bad);
 }
 
 .q-foot {
@@ -259,6 +294,14 @@ onBeforeUnmount(() => controller?.abort())
   flex-wrap: wrap;
 }
 
+.q-grade {
+  font-size: 11px;
+}
+
+.q-grade.tone-good { color: var(--tone-good); }
+.q-grade.tone-ok { color: var(--tone-warn); }
+.q-grade.tone-bad { color: var(--tone-bad); }
+
 .q-foot-text {
   color: var(--text-muted);
   font-size: 11px;
@@ -267,15 +310,11 @@ onBeforeUnmount(() => controller?.abort())
 .q-tip,
 .q-error {
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: 11px;
   line-height: 1.6;
 }
 
 .q-error {
-  color: var(--color-danger);
-}
-
-.mono {
-  font-family: var(--font-mono);
+  color: var(--tone-bad);
 }
 </style>

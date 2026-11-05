@@ -61,7 +61,7 @@ const filled = computed(() => Object.values(props.rows).filter(Boolean).length)
   margin-bottom: 12px;
   padding: 8px 10px 6px;
   border: 1px solid var(--border-subtle);
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   break-inside: avoid;
 }
 
@@ -73,7 +73,7 @@ const filled = computed(() => Object.values(props.rows).filter(Boolean).length)
   margin-bottom: 2px;
   color: var(--text-secondary);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.08em;
 }
 

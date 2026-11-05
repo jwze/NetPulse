@@ -59,7 +59,7 @@ onBeforeUnmount(() => controller?.abort())
 </script>
 
 <template>
-  <DiagCard title="上传测速" icon="M12 19V5 M5 12l7-7 7 7">
+  <DiagCard title="上传测速">
     <template #action>
       <button class="np-btn-primary up-btn" @click="start">
         {{ running ? '停止' : '开始测速' }}
@@ -113,8 +113,8 @@ onBeforeUnmount(() => controller?.abort())
   height: 30px;
   padding: 0 14px;
   font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
+  font-weight: 500;
+  border-radius: var(--r-sm);
 }
 
 .up-live {
@@ -128,7 +128,7 @@ onBeforeUnmount(() => controller?.abort())
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
@@ -137,13 +137,13 @@ onBeforeUnmount(() => controller?.abort())
 .up-value small {
   margin-left: 4px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   opacity: 0.55;
 }
 
 .up-bar {
   height: 4px;
-  border-radius: 2px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
   overflow: hidden;
 }
@@ -179,7 +179,7 @@ onBeforeUnmount(() => controller?.abort())
 .up-tip,
 .up-error {
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: 11px;
   line-height: 1.6;
 }
 

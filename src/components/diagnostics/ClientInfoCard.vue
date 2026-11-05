@@ -22,16 +22,14 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DiagCard title="本机环境" icon="M4 4h16v12H4z M8 20h8 M12 16v4">
+  <DiagCard title="本机环境">
     <div class="proto-row">
-      <div>
-        <div class="proto-label">当前页面协议</div>
-        <div class="proto-value">{{ protocolLabel }}</div>
-      </div>
-      <div class="proto-right">
-        <span class="np-chip">{{ quality.label }}</span>
-        <span v-if="info.mobile !== null" class="np-chip">{{ info.mobile ? '移动端' : '桌面端' }}</span>
-      </div>
+      <span class="proto-label">当前页面协议</span>
+      <span class="proto-value">{{ protocolLabel }}</span>
+      <span class="proto-right">
+        <span class="proto-meta">{{ quality.label }}</span>
+        <span v-if="info.mobile !== null" class="proto-meta">{{ info.mobile ? '移动端' : '桌面端' }}</span>
+      </span>
     </div>
 
     <dl class="np-kv-list">
@@ -66,40 +64,41 @@ onMounted(async () => {
 <style scoped>
 .proto-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 7px;
-  background: var(--bg-subtle);
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .proto-label {
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 500;
 }
 
 .proto-value {
-  margin-top: 2px;
   color: var(--text-primary);
   font-family: var(--font-mono);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 
 .proto-right {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.proto-meta {
+  color: var(--tone-good);
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .kv-sub {
   color: var(--text-muted);
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 400;
 }
 </style>

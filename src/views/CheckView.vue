@@ -50,27 +50,27 @@ function go(catId: string, tabId?: string) {
     <header class="check-head">
       <div class="check-head-main">
         <h1 class="np-page-title">检测中心</h1>
-        <p class="check-sub">
-          所有网络检测收在这里，按用途分类；打开即自动检测，只有占带宽的项目需要手动开始。
-        </p>
+        <p class="np-page-sub">所有检测收在这里，打开即自动检测；只有占带宽的几项需要手动开始</p>
       </div>
     </header>
 
-    <nav class="check-cats" aria-label="检测分类">
-      <button
-        v-for="cat in CHECK_CATEGORIES"
-        :key="cat.id"
-        type="button"
-        class="check-cat"
-        :class="{ 'is-active': cat.id === category.id }"
-        @click="go(cat.id)"
-      >
-        <span class="check-cat-label">{{ cat.label }}</span>
-        <span class="check-cat-desc">{{ cat.desc }}</span>
-      </button>
-    </nav>
+    <div class="cat-row">
+      <nav class="cat-bar" aria-label="检测分类">
+        <button
+          v-for="cat in CHECK_CATEGORIES"
+          :key="cat.id"
+          type="button"
+          class="cat-btn"
+          :class="{ 'is-active': cat.id === category.id }"
+          @click="go(cat.id)"
+        >
+          {{ cat.label }}
+        </button>
+      </nav>
+      <p v-if="category.tabs.length > 1" class="cat-desc">{{ tab.desc }}</p>
+    </div>
 
-    <nav class="check-tabs" aria-label="检测项">
+    <nav v-if="category.tabs.length > 1" class="tab-bar" aria-label="检测项">
       <button
         v-for="item in category.tabs"
         :key="item.id"
@@ -81,7 +81,7 @@ function go(catId: string, tabId?: string) {
         @click="go(category.id, item.id)"
       >
         {{ item.label }}
-        <span v-if="!item.auto" class="check-tab-flag">手动</span>
+        <span v-if="!item.auto" class="manual-flag">手动</span>
       </button>
     </nav>
 
@@ -93,89 +93,86 @@ function go(catId: string, tabId?: string) {
 
 <style scoped>
 .check-page {
-  padding-top: 20px;
-  padding-bottom: 56px;
+  padding-top: 24px;
+  padding-bottom: 64px;
 }
 
 .check-head {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .check-head-main {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 
-.check-sub {
-  max-width: 640px;
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.check-cats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.check-cat {
+.cat-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.cat-bar {
+  display: flex;
+  align-items: center;
   gap: 2px;
-  min-width: 0;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  background: var(--bg-card);
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.check-cat:hover {
-  border-color: var(--text-muted);
-}
-
-.check-cat.is-active {
-  border-color: var(--text-primary);
+  padding: 3px;
+  border-radius: var(--r-md);
   background: var(--bg-subtle);
 }
 
-.check-cat-label {
-  color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 650;
-  letter-spacing: -0.01em;
+.cat-btn {
+  height: 30px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
 }
 
-.check-cat-desc {
-  overflow: hidden;
+.cat-btn:hover {
+  color: var(--text-primary);
+}
+
+.cat-btn.is-active {
+  background: var(--bg-card);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.cat-desc {
   color: var(--text-muted);
   font-size: 11px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
-.check-tabs {
+.tab-bar {
   display: flex;
   align-items: center;
   gap: 2px;
   overflow-x: auto;
-  padding-bottom: 1px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 20px;
   scrollbar-width: none;
 }
 
-.check-tabs::-webkit-scrollbar {
+.tab-bar::-webkit-scrollbar {
   display: none;
 }
 
@@ -183,26 +180,27 @@ function go(catId: string, tabId?: string) {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   flex: 0 0 auto;
-  padding: 8px 12px 10px;
+  height: 36px;
+  padding: 0 12px;
   border: none;
   background: transparent;
   color: var(--text-muted);
+  font-family: inherit;
   font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
   cursor: pointer;
-  transition: color 0.15s ease;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease);
 }
 
 .check-tab:hover {
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .check-tab.is-active {
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .check-tab.is-active::after {
@@ -211,33 +209,33 @@ function go(catId: string, tabId?: string) {
   left: 8px;
   right: 8px;
   bottom: -1px;
-  height: 2px;
-  border-radius: 2px 2px 0 0;
+  height: 1.5px;
   background: var(--text-primary);
 }
 
-.check-tab-flag {
-  padding: 1px 5px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
+.manual-flag {
   color: var(--text-muted);
-  font-size: 9px;
-  font-weight: 600;
-  line-height: 1.5;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0;
+  padding: 1px 4px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xs);
+  line-height: 1.4;
 }
 
-@media (max-width: 760px) {
-  .check-cats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 640px) {
+  .cat-bar {
+    width: 100%;
   }
 
-  .check-cat-desc {
+  .cat-btn {
+    flex: 1;
+    padding: 0 8px;
+  }
+
+  .cat-desc {
     display: none;
-  }
-
-  .check-cat {
-    align-items: center;
-    padding: 9px 10px;
   }
 }
 </style>

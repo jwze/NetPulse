@@ -111,7 +111,7 @@ function sourceText(exit: ExitGroup) {
   gap: 4px;
   padding: 10px;
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   background: var(--bg-subtle);
 }
 
@@ -129,7 +129,7 @@ function sourceText(exit: ExitGroup) {
   white-space: nowrap;
   color: var(--text-primary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .exit-kind {

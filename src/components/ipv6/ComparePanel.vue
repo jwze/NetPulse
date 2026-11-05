@@ -98,7 +98,7 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
   margin-top: 4px;
   color: var(--text-primary);
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 500;
   letter-spacing: -0.02em;
 }
 
@@ -144,7 +144,7 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
 .cmp-cell b {
   color: var(--text-primary);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .cmp-cell b.is-muted {
@@ -155,7 +155,7 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
   display: block;
   max-width: 128px;
   height: 3px;
-  border-radius: 2px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
   overflow: hidden;
 }
@@ -163,7 +163,7 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
 .cmp-bar em {
   display: block;
   height: 100%;
-  border-radius: 2px;
+  border-radius: var(--r-xs);
   background: var(--text-muted);
   transform-origin: left center;
   transition: transform 0.35s ease;
@@ -175,24 +175,24 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
   text-align: right;
 }
 
-.is-slow { color: #d97706; }
-.is-fast { color: #16a34a; }
+.is-slow { color: var(--tone-warn); }
+.is-fast { color: var(--tone-good); }
 
-.dark .is-slow { color: #f5a623; }
-.dark .is-fast { color: #50e3a4; }
+.dark .is-slow { color: var(--tone-warn); }
+.dark .is-fast { color: var(--tone-good); }
 
 .s-muted { color: var(--text-secondary); }
-.s-great { color: #16a34a; }
-.s-good { color: #2563eb; }
-.s-ok { color: #7c3aed; }
-.s-warn { color: #d97706; }
-.s-bad { color: #dc2626; }
+.s-great { color: var(--tone-good); }
+.s-good { color: var(--tone-good); }
+.s-ok { color: var(--tone-warn); }
+.s-warn { color: var(--tone-warn); }
+.s-bad { color: var(--tone-bad); }
 
-.dark .s-great { color: #50e3a4; }
-.dark .s-good { color: #60a5fa; }
-.dark .s-ok { color: #a78bfa; }
-.dark .s-warn { color: #f5a623; }
-.dark .s-bad { color: #ff5c4e; }
+.dark .s-great { color: var(--tone-good); }
+.dark .s-good { color: var(--tone-good); }
+.dark .s-ok { color: var(--tone-warn); }
+.dark .s-warn { color: var(--tone-warn); }
+.dark .s-bad { color: var(--tone-bad); }
 
 @media (max-width: 520px) {
   .cmp-row {
