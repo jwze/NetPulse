@@ -83,7 +83,7 @@ function switchView(view: PanelView) {
         </p>
       </div>
 
-      <SettingsPanel v-else-if="currentView === 'settings'" key="settings" @back="switchView('main')" />
+      <SettingsPanel v-else-if="currentView === 'settings'" key="settings" />
       <CustomNodes v-else-if="currentView === 'nodes'" key="nodes" @back="switchView('main')" />
     </Transition>
   </section>

@@ -69,9 +69,6 @@ function onRotationModeChange(enabled: boolean) {
   if (enabled) settings.groupMode = false
 }
 
-const emit = defineEmits<{
-  (e: 'back'): void
-}>()
 </script>
 
 <template>
@@ -228,13 +225,6 @@ const emit = defineEmits<{
       </div>
       <small class="rotation-hint">流量限制：每个节点跑满指定 MB 后切换下一个。运行次数：0 表示无限循环。</small>
     </div>
-
-    <button class="panel-button panel-button-ghost" @click="emit('back')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5M12 19l-7-7 7-7" />
-      </svg>
-      返回面板
-    </button>
   </div>
 </template>
 
@@ -350,34 +340,6 @@ const emit = defineEmits<{
   flex-shrink: 0;
 }
 
-.panel-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  height: 38px;
-  border-radius: var(--r-md);
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-
-.panel-button:hover {
-  color: var(--text-primary);
-  border-color: var(--text-muted);
-  background: var(--bg-subtle);
-}
-
-.panel-button svg {
-  width: 14px;
-  height: 14px;
-}
-
 @media (max-width: 860px) {
   .settings-grid {
     grid-template-columns: 1fr;
@@ -392,16 +354,16 @@ const emit = defineEmits<{
 
 .rotation-box {
   padding: 13px;
-  border: 1px solid rgba(16, 185, 129, 0.18);
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
-  background: rgba(16, 185, 129, 0.04);
+  background: var(--bg-subtle);
 }
 
 .rotation-box h4 {
   margin-bottom: 10px;
-  color: #059669;
-  font-size: 13px;
-  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 400;
 }
 
 .rotation-select {
@@ -492,8 +454,8 @@ const emit = defineEmits<{
 }
 
 .rotation-remove:hover {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.08);
+  color: var(--tone-bad);
+  background: var(--tone-bad-bg);
 }
 
 .rotation-remove:disabled {
