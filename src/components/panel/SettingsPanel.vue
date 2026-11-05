@@ -261,29 +261,29 @@ const emit = defineEmits<{
 }
 
 .settings-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .setting-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
-  min-height: 72px;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  background: var(--bg-subtle);
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.setting-card:last-child {
+  border-bottom: none;
 }
 
 .setting-card span {
   display: block;
   color: var(--text-primary);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 400;
   line-height: 1.3;
 }
 
@@ -297,16 +297,16 @@ const emit = defineEmits<{
 
 .cron-box {
   padding: 13px;
-  border: 1px solid rgba(0, 112, 243, 0.16);
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
-  background: rgba(0, 112, 243, 0.04);
+  background: var(--bg-subtle);
 }
 
 .cron-box h4 {
   margin-bottom: 10px;
-  color: var(--color-info);
-  font-size: 13px;
-  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 400;
   letter-spacing: 0;
 }
 
