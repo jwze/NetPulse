@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useMessage } from 'naive-ui'
+import Icon from '@/components/ui/Icon.vue'
 import { usePanelStore } from '@/stores/panel'
 import { buildShareCard } from '@/utils/shareCard'
 
@@ -82,8 +83,11 @@ watch(() => props.show, (visible) => {
           <header>
             <div class="share-head-text">
               <h3>成绩卡</h3>
+              <span class="share-head-note">本次测速的截图存证</span>
             </div>
-            <button type="button" aria-label="关闭" @click="emit('close')">×</button>
+            <button type="button" aria-label="关闭" @click="emit('close')">
+              <Icon name="x" :size="14" />
+            </button>
           </header>
 
           <div class="share-body">
@@ -139,9 +143,16 @@ header {
 
 .share-head-text h3 {
   color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.share-head-note {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 header button {

@@ -247,18 +247,6 @@ function formatTime(text: string) {
 
 <template>
   <div class="subpanel">
-    <div class="subpanel-titlebar">
-      <div>
-        <h3>自定义节点</h3>
-        <p>节点只保存在本机浏览器，可导出配置文件迁移到其他设备。</p>
-      </div>
-      <button class="np-btn-ghost" aria-label="返回面板" @click="emit('back')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-      </button>
-    </div>
-
     <div class="node-actions">
       <button class="np-btn-primary node-action-main" @click="openCreate">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -329,20 +317,9 @@ function formatTime(text: string) {
     </div>
 
     <div v-else class="node-empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="3" />
-        <path d="M12 8v8M8 12h8" />
-      </svg>
-      <p>{{ activeGroup === '全部' ? '还没有自定义节点' : '该分组下还没有节点' }}</p>
-      <button class="np-btn-primary" @click="openCreate">添加第一个节点</button>
+      <span>{{ activeGroup === '全部' ? '还没有自定义节点' : '该分组下还没有节点' }}</span>
+      <button class="node-empty-add" @click="openCreate">新增</button>
     </div>
-
-    <button class="panel-button panel-button-ghost" @click="emit('back')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5M12 19l-7-7 7-7" />
-      </svg>
-      返回面板
-    </button>
 
     <NModal v-model:show="showForm" :mask-closable="!submitting">
       <div class="node-modal">
@@ -476,61 +453,61 @@ function formatTime(text: string) {
 .group-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .group-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   height: 26px;
-  padding: 0 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  background: var(--bg-card);
-  color: var(--text-secondary);
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-muted);
   font-size: 12px;
-  font-weight: 550;
+  font-weight: 400;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .group-chip:hover {
-  border-color: var(--text-muted);
   color: var(--text-primary);
 }
 
 .group-chip.active {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: var(--accent-on-primary);
+  border-bottom-color: var(--text-primary);
+  background: transparent;
+  color: var(--text-primary);
 }
 
 .group-count {
-  min-width: 16px;
-  padding: 0 4px;
-  border-radius: var(--r-xs);
-  background: var(--bg-subtle);
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 10px;
-  line-height: 15px;
-  text-align: center;
+  line-height: 1;
 }
 
 .group-chip.active .group-count {
-  background: rgba(255, 255, 255, 0.18);
-  color: inherit;
+  background: transparent;
+  color: var(--text-secondary);
 }
 
 .group-remove {
-  margin-left: 2px;
-  font-size: 13px;
+  margin-left: 1px;
+  color: var(--text-muted);
+  font-size: 12px;
   line-height: 1;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .group-remove:hover {
+  color: var(--tone-bad);
   opacity: 1;
 }
 
@@ -662,25 +639,29 @@ function formatTime(text: string) {
 
 .node-empty {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 34px 16px;
-  border: 1px dashed var(--border);
-  border-radius: var(--r-md);
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border-subtle);
   color: var(--text-muted);
   font-size: 12px;
 }
 
-.node-empty svg {
-  width: 26px;
-  height: 26px;
-  opacity: 0.6;
+.node-empty-add {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
-.node-empty .np-btn-primary {
-  height: 34px;
-  font-size: 12px;
+.node-empty-add:hover {
+  color: var(--trace);
 }
 
 .panel-button {
