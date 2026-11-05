@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
-import PageHead from '@/components/common/PageHead.vue'
+import PaneBar from '@/components/check/PaneBar.vue'
 import ScoreBoard from '@/components/unlock/ScoreBoard.vue'
 import ServiceRows from '@/components/unlock/ServiceRows.vue'
 import { useUnlock } from '@/composables/useUnlock'
@@ -37,7 +37,8 @@ async function copyLink() {
 }
 
 onMounted(() => {
-  loadFromHash()
+  if (loadFromHash()) return
+  void start()
 })
 
 onUnmounted(() => {
@@ -46,8 +47,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-shell np-page">
-    <PageHead title="解锁检测">
+  <div class="pane">
+    <PaneBar hint="流媒体与 AI 服务在当前线路的可达情况">
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />
@@ -63,7 +64,7 @@ onUnmounted(() => {
           {{ running ? '停止' : done ? '重新检测' : '开始检测' }}
         </button>
       </template>
-    </PageHead>
+    </PaneBar>
 
     <ScoreBoard :card="card" :counts="counts" :running="running" />
 
@@ -119,6 +120,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.pane {
+  min-width: 0;
+}
+
 .un-advice,
 .un-exits,
 .un-how {

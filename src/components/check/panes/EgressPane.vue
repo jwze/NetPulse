@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
 import { PROBES } from '@/data/egressProbes'
-import PageHead from '@/components/common/PageHead.vue'
+import PaneBar from '@/components/check/PaneBar.vue'
 import CheckList from '@/components/egress/CheckList.vue'
 import ExitList from '@/components/egress/ExitList.vue'
 import ProbeList from '@/components/egress/ProbeList.vue'
@@ -28,7 +28,8 @@ async function copyLink() {
 }
 
 onMounted(() => {
-  loadFromHash()
+  if (loadFromHash()) return
+  void start()
 })
 
 onUnmounted(() => {
@@ -37,8 +38,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-shell np-page">
-    <PageHead title="出口对照">
+  <div class="pane">
+    <PaneBar hint="按目的地分组，看每条线路真正用的出口">
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />
@@ -57,7 +58,7 @@ onUnmounted(() => {
           {{ running ? '停止' : exits.length ? '重新探测' : '开始探测' }}
         </button>
       </template>
-    </PageHead>
+    </PaneBar>
 
     <div class="np-split">
       <div class="np-main">
@@ -77,3 +78,9 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.pane {
+  min-width: 0;
+}
+</style>

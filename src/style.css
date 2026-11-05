@@ -322,6 +322,29 @@ pre {
   text-align: center;
 }
 
+/* 检测中心：手动启动项上方的一句话说明 */
+.pane-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.pane-note-tag {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
 /* 骨架条：等待数据时的占位，宽度由内联样式给 */
 .np-skel {
   border-radius: 4px;

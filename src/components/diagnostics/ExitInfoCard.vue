@@ -39,6 +39,14 @@ function copyIp() {
   if (info.value?.ip) void copy(info.value.ip)
 }
 
+function copyStack(address: string) {
+  if (address) void copy(address)
+}
+
+function isCurrent(stack: StackProbe) {
+  return !!info.value && info.value.version === stack.family
+}
+
 const stackRows = computed<StackProbe[]>(() => {
   if (!stackLoading.value) return stacks.value
   return [
@@ -127,15 +135,25 @@ onMounted(() => {
     </template>
 
     <div class="stack-row">
-      <div v-for="stack in stackRows" :key="stack.family" class="stack-item">
-        <span class="stack-label">{{ stack.family }}</span>
+      <div
+        v-for="stack in stackRows"
+        :key="stack.family"
+        class="stack-item"
+        :class="{ 'is-current': !stackLoading && stack.ok && isCurrent(stack) }"
+      >
+        <span class="stack-label">
+          {{ stack.family }}
+          <em v-if="!stackLoading && stack.ok && isCurrent(stack)">当前</em>
+        </span>
         <span v-if="stackLoading" class="stack-value tone-none">检测中</span>
-        <span
-          v-else
-          class="stack-value"
-          :class="stack.ok ? 'tone-good' : 'tone-none'"
-          :title="stack.ok ? `${stack.address} · ${stack.ms}ms` : `${stack.family} 不可达`"
-        >{{ stack.ok ? '可用' : '不可用' }}</span>
+        <button
+          v-else-if="stack.ok"
+          class="stack-addr font-mono"
+          :title="`${stack.address}（${stack.ms}ms），点击复制`"
+          @click="copyStack(stack.address)"
+        >{{ stack.address }}</button>
+        <span v-else class="stack-value tone-none">不可用</span>
+        <span v-if="!stackLoading && stack.ok" class="stack-ms font-mono">{{ stack.ms }}ms</span>
       </div>
     </div>
   </DiagCard>
@@ -235,19 +253,66 @@ onMounted(() => {
 }
 
 .stack-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
+  min-width: 0;
   padding: 8px 10px;
+  border: 1px solid transparent;
   border-radius: 6px;
   background: var(--bg-subtle);
 }
 
+.stack-item.is-current {
+  border-color: var(--border);
+  background: var(--bg-card);
+}
+
 .stack-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--text-muted);
   font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.stack-label em {
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.stack-addr {
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.35;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.stack-addr:hover {
+  color: var(--color-accent);
+}
+
+.stack-ms {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .stack-value {
@@ -255,5 +320,11 @@ onMounted(() => {
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  .stack-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 </style>

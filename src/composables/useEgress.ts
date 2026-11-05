@@ -108,7 +108,7 @@ export function useEgress() {
       },
       false,
     )
-    const url = `${window.location.origin}/egress${code}`
+    const url = `${window.location.origin}/check/network/egress${code}`
     return copyText(url)
   }
 

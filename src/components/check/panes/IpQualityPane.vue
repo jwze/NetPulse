@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useMessage } from 'naive-ui'
-import PageHead from '@/components/common/PageHead.vue'
+import PaneBar from '@/components/check/PaneBar.vue'
 import QualityScore from '@/components/ipquality/QualityScore.vue'
 import SourceList from '@/components/ipquality/SourceList.vue'
 import { useIpQuality } from '@/composables/useIpQuality'
@@ -23,8 +23,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="np-shell np-page">
-    <PageHead title="IP 质量">
+  <div class="pane">
+    <PaneBar hint="多来源核对地址的归属、用途与风险标记">
       <span v-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />
         {{ done }}/{{ total }}
@@ -36,7 +36,7 @@ onMounted(() => {
           复制链接
         </button>
       </template>
-    </PageHead>
+    </PaneBar>
 
     <section class="np-card iq-query">
       <label class="iq-query-label" for="iq-ip">查询地址</label>
@@ -106,6 +106,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.pane {
+  min-width: 0;
+}
+
 .iq-query {
   display: flex;
   align-items: center;

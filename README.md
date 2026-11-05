@@ -8,17 +8,26 @@
 
 ## 页面一览
 
+除测速台外，其余检测都收在「检测中心」：一级按用途分类，二级是具体检测项。打开即自动检测，只有占带宽的项目需要手动开始。
+
 | 路由 | 页面 | 在做什么 |
 | --- | --- | --- |
 | `/` | 测速台 | 1–64 线程并发下载，实时吞吐曲线与 Bufferbloat 评级 |
-| `/diagnostics` | 网络诊断 | ASN 与机房标记、IPv4/v6 双栈、DoH 对比、延迟抖动丢包、上行带宽、WebRTC 拓扑、多节点对比 |
-| `/latency` | 全球延迟 | 40 个海外服务逐一测 HTTPS 往返，识别边缘节点与出口，给出可用度判定 |
-| `/ipv6` | IPv6 测试 | 六项检测打到 10 分制，识别 AAAA 过滤、PMTU 黑洞、NAT64 与隧道地址 |
-| `/egress` | 出口对照 | 53 个探测器同时问「我是谁」，按 ASN 还原真实出口与分流规则 |
-| `/ip-quality` | IP 质量 | 11 个来源交叉验证，8 个邮件黑名单，100 分制评级 |
-| `/unlock` | 解锁检测 | 148 个服务逐个看「它以为你在哪」，四类成绩单与分流建议 |
-| `/privacy` | 隐私画像 | 87 项嗅探 + 11 项伪装检测，A+ ~ F 环境评分 |
+| `/check` | 概览 · 总览 | 出口 IPv4 / IPv6 地址并列展示、ASN 与机房标记、本机环境、历史记录 |
+| `/check/network/egress` | 网络 · 出口对照 | 53 个探测器同时问「我是谁」，按 ASN 还原真实出口与分流规则 |
+| `/check/network/latency` | 网络 · 全球延迟 | 40 个海外服务逐一测 HTTPS 往返，识别边缘节点与出口，给出可用度判定 |
+| `/check/network/ipv6` | 网络 · IPv6 双栈 | 六项检测打到 10 分制，识别 AAAA 过滤、PMTU 黑洞、NAT64 与隧道地址 |
+| `/check/network/multinode` | 网络 · 多节点测速 | 多节点并发拉流比较线路差距（手动） |
+| `/check/quality/quality` | 质量 · 链路质量 | 20 次探测的延迟、抖动与丢包 |
+| `/check/quality/upload` | 质量 · 上传带宽 | 上行吞吐实测（手动） |
+| `/check/quality/ip-quality` | 质量 · IP 质量 | 11 个来源交叉验证，8 个邮件黑名单，100 分制评级 |
+| `/check/quality/dns` | 质量 · DNS 解析 | 国内外 DoH 解析结果对比 |
+| `/check/privacy/unlock` | 隐私 · 解锁检测 | 148 个服务逐个看「它以为你在哪」，四类成绩单与分流建议 |
+| `/check/privacy/portrait` | 隐私 · 隐私画像 | 87 项嗅探 + 11 项伪装检测，A+ ~ F 环境评分 |
+| `/check/privacy/webrtc` | 隐私 · 网络拓扑 | NAT 类型、STUN 映射与内网地址泄露 |
 | `/:pathMatch` | 404 | 兜底页 |
+
+旧的 `/diagnostics`、`/latency`、`/ipv6`、`/egress`、`/ip-quality`、`/unlock`、`/privacy` 会跳转到对应的新地址，分享链接里的 `#hash` 与 `?query` 原样保留。
 
 ## 测速台
 
@@ -53,9 +62,9 @@ Vue 3 · TypeScript · Vite 8 · Pinia · Vue Router · Naive UI · Tailwind CSS
 
 ```
 src/
-├── components/   表现层，按页面分组（panel / diagnostics / latency / ipv6 / ...）
+├── components/   表现层，按功能分组（panel / diagnostics / latency / ipv6 / check ...）
 ├── composables/  页面级流程编排，组件只负责渲染
-├── config/       品牌与文案，改名只需改 brand.ts
+├── config/       品牌文案与检测中心目录（check.ts），加检测项先改这里
 ├── data/         探测清单与服务定义，纯数据
 ├── router/       路由表与标题
 ├── stores/       Pinia：panel / nodes / network / history / settings / app

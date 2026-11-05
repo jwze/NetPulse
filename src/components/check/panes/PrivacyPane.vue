@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
-import PageHead from '@/components/common/PageHead.vue'
+import PaneBar from '@/components/check/PaneBar.vue'
 import PortraitCard from '@/components/privacy/PortraitCard.vue'
 import SnifferList from '@/components/privacy/SnifferList.vue'
 import CheckCard from '@/components/privacy/CheckCard.vue'
@@ -22,7 +22,8 @@ async function copyLink() {
 }
 
 onMounted(() => {
-  loadFromHash()
+  if (loadFromHash()) return
+  void start()
 })
 
 onUnmounted(() => {
@@ -31,8 +32,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-shell np-page">
-    <PageHead title="隐私画像">
+  <div class="pane">
+    <PaneBar hint="本机指纹、时区与地址暴露面，全部在浏览器本地完成">
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />
@@ -51,7 +52,7 @@ onUnmounted(() => {
           {{ running ? '停止' : portrait ? '重新探测' : '开始探测' }}
         </button>
       </template>
-    </PageHead>
+    </PaneBar>
 
     <PortraitCard :portrait="portrait" :labels="labels" :running="running" :shared="!!shared" />
 
@@ -84,6 +85,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.pane {
+  min-width: 0;
+}
+
 .pv-split {
   margin-top: 16px;
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import DiagCard from '@/components/diagnostics/DiagCard.vue'
 import { runQualityTest, type QualityResult } from '@/utils/quality'
 import { useHistoryStore } from '@/stores/history'
@@ -62,6 +62,10 @@ async function start() {
     running.value = false
   }
 }
+
+onMounted(() => {
+  void start()
+})
 
 onBeforeUnmount(() => controller?.abort())
 </script>

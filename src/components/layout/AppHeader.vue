@@ -12,14 +12,13 @@ const themeMenuOpen = ref(false)
 
 const navItems = [
   { id: 0, label: '测速台', path: '/' },
-  { id: 1, label: '全球延迟', path: '/latency' },
-  { id: 2, label: 'IPv6 测试', path: '/ipv6' },
-  { id: 3, label: '出口对照', path: '/egress' },
-  { id: 4, label: 'IP 质量', path: '/ip-quality' },
-  { id: 5, label: '解锁检测', path: '/unlock' },
-  { id: 6, label: '隐私画像', path: '/privacy' },
-  { id: 7, label: '网络诊断', path: '/diagnostics' },
+  { id: 1, label: '检测中心', path: '/check' },
 ]
+
+function isActive(path: string) {
+  if (path === '/') return route.path === '/'
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
 
 function navigate(path: string) {
   void router.push(path)
@@ -62,7 +61,7 @@ onBeforeUnmount(() => {
             v-for="item in navItems"
             :key="item.id"
             class="nav-item"
-            :class="{ 'is-active': route.path === item.path }"
+            :class="{ 'is-active': isActive(item.path) }"
             @click="navigate(item.path)"
           >
             {{ item.label }}
@@ -145,8 +144,8 @@ onBeforeUnmount(() => {
               :key="item.id"
               class="px-3 py-3 rounded-md text-[14px] font-medium transition-colors cursor-pointer"
               :style="{
-                color: route.path === item.path ? 'var(--text-primary)' : 'var(--text-secondary)',
-                background: route.path === item.path ? 'var(--bg-subtle)' : 'transparent',
+                color: isActive(item.path) ? 'var(--text-primary)' : 'var(--text-secondary)',
+                background: isActive(item.path) ? 'var(--bg-subtle)' : 'transparent',
               }"
               @click="navigate(item.path)"
             >

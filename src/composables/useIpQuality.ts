@@ -95,8 +95,8 @@ export function useIpQuality() {
   async function copyLink() {
     if (!ip.value) return false
     const url = isOwn.value
-      ? `${window.location.origin}/ip-quality`
-      : `${window.location.origin}/ip-quality?ip=${encodeURIComponent(ip.value)}`
+      ? `${window.location.origin}/check/quality/ip-quality`
+      : `${window.location.origin}/check/quality/ip-quality?ip=${encodeURIComponent(ip.value)}`
     return copyText(url)
   }
 

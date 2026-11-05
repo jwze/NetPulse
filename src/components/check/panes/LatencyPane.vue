@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
 import { NSelect, useMessage } from 'naive-ui'
+import PaneBar from '@/components/check/PaneBar.vue'
 import VerdictPanel from '@/components/latency/VerdictPanel.vue'
 import ExitPanel from '@/components/latency/ExitPanel.vue'
 import ServiceLane from '@/components/latency/ServiceLane.vue'
-import PageHead from '@/components/common/PageHead.vue'
 import { useLatencyProbe } from '@/composables/useLatencyProbe'
 import { CATS, PACK_LABELS } from '@/data/latencyServices'
 import { fmtDelta, fmtMs, posOf, tierOf } from '@/utils/latency'
@@ -100,7 +100,8 @@ function exportImage() {
 }
 
 onMounted(() => {
-  probe.loadFromHash()
+  if (probe.loadFromHash()) return
+  void probe.start()
 })
 
 onUnmounted(() => {
@@ -109,8 +110,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-shell np-page">
-    <PageHead title="全球延迟">
+  <div class="pane">
+    <PaneBar hint="按类别列出常用服务，取多次采样的中位数">
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />
@@ -128,7 +129,7 @@ onUnmounted(() => {
           {{ running ? '停止' : '开始探测' }}
         </button>
       </template>
-    </PageHead>
+    </PaneBar>
 
     <p v-if="error" class="lat-error">{{ error }}</p>
 
@@ -232,6 +233,10 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.pane {
+  min-width: 0;
+}
+
 .lat-error {
   margin-bottom: 12px;
   color: var(--color-danger);

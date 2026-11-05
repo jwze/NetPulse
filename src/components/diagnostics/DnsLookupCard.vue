@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import DiagCard from '@/components/diagnostics/DiagCard.vue'
 import {
   DNS_TYPES,
@@ -63,6 +63,10 @@ function pickType(type: DnsRecordType) {
   recordType.value = type
   if (results.value.length) void run()
 }
+
+onMounted(() => {
+  void run()
+})
 
 onBeforeUnmount(() => controller?.abort())
 </script>

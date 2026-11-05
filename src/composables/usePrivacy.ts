@@ -137,7 +137,7 @@ export function usePrivacy() {
       fpid: local.value.fpid,
       shield: local.value.rows.shield || '',
     })
-    return copyText(`${window.location.origin}/privacy${code}`)
+    return copyText(`${window.location.origin}/check/privacy/portrait${code}`)
   }
 
   return {

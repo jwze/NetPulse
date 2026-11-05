@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import { useMessage } from 'naive-ui'
-import PageHead from '@/components/common/PageHead.vue'
+import PaneBar from '@/components/check/PaneBar.vue'
 import ScorePanel from '@/components/ipv6/ScorePanel.vue'
 import TestList from '@/components/ipv6/TestList.vue'
 import ComparePanel from '@/components/ipv6/ComparePanel.vue'
@@ -72,7 +72,8 @@ function exportImage() {
 }
 
 onMounted(() => {
-  loadFromHash()
+  if (loadFromHash()) return
+  void start()
 })
 
 onUnmounted(() => {
@@ -81,8 +82,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="np-shell np-page">
-    <PageHead title="IPv6 测试">
+  <div class="pane">
+    <PaneBar hint="六项 IPv6 能力测试，同时用同一目标对比 IPv4 与 IPv6">
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />
@@ -101,7 +102,7 @@ onUnmounted(() => {
           {{ running ? '停止' : verdict ? '重新测试' : '开始测试' }}
         </button>
       </template>
-    </PageHead>
+    </PaneBar>
 
     <div class="np-split np-split--main-first">
       <div class="np-main">
@@ -130,3 +131,9 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.pane {
+  min-width: 0;
+}
+</style>

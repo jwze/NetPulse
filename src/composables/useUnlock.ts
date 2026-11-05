@@ -94,7 +94,7 @@ export function useUnlock() {
   async function copyShareLink() {
     if (!answered.value) return false
     const code = encodeShare(sharedTs.value || Date.now(), tzCountry(Intl.DateTimeFormat().resolvedOptions().timeZone || ''), verdicts)
-    return copyText(`${window.location.origin}/unlock${code}`)
+    return copyText(`${window.location.origin}/check/privacy/unlock${code}`)
   }
 
   return {

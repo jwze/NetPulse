@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import { brand } from '@/config/brand'
 
+/** 旧的分散页面全部收敛到检测中心，老链接按 hash / query 平移过去 */
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -10,40 +11,17 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
   },
   {
-    path: '/diagnostics',
-    name: 'Diagnostics',
-    component: () => import('@/views/DiagnosticsView.vue'),
+    path: '/check/:cat?/:tab?',
+    name: 'Check',
+    component: () => import('@/views/CheckView.vue'),
   },
-  {
-    path: '/latency',
-    name: 'Latency',
-    component: () => import('@/views/LatencyView.vue'),
-  },
-  {
-    path: '/ipv6',
-    name: 'Ipv6',
-    component: () => import('@/views/Ipv6View.vue'),
-  },
-  {
-    path: '/egress',
-    name: 'Egress',
-    component: () => import('@/views/EgressView.vue'),
-  },
-  {
-    path: '/ip-quality',
-    name: 'IpQuality',
-    component: () => import('@/views/IpQualityView.vue'),
-  },
-  {
-    path: '/unlock',
-    name: 'Unlock',
-    component: () => import('@/views/UnlockView.vue'),
-  },
-  {
-    path: '/privacy',
-    name: 'Privacy',
-    component: () => import('@/views/PrivacyView.vue'),
-  },
+  { path: '/diagnostics', redirect: to => ({ path: '/check', query: to.query, hash: to.hash }) },
+  { path: '/latency', redirect: to => ({ path: '/check/network/latency', query: to.query, hash: to.hash }) },
+  { path: '/ipv6', redirect: to => ({ path: '/check/network/ipv6', query: to.query, hash: to.hash }) },
+  { path: '/egress', redirect: to => ({ path: '/check/network/egress', query: to.query, hash: to.hash }) },
+  { path: '/ip-quality', redirect: to => ({ path: '/check/quality/ip-quality', query: to.query, hash: to.hash }) },
+  { path: '/unlock', redirect: to => ({ path: '/check/privacy/unlock', query: to.query, hash: to.hash }) },
+  { path: '/privacy', redirect: to => ({ path: '/check/privacy/portrait', query: to.query, hash: to.hash }) },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
@@ -62,20 +40,8 @@ const router = createRouter({
 router.afterEach((to) => {
   if (to.path === '/') {
     document.title = `${brand.name} · ${brand.tagline}`
-  } else if (to.name === 'Diagnostics') {
-    document.title = `网络诊断 · ${brand.name}`
-  } else if (to.name === 'Latency') {
-    document.title = `全球延迟 · ${brand.name}`
-  } else if (to.name === 'Ipv6') {
-    document.title = `IPv6 测试 · ${brand.name}`
-  } else if (to.name === 'Egress') {
-    document.title = `出口对照 · ${brand.name}`
-  } else if (to.name === 'IpQuality') {
-    document.title = `IP 质量 · ${brand.name}`
-  } else if (to.name === 'Unlock') {
-    document.title = `解锁检测 · ${brand.name}`
-  } else if (to.name === 'Privacy') {
-    document.title = `隐私画像 · ${brand.name}`
+  } else if (to.name === 'Check') {
+    document.title = `检测中心 · ${brand.name}`
   } else {
     document.title = `页面未找到 · ${brand.name}`
   }
