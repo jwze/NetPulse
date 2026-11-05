@@ -12,92 +12,95 @@ onMounted(() => {
   appStore.initTheme()
 })
 
+const fontFamily = "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+const fontFamilyMono = "ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace"
+
 const lightOverrides: GlobalThemeOverrides = {
   common: {
-    primaryColor: '#000000',
-    primaryColorHover: '#1A1A1A',
-    primaryColorPressed: '#000000',
-    primaryColorSuppl: '#3B82F6',
-    borderRadius: '6px',
-    borderRadiusSmall: '4px',
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    fontFamilyMono: "'Geist Mono', 'JetBrains Mono', 'SF Mono', Menlo, monospace",
-    fontSize: '14px',
-    textColor1: '#000000',
-    textColor2: '#000000',
-    textColor3: '#666666',
-    dividerColor: '#EAEAEA',
-    hoverColor: '#F5F5F5',
-    borderColor: '#EAEAEA',
-    bodyColor: '#FAFAFA',
+    primaryColor: '#101719',
+    primaryColorHover: '#23302F',
+    primaryColorPressed: '#101719',
+    primaryColorSuppl: '#BF4012',
+    borderRadius: '10px',
+    borderRadiusSmall: '6px',
+    fontFamily,
+    fontFamilyMono,
+    fontSize: '13px',
+    textColor1: '#101719',
+    textColor2: '#4C5A5C',
+    textColor3: '#78878A',
+    dividerColor: 'rgba(16, 23, 25, 0.11)',
+    hoverColor: '#EDF1F1',
+    borderColor: 'rgba(16, 23, 25, 0.11)',
+    bodyColor: '#F5F7F7',
     cardColor: '#FFFFFF',
-    inputColor: '#F5F5F5',
+    inputColor: '#FFFFFF',
   },
   Button: {
-    borderRadiusMedium: '6px',
-    borderRadiusLarge: '6px',
+    borderRadiusMedium: '10px',
+    borderRadiusLarge: '10px',
     fontWeight: '500',
     fontWeightStrong: '500',
     textColorPrimary: '#FFFFFF',
-    colorPrimary: '#000000',
-    colorHoverPrimary: '#1A1A1A',
-    colorPressedPrimary: '#000000',
-    colorFocusPrimary: '#000000',
-    borderPrimary: '1px solid #000000',
-    borderHoverPrimary: '1px solid #1A1A1A',
-    borderPressedPrimary: '1px solid #000000',
-    borderFocusPrimary: '1px solid #000000',
-    rippleColorPrimary: 'rgba(0, 0, 0, 0.1)',
+    colorPrimary: '#101719',
+    colorHoverPrimary: '#23302F',
+    colorPressedPrimary: '#101719',
+    colorFocusPrimary: '#101719',
+    borderPrimary: '1px solid #101719',
+    borderHoverPrimary: '1px solid #23302F',
+    borderPressedPrimary: '1px solid #101719',
+    borderFocusPrimary: '1px solid #101719',
+    rippleColorPrimary: 'rgba(16, 23, 25, 0.1)',
   },
-  Card: { borderRadius: '6px' },
+  Card: { borderRadius: '14px' },
   Tooltip: { borderRadius: '6px' },
-  Pagination: { borderRadius: '4px' },
+  Pagination: { borderRadius: '6px' },
 }
 
 const darkOverrides: GlobalThemeOverrides = {
   common: {
-    primaryColor: '#FFFFFF',
-    primaryColorHover: '#EDEDED',
-    primaryColorPressed: '#FFFFFF',
-    primaryColorSuppl: '#3B82F6',
-    borderRadius: '6px',
-    borderRadiusSmall: '4px',
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    fontFamilyMono: "'Geist Mono', 'JetBrains Mono', 'SF Mono', Menlo, monospace",
-    fontSize: '14px',
-    textColor1: '#EDEDED',
-    textColor2: '#EDEDED',
-    textColor3: '#A1A1A1',
-    dividerColor: '#262626',
-    hoverColor: '#1A1A1A',
-    borderColor: '#262626',
-    bodyColor: '#000000',
-    cardColor: '#0A0A0A',
-    modalColor: '#0A0A0A',
-    popoverColor: '#111111',
-    tableColor: '#0A0A0A',
-    inputColor: '#1A1A1A',
-    actionColor: '#1A1A1A',
+    primaryColor: '#E6EDEE',
+    primaryColorHover: '#FFFFFF',
+    primaryColorPressed: '#E6EDEE',
+    primaryColorSuppl: '#F0744A',
+    borderRadius: '10px',
+    borderRadiusSmall: '6px',
+    fontFamily,
+    fontFamilyMono,
+    fontSize: '13px',
+    textColor1: '#E6EDEE',
+    textColor2: '#9AA7A9',
+    textColor3: '#677678',
+    dividerColor: 'rgba(230, 237, 238, 0.11)',
+    hoverColor: '#161A1C',
+    borderColor: 'rgba(230, 237, 238, 0.11)',
+    bodyColor: '#090B0C',
+    cardColor: '#0E1113',
+    modalColor: '#0E1113',
+    popoverColor: '#14181A',
+    tableColor: '#0E1113',
+    inputColor: '#121618',
+    actionColor: '#161A1C',
   },
   Button: {
-    borderRadiusMedium: '6px',
-    borderRadiusLarge: '6px',
+    borderRadiusMedium: '10px',
+    borderRadiusLarge: '10px',
     fontWeight: '500',
     fontWeightStrong: '500',
-    textColorPrimary: '#000000',
-    colorPrimary: '#FFFFFF',
-    colorHoverPrimary: '#EDEDED',
-    colorPressedPrimary: '#FFFFFF',
-    colorFocusPrimary: '#FFFFFF',
-    borderPrimary: '1px solid #FFFFFF',
-    borderHoverPrimary: '1px solid #EDEDED',
-    borderPressedPrimary: '1px solid #FFFFFF',
-    borderFocusPrimary: '1px solid #FFFFFF',
-    rippleColorPrimary: 'rgba(255, 255, 255, 0.1)',
+    textColorPrimary: '#090B0C',
+    colorPrimary: '#E6EDEE',
+    colorHoverPrimary: '#FFFFFF',
+    colorPressedPrimary: '#E6EDEE',
+    colorFocusPrimary: '#E6EDEE',
+    borderPrimary: '1px solid #E6EDEE',
+    borderHoverPrimary: '1px solid #FFFFFF',
+    borderPressedPrimary: '1px solid #E6EDEE',
+    borderFocusPrimary: '1px solid #E6EDEE',
+    rippleColorPrimary: 'rgba(230, 237, 238, 0.1)',
   },
-  Card: { borderRadius: '10px', color: '#0A0A0A' },
-  Tooltip: { borderRadius: '6px', color: '#1A1A1A', textColor: '#EDEDED' },
-  Pagination: { borderRadius: '4px' },
+  Card: { borderRadius: '14px', color: '#0E1113' },
+  Tooltip: { borderRadius: '6px', color: '#14181A', textColor: '#E6EDEE' },
+  Pagination: { borderRadius: '6px' },
 }
 
 const themeOverrides = computed(() => appStore.isDark ? darkOverrides : lightOverrides)
@@ -106,9 +109,9 @@ const themeOverrides = computed(() => appStore.isDark ? darkOverrides : lightOve
 <template>
   <NConfigProvider :theme="theme" :theme-overrides="themeOverrides">
     <NMessageProvider>
-      <div class="min-h-screen flex flex-col overflow-x-hidden" style="background: var(--bg-body)">
+      <div class="app-root">
         <AppHeader />
-        <main class="flex-1">
+        <main class="app-main">
           <router-view v-slot="{ Component }">
             <Transition name="fade" mode="out-in">
               <component :is="Component" />
@@ -120,3 +123,17 @@ const themeOverrides = computed(() => appStore.isDark ? darkOverrides : lightOve
     </NMessageProvider>
   </NConfigProvider>
 </template>
+
+<style scoped>
+.app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg-body);
+}
+
+.app-main {
+  flex: 1;
+}
+</style>

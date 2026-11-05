@@ -1,46 +1,57 @@
 <script setup lang="ts">
 import { brand } from '@/config/brand'
-
-const year = new Date().getFullYear()
 </script>
 
 <template>
-  <footer class="mt-auto" style="margin-top: 40px; border-top: 1px solid var(--border); background: var(--bg-body)">
+  <footer class="site-footer">
     <div class="np-shell footer-row">
-      <div class="footer-left">
-        <span>&copy; {{ year }}</span>
-        <span class="font-medium" style="color: var(--text-secondary)">{{ brand.name }}</span>
-        <span class="np-chip font-mono" style="padding: 2px 6px; font-size: 11px; line-height: 1">v{{ brand.version }}</span>
-      </div>
+      <span>&copy; {{ new Date().getFullYear() }} {{ brand.name }}</span>
+      <span class="footer-sep" aria-hidden="true">/</span>
+      <span class="footer-version">v{{ brand.version }}</span>
+      <span class="footer-note">{{ brand.tagline }}</span>
     </div>
   </footer>
 </template>
 
 <style scoped>
+.site-footer {
+  margin-top: 48px;
+  border-top: 1px solid var(--border-subtle);
+}
+
 .footer-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  height: 34px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.footer-left {
-  display: flex;
-  align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
-  min-width: 0;
+  height: 48px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 520px) {
+.footer-sep {
+  color: var(--border-strong);
+}
+
+.footer-version {
+  font-family: var(--font-mono);
+}
+
+.footer-note {
+  margin-left: auto;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 640px) {
   .footer-row {
     height: auto;
-    padding-block: 10px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    padding-block: 12px 20px;
+    flex-wrap: wrap;
+  }
+
+  .footer-note {
+    margin-left: 0;
+    flex: 1 0 100%;
   }
 }
 </style>
