@@ -42,6 +42,12 @@ watch(options, (list) => {
 const maxSpeed = computed(() => Math.max(1, ...items.value.map(item => displaySpeed(item))))
 const totalSpeed = computed(() => items.value.reduce((sum, item) => sum + (running.value ? item.current : item.avg), 0))
 
+/** 未开始时先摆出待测的节点，让仪器的框先立在那里 */
+const previewRows = computed(() => selected.value.slice(0, MAX).map((url) => {
+  const node = flatNodes.value.find(item => item.url === url)
+  return { url, title: node?.title || url }
+}))
+
 function displaySpeed(item: MultiNodeItem) {
   return running.value ? item.current : item.avg
 }
@@ -176,9 +182,22 @@ onBeforeUnmount(() => {
       </li>
     </ul>
 
-    <p v-else-if="!running" class="mn-tip">
-      并发向 2-3 个节点拉流 8 秒，比较各自抢到的带宽。适合排查「某个节点明显更慢」的情况；
-      由于带宽被平分，结果不代表单节点独跑时的峰值。节点需允许跨域（CORS）才能参与对比。
+    <ul v-else-if="previewRows.length" class="mn-list mn-list-idle">
+      <li v-for="row in previewRows" :key="row.url" class="mn-item">
+        <div class="mn-row">
+          <span class="mn-name" :title="row.title">{{ row.title }}</span>
+          <span class="mn-speed mn-idle-value">—</span>
+        </div>
+        <div class="mn-bar"><span class="mn-fill" /></div>
+        <div class="mn-meta">
+          <span>峰值 —</span>
+          <span>待测</span>
+        </div>
+      </li>
+    </ul>
+
+    <p v-if="!running && !items.length" class="mn-tip">
+      并发拉流 {{ DURATION / 1000 }} 秒，带宽被各路平分，结果不代表单节点独跑峰值。
     </p>
 
     <div v-if="items.length && !running" class="mn-total">
@@ -258,17 +277,34 @@ onBeforeUnmount(() => {
 }
 
 .mn-bar {
-  height: 6px;
-  border-radius: 999px;
+  height: 5px;
+  border-radius: var(--r-xs);
   background: var(--bg-subtle);
   overflow: hidden;
 }
 
 .mn-fill {
   display: block;
+  width: 0;
   height: 100%;
-  border-radius: 999px;
+  border-radius: var(--r-xs);
   transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 未开测的轨道也带刻度，不至于看起来像一条分隔线 */
+.mn-list-idle .mn-bar {
+  position: relative;
+}
+
+.mn-list-idle .mn-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border) 0 1px,
+    transparent 1px 12.5%
+  );
 }
 
 .fill-good {
@@ -291,6 +327,10 @@ onBeforeUnmount(() => {
   color: var(--text-muted);
   font-size: 10px;
   font-family: var(--font-mono);
+}
+
+.mn-idle-value {
+  color: var(--text-muted);
 }
 
 .mn-total {
