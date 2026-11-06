@@ -1,0 +1,74 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # 项目站点发布在 /<repo>/ 下，用户站点（<owner>.github.io）发布在根路径
+      - name: Resolve base path
+        id: base
+        run: |
+          repo="${GITHUB_REPOSITORY#*/}"
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          if [ "$repo" = "${owner}.github.io" ]; then
+            echo "value=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=/${repo}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Typecheck
+        run: npx vue-tsc --noEmit
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        env:
+          VITE_BASE: ${{ steps.base.outputs.value }}
+        run: npm run build
+
+      # history 路由需要 404 兜底；.nojekyll 阻止 Jekyll 处理产物
+      - name: Prepare Pages artifact
+        run: |
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -5,13 +5,17 @@ import tailwindcss from '@tailwindcss/vite'
 
 /** 构建后输出资源清单，供 Service Worker 一次性预热，保证首次离线可用 */
 function precacheManifest(): Plugin {
+  let base = '/'
   return {
     name: 'np-precache-manifest',
     apply: 'build',
+    configResolved(config) {
+      base = config.base.endsWith('/') ? config.base : `${config.base}/`
+    },
     generateBundle(_options, bundle) {
       const files = Object.keys(bundle)
         .filter(file => file.startsWith('assets/') && /\.(js|css)$/.test(file))
-        .map(file => `/${file}`)
+        .map(file => `${base}${file}`)
       this.emitFile({
         type: 'asset',
         fileName: 'precache.json',
@@ -22,6 +26,8 @@ function precacheManifest(): Plugin {
 }
 
 export default defineConfig({
+  // 站点根路径。自建静态托管保持 '/'，GitHub Pages 项目站点由工作流注入 '/<repo>/'
+  base: process.env.VITE_BASE || '/',
   plugins: [vue(), tailwindcss(), precacheManifest()],
   resolve: {
     alias: {

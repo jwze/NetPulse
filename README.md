@@ -72,6 +72,7 @@ src/
 └── views/        页面入口
 public/           图标、manifest、sw.js、nodes.json
 scripts/          gen-icons.mjs，图标唯一来源
+.github/          workflows/deploy.yml，GitHub Pages 自动发布
 ```
 
 约定：网络能力一律放 `utils/`，组件不直接发探测请求；CSS 类前缀 `np-`。
@@ -155,6 +156,20 @@ scripts/          gen-icons.mjs，图标唯一来源
 
 地址栏出现安装图标即可装成桌面应用；iOS 用 Safari 分享 → 添加到主屏幕。
 
+## 部署
+
+产物是纯静态文件，`dist/` 丢到任意静态托管即可。站点根路径由 `VITE_BASE` 控制，默认 `/`。
+
+**GitHub Pages**：`.github/workflows/deploy.yml` 在 `main` 分支每次推送时类型检查 → 单测 → 构建 → 发布，失败则不发布。
+
+1. 仓库 Settings → Pages → Build and deployment → Source 选 **GitHub Actions**
+2. 推送到 `main`，工作流自动算出站点根：项目站点 `/NetPulse/`，用户站点 `<owner>.github.io` 为 `/`
+3. 构建时补 `404.html`（history 路由兜底）与 `.nojekyll`
+
+子路径部署下 `manifest.webmanifest`、`sw.js`、`nodes.json` 全部按相对路径或 `import.meta.env.BASE_URL` 解析，无需改代码。
+
+**自建服务器**（nginx）：站点根目录放 `dist/` 内容，SPA 回退 `try_files $uri $uri/ /index.html`，`/assets/` 长缓存且 immutable，`sw.js` 与 `index.html` 不缓存。
+
 ## 图标
 
 `public/favicon.svg` 与四张 PNG（PWA 192 / 512、maskable 512、iOS 180）由同一份图形生成，改图后执行 `npm run icons`：
@@ -168,6 +183,10 @@ scripts/          gen-icons.mjs，图标唯一来源
 - WebRTC 拓扑依赖 STUN 绑定请求，不建立数据通道、不传输内容；Chrome 会把内网地址混淆成 `.local`，此时显示「已被浏览器隐藏」
 - 路径 MTU 与 Happy Eyeballs 的实际等待时间浏览器看不到，纯前端版本不做
 - 构建产物是纯静态文件，可直接丢到任意静态托管
+
+## 许可证
+
+[GPL-3.0](LICENSE)。可自由使用、修改、分发，衍生作品需同样以 GPL-3.0 开源并保留版权声明。
 
 ## 免责声明
 
