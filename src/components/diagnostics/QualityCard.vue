@@ -134,9 +134,6 @@ onBeforeUnmount(() => controller?.abort())
           <span class="q-value q-idle">—</span>
         </div>
       </div>
-      <p class="q-tip">
-        连续发送 20 个小请求测量往返延迟。抖动反映稳定性，丢包会直接体现为超时；两者比单次延迟更影响游戏与会议体验。
-      </p>
     </template>
 
     <p v-if="error" class="q-error">{{ error }}</p>
@@ -307,7 +304,6 @@ onBeforeUnmount(() => controller?.abort())
   font-size: 11px;
 }
 
-.q-tip,
 .q-error {
   color: var(--text-muted);
   font-size: 11px;

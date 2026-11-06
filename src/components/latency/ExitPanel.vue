@@ -51,7 +51,7 @@ function sourceText(exit: ExitGroup) {
     </header>
 
     <p v-if="!hasExits" class="np-empty exit-empty">
-      {{ state === 'checking' ? '正在核对多个来源…' : '开始探测后，这里会列出每条出口线路。' }}
+      {{ state === 'checking' ? '正在核对' : '—' }}
     </p>
 
     <ul v-else class="exit-list">

@@ -24,7 +24,7 @@ onMounted(() => {
 
 <template>
   <div class="pane">
-    <PaneBar hint="多来源核对地址的归属、用途与风险标记">
+    <PaneBar>
       <span v-if="running" class="progress">
         <span class="np-live-dot" />
         <span>{{ done }} / {{ total }}</span>
@@ -47,7 +47,7 @@ onMounted(() => {
         type="text"
         inputmode="text"
         spellcheck="false"
-        placeholder="任意公网 IP，留空查本机"
+        placeholder="公网 IP"
         @keyup.enter="query()"
       />
       <button class="np-btn-primary query-run" type="button" :disabled="running" @click="query()">
@@ -87,7 +87,7 @@ onMounted(() => {
               <span class="use-why">{{ USE_WHY[item.why] || '' }}</span>
             </li>
           </ul>
-          <p v-else class="np-empty uses-empty">查到地址后按用途给结论</p>
+          <p v-else class="np-empty uses-empty">—</p>
         </section>
 
         <section class="np-card np-panel elsewhere">

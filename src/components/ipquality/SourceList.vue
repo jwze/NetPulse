@@ -86,8 +86,7 @@ const checked = computed(() => props.dnsbl.filter(item => item.listed !== null).
         <span>邮件黑名单</span>
         <span class="count">{{ dnsbl.filter(item => item.listed).length }} / {{ checked }}</span>
       </div>
-      <p v-if="checked === 0" class="bl-note">IPv6 地址不参与邮件黑名单查询</p>
-      <div v-else class="bl">
+      <div v-if="checked > 0" class="bl">
         <span
           v-for="item in dnsbl"
           :key="item.id"
@@ -207,12 +206,6 @@ a.row-name:hover {
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 10px;
-}
-
-.bl-note {
-  margin-top: 6px;
-  color: var(--text-muted);
-  font-size: 11px;
 }
 
 .bl {

@@ -20,7 +20,6 @@ const settings = useSettingsStore()
       :step="1"
       :tooltip="false"
     />
-    <span class="hint">移动端建议 10 以内</span>
   </div>
 </template>
 
@@ -50,11 +49,5 @@ const settings = useSettingsStore()
 .thread-num {
   font-size: 13px;
   font-weight: 500;
-}
-
-.hint {
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.4;
 }
 </style>

@@ -76,7 +76,6 @@ function onRotationModeChange(enabled: boolean) {
     <div class="subpanel-titlebar">
       <div>
         <h3>面板设置</h3>
-        <p>控制后台运行、自动启动与定时测速行为。</p>
       </div>
     </div>
 
@@ -84,42 +83,36 @@ function onRotationModeChange(enabled: boolean) {
       <div class="setting-card">
         <div>
           <span>后台运行</span>
-          <small>页面切后台后保持任务</small>
         </div>
         <NSwitch v-model:value="settings.runBackground" :disabled="settings.cronTab.status" size="medium" />
       </div>
       <div class="setting-card">
         <div>
           <span>自动运行</span>
-          <small>打开页面后自动开始</small>
         </div>
         <NSwitch v-model:value="settings.autoStart" size="medium" />
       </div>
       <div class="setting-card">
         <div>
           <span>定时任务</span>
-          <small>按时间间隔循环测速</small>
         </div>
         <NSwitch v-model:value="settings.cronTab.status" :disabled="panel.isRunning && !settings.cronTab.status" size="medium" />
       </div>
       <div class="setting-card">
         <div>
           <span>节点联测</span>
-          <small>节点组内多通道同时测速</small>
         </div>
         <NSwitch :value="settings.groupMode" :disabled="panel.isRunning" size="medium" @update:value="onGroupModeChange" />
       </div>
       <div class="setting-card">
         <div>
           <span>节点轮换</span>
-          <small>多节点按流量自动切换</small>
         </div>
         <NSwitch :value="settings.nodeRotation.enabled" :disabled="panel.isRunning" size="medium" @update:value="onRotationModeChange" />
       </div>
       <div class="setting-card">
         <div>
           <span>强防缓存</span>
-          <small>防止浏览器缓存导致速率不准</small>
         </div>
         <NSwitch v-model:value="settings.noCache" size="medium" />
       </div>
@@ -189,7 +182,7 @@ function onRotationModeChange(enabled: boolean) {
           :options="rotationNodeOptions"
           multiple
           :disabled="panel.isRunning"
-          placeholder="选择参与轮换的节点..."
+          placeholder="选择节点"
           size="small"
         />
       </div>
@@ -223,7 +216,6 @@ function onRotationModeChange(enabled: boolean) {
           </button>
         </div>
       </div>
-      <small class="rotation-hint">流量限制：每个节点跑满指定 MB 后切换下一个。运行次数：0 表示无限循环。</small>
     </div>
   </div>
 </template>
@@ -241,13 +233,6 @@ function onRotationModeChange(enabled: boolean) {
   font-weight: 500;
   letter-spacing: 0;
   line-height: 1.25;
-}
-
-.subpanel-titlebar p {
-  margin-top: 3px;
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.5;
 }
 
 .settings-grid {
@@ -275,14 +260,6 @@ function onRotationModeChange(enabled: boolean) {
   font-size: 12px;
   font-weight: 400;
   line-height: 1.3;
-}
-
-.setting-card small {
-  display: block;
-  margin-top: 4px;
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.35;
 }
 
 .cron-box {
@@ -466,13 +443,5 @@ function onRotationModeChange(enabled: boolean) {
 .rotation-remove svg {
   width: 13px;
   height: 13px;
-}
-
-.rotation-hint {
-  display: block;
-  margin-top: 8px;
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.5;
 }
 </style>

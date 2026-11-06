@@ -103,11 +103,9 @@ onMounted(() => {
         </dl>
 
         <div class="rtc-side">
-          <p class="rtc-note">{{ result.natHint }}</p>
-          <p class="rtc-note">{{ result.doubleNatReason }}</p>
-          <p v-if="result.mdnsHidden" class="rtc-note">
-            Chrome 会把内网地址替换成随机 .local 域名（mDNS 混淆），Firefox 与 Safari 可直接读出。
-          </p>
+          <p v-if="result.natHint" class="rtc-note">{{ result.natHint }}</p>
+          <p v-if="result.doubleNatReason" class="rtc-note">{{ result.doubleNatReason }}</p>
+          <p v-if="result.mdnsHidden" class="rtc-note">mDNS 混淆，内网地址不可读</p>
         </div>
       </div>
     </template>

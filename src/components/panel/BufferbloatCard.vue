@@ -20,9 +20,8 @@ const statusText = computed(() => {
 })
 
 const footText = computed(() => {
-  if (bloat.value.active) return '正在压满带宽，同时每 500ms 探测一次往返延迟'
-  if (!hasResult.value) return '开始测速时会同步探测：先取空闲延迟基线，再测满载时的排队延迟'
-  return `增量越小越好，视频会议与在线游戏最在意这一项${bloat.value.target ? ` · 探测目标 ${bloat.value.target}` : ''}`
+  if (bloat.value.active || !hasResult.value) return ''
+  return bloat.value.target ? `探测目标 ${bloat.value.target}` : ''
 })
 
 function msText(value: number | null) {
@@ -98,7 +97,7 @@ function deltaText(value: number | null) {
       </div>
     </div>
 
-    <p class="foot">{{ footText }}</p>
+    <p v-if="footText" class="foot">{{ footText }}</p>
   </section>
 </template>
 

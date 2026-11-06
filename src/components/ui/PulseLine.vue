@@ -50,13 +50,13 @@ withDefaults(defineProps<{
 .is-live .pulse-base {
   color: var(--trace);
   opacity: 1;
-  stroke-dasharray: 24 46;
-  stroke-dashoffset: 70;
-  animation: pulse-travel 2.4s linear infinite;
+  animation: pulse-breathe 2.2s ease-in-out infinite;
 }
 
-@keyframes pulse-travel {
-  to { stroke-dashoffset: -46; }
+@keyframes pulse-breathe {
+  0%,
+  100% { opacity: 0.45; }
+  50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

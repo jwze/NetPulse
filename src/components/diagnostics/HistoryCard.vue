@@ -80,7 +80,7 @@ function handleClear() {
         <span>明细</span>
         <span>时间</span>
       </div>
-      <p class="hist-empty-text">还没有记录，跑一次测速或检测就会写在这里。最多 50 条，只存在本机。</p>
+      <p class="hist-empty-text">暂无记录</p>
     </div>
   </DiagCard>
 </template>

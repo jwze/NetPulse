@@ -297,37 +297,6 @@ pre,
   padding-bottom: 64px;
 }
 
-.np-page-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-.np-page-head-main {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.np-page-title {
-  color: var(--text-primary);
-  font-size: 24px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-.np-page-sub {
-  max-width: 620px;
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
 .np-page-meta {
   color: var(--text-muted);
   font-size: 11px;

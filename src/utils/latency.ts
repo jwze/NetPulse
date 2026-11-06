@@ -131,7 +131,7 @@ export function diagnose(local: Segment, global: Segment): Verdict {
       ...base,
       key: 'down',
       title: '几乎全部不通',
-      detail: `两组服务大多没有响应，先确认网络本身是否可用。${suffix}`,
+      detail: `两组服务大多没有响应。${suffix}`,
       tone: 'bad',
     }
   }

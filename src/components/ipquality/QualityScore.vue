@@ -53,8 +53,7 @@ const parts = computed(() =>
         <span class="num">—</span>
         <span class="max">/100</span>
       </p>
-      <p class="place">{{ running ? '正在询问 IP 情报来源' : '还没有查询结果' }}</p>
-      <p class="org">{{ running ? '12 个来源会同时回答' : '查本机，或在上面填一个公网地址' }}</p>
+      <p class="place">{{ running ? '正在查询' : '还没有查询结果' }}</p>
     </div>
 
     <div v-if="parts.length" class="parts">

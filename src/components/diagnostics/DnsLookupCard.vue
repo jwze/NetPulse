@@ -104,7 +104,7 @@ onBeforeUnmount(() => controller?.abort())
     </div>
 
     <div class="dns-presets">
-      <span class="preset-label">试试</span>
+      <span class="preset-label">示例</span>
       <button v-for="item in PRESETS" :key="item" class="preset" @click="pickPreset(item)">{{ item }}</button>
     </div>
 
@@ -153,10 +153,6 @@ onBeforeUnmount(() => controller?.abort())
         </p>
       </div>
     </div>
-
-    <p v-else-if="!loading" class="dns-tip">
-      对比同一域名在国内外递归解析器上的结果：差异通常来自 CDN 调度就近返回，也可能是本地 DNS 被污染或劫持。
-    </p>
   </DiagCard>
 </template>
 
@@ -377,9 +373,8 @@ onBeforeUnmount(() => controller?.abort())
   font-size: 10px;
 }
 
-.dns-empty,
-.dns-tip {
-  margin-top: 8px;
+.dns-empty {
+  margin-top: 6px;
   color: var(--text-muted);
   font-size: 11px;
   line-height: 1.6;

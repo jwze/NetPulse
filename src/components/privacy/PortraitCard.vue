@@ -25,7 +25,7 @@ defineProps<{
       <b>{{ portrait.tz }}</b>，看起来像是 <b>{{ portrait.nat }}</b> 的人。{{ portrait.shield === '没有：浏览器原样报出指纹' ? '' : '它还看得出：' + portrait.shield + '。' }}
     </p>
     <p v-else class="pv-empty">
-      {{ running ? '正在读这台设备的信息…' : '点「开始探测」，看看网站不用询问就能读到什么。' }}
+      {{ running ? '读取中…' : '尚未探测' }}
     </p>
 
     <ul class="pv-labels">

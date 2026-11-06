@@ -329,7 +329,7 @@ function formatTime(text: string) {
         </header>
         <div class="node-form">
           <label>节点名称</label>
-          <NInput v-model:value="form.label" placeholder="例如：Cloudflare 新加坡" size="small" />
+          <NInput v-model:value="form.label" placeholder="Cloudflare 新加坡" size="small" />
 
           <label>节点链接</label>
           <NInput v-model:value="form.value" placeholder="https://example.com/file" size="small" />
@@ -354,7 +354,7 @@ function formatTime(text: string) {
 
           <template v-if="form.method === 'POST'">
             <label>请求体</label>
-            <NInput v-model:value="form.postData" type="textarea" :autosize="{ minRows: 2, maxRows: 5 }" placeholder="POST 请求体，可留空" />
+            <NInput v-model:value="form.postData" type="textarea" :autosize="{ minRows: 2, maxRows: 5 }" />
           </template>
 
           <label>请求头（可选，JSON 对象）</label>
@@ -364,7 +364,6 @@ function formatTime(text: string) {
             :autosize="{ minRows: 2, maxRows: 4 }"
             placeholder='{"User-Agent":"NetPulse"}'
           />
-          <p class="node-hint">HTTP 明文节点会自动忽略携带凭证的请求头。</p>
         </div>
         <footer>
           <button class="ghost" @click="showForm = false">取消</button>
@@ -749,12 +748,6 @@ function formatTime(text: string) {
 .node-form-row > div {
   display: grid;
   gap: 7px;
-}
-
-.node-hint {
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.5;
 }
 
 .node-modal footer {

@@ -18,10 +18,7 @@ const props = defineProps<{
 
 const headline = computed(() => props.verdict?.title || (props.running ? '正在探测…' : '等待探测'))
 const tone = computed(() => props.verdict?.tone || 'muted')
-const detail = computed(() => {
-  if (props.verdict) return props.verdict.detail
-  return props.running ? '正在确认出口并逐个测量服务往返。' : '开始后会先确认出口线路，再逐个测量服务的真实往返。'
-})
+const detail = computed(() => props.verdict?.detail || '')
 
 /** 三格始终存在，探测前后高度不变 */
 const stats = computed(() => {
@@ -45,7 +42,7 @@ const stats = computed(() => {
       <span class="verdict-dot" />
       <h3>{{ headline }}</h3>
     </div>
-    <p class="verdict-text">{{ detail }}</p>
+    <p v-if="detail" class="verdict-text">{{ detail }}</p>
 
     <div class="verdict-stats">
       <div v-for="item in stats" :key="item.key" class="verdict-stat">
@@ -68,7 +65,6 @@ const stats = computed(() => {
         {{ use.label }}
         <b>{{ USE_TEXT[use.status] }}</b>
       </span>
-      <span v-if="!uses.length" class="verdict-uses-empty">开始后按用途给出可用性</span>
     </div>
   </section>
 </template>
@@ -168,12 +164,6 @@ const stats = computed(() => {
   min-height: 58px;
   padding-top: 8px;
   border-top: 1px solid var(--border-subtle);
-}
-
-.verdict-uses-empty {
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.5;
 }
 
 .use-chip {

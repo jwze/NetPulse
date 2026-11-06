@@ -159,7 +159,6 @@ onBeforeUnmount(() => {
         size="small"
         placeholder="最多选 3 个节点"
       />
-      <span class="mn-hint">{{ running ? '并发进行中，总带宽被各路平分' : `同时拉取 ${MAX} 路，看线路差距` }}</span>
     </div>
 
     <p v-if="error" class="mn-error">{{ error }}</p>
@@ -196,10 +195,6 @@ onBeforeUnmount(() => {
       </li>
     </ul>
 
-    <p v-if="!running && !items.length" class="mn-tip">
-      并发拉流 {{ DURATION / 1000 }} 秒，带宽被各路平分，结果不代表单节点独跑峰值。
-    </p>
-
     <div v-if="items.length && !running" class="mn-total">
       <span>合计吞吐</span>
       <strong>{{ formatSpeed(totalSpeed) }}</strong>
@@ -220,20 +215,9 @@ onBeforeUnmount(() => {
   gap: 6px;
 }
 
-.mn-hint {
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
 .mn-error {
   color: var(--color-danger);
   font-size: 12px;
-}
-
-.mn-tip {
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.6;
 }
 
 .mn-list {

@@ -237,10 +237,6 @@ defineExpose({ addDataPoint, clearData })
 
     <div v-show="settings.chartShow" class="paper">
       <VChart ref="chartRef" :option="option" autoresize />
-      <p v-if="!hasData" class="hint">
-        <span class="hint-mark" aria-hidden="true" />
-        开始测速后，曲线会在这里逐秒描出
-      </p>
     </div>
 
     <div v-show="!settings.chartShow" class="hidden-note">
@@ -332,25 +328,6 @@ defineExpose({ addDataPoint, clearData })
   height: 1px;
   background: var(--grid-line-strong);
   pointer-events: none;
-}
-
-.hint {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--text-muted);
-  font-size: 12px;
-  pointer-events: none;
-}
-
-.hint-mark {
-  width: 14px;
-  height: 1px;
-  background: var(--trace);
-  opacity: 0.7;
 }
 
 .hidden-note {

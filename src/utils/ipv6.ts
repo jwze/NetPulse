@@ -165,20 +165,20 @@ export const HEAD_TEXT: Record<HeadKey, string> = {
 }
 
 export const PROB_TEXT: Record<ProbKey, string> = {
-  nodns: 'DNS 没有返回 AAAA 记录，所以只有 IPv6 的网站打不开。常见原因是路由器开了「过滤 AAAA 记录」，关掉它或换个公共 DNS 试试。',
-  mtu: 'IPv6 的大数据包会丢，有些网页会一直转圈。可以在路由器里调低 MTU（PPPoE 拨号试 1480 或 1452）。',
-  slowds: '同时有 IPv4 和 IPv6 的网站打开慢：浏览器要先等 IPv6 超时，才改用 IPv4。重启路由器和光猫后再测一次，还是这样就找运营商。',
-  prefer4: '两种地址都有的网站，浏览器选了 IPv4。这不算故障，通常是 IPv6 连得稍慢，或者代理、VPN 只转发 IPv4。',
-  slow6: 'IPv6 第一次响应超过 3 秒。换个时间再测，一直这么慢就是线路问题。',
-  tunnel: 'IPv6 走的是老式隧道（6to4 或 Teredo），不是运营商直接给的，通常又慢又不稳。',
-  lit6: '直接用 IPv6 地址连不上，用域名正常。影响很小，平时上网用的都是域名。',
-  v4dns: '只有 IPv4 的网站用域名打不开，直接用 IP 地址却能连，说明 DNS 有问题。换个公共 DNS 试试。',
+  nodns: 'DNS 没有返回 AAAA 记录，只有 IPv6 的网站打不开。',
+  mtu: 'IPv6 的大数据包被丢，部分网页卡在加载。',
+  slowds: '双栈网站要先等 IPv6 超时才回落到 IPv4。',
+  prefer4: '双栈网站走了 IPv4，IPv6 偏慢或代理只转发 IPv4。',
+  slow6: 'IPv6 首次响应超过 3 秒。',
+  tunnel: 'IPv6 走 6to4 或 Teredo 隧道，不是运营商直连。',
+  lit6: '直连 IPv6 地址失败，用域名正常。',
+  v4dns: 'IPv4 站点用域名打不开，用 IP 能连，问题在 DNS。',
 }
 
 export const OK_TEXT = {
-  all: '全部通过：只有 IPv6 的网站也能打开，IPv6 也不会拖慢上网。',
-  v4: '上网不受影响，所有网站照常走 IPv4。想开通 IPv6，可以在路由器的 IPv6 设置里打开，或者问问运营商。',
-  offline: '先确认网络是通的，再看看有没有防火墙或浏览器扩展拦下了这些站点，然后重新测试。',
+  all: '全部通过',
+  v4: '上网走 IPv4 正常，没有 IPv6',
+  offline: '所有测试站点都没有响应',
 }
 
 /** 得分档位，页面和分享图用同一套颜色 */
@@ -233,15 +233,6 @@ export function compareOf(r: Record<string, TestResult>): Compare {
         ? '6much'
         : '6slow'
   return { key, n: both.length, v4, v6, diff }
-}
-
-export const CMP_HINT: Record<CompareKey, string> = {
-  same: '用哪个都一样，走 IPv6 没有额外代价。',
-  '6fast': '你这里 IPv6 的线路更好，浏览器也会优先用它。',
-  '6slow': '几乎感觉不到：每次请求只多几毫秒。',
-  '6much': 'IPv6 线路比 IPv4 更绕或更堵，走 IPv6 的网站会打开得更慢。',
-  no6: '在路由器里开启 IPv6 后才能对比。',
-  none: '先确认网络是通的，再看看有没有防火墙或扩展拦下了这些网站。',
 }
 
 export function cmpText(compare: Compare): string {

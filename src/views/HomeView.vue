@@ -172,23 +172,16 @@ async function handlePaste(e: ClipboardEvent) {
 
 <template>
   <div class="np-shell page">
-    <header class="page-head">
-      <div class="page-head-main">
-        <h1 class="np-page-title">测速台</h1>
-        <p class="np-page-sub">浏览器内并发下载，逐秒描出真实吞吐；节点与结果只留在本机</p>
-      </div>
-
-      <div class="run-state" :class="{ live: panel.isRunning }">
-        <PulseLine :live="panel.isRunning" :width="48" :height="14" />
-        <span class="state-text">{{ statusLabel }}</span>
-        <span class="state-time">{{ panel.runTimeShow }}</span>
-      </div>
-    </header>
-
     <div class="home-grid">
       <section class="np-card instrument">
         <header class="instrument-head">
-          <span class="np-label">{{ panel.isRunning ? '实时速率' : '当前速率' }}</span>
+          <div class="instrument-title">
+            <span class="np-label">{{ panel.isRunning && !panel.isChecking ? '实时速率' : '当前速率' }}</span>
+            <span class="run-state" :class="{ live: panel.isRunning }">
+              <PulseLine :live="panel.isRunning" :width="44" :height="12" />
+              <span>{{ statusLabel }}</span>
+            </span>
+          </div>
           <span class="node-name" :title="nodeLabel">{{ nodeLabel }}</span>
         </header>
 
@@ -246,7 +239,7 @@ async function handlePaste(e: ClipboardEvent) {
             </header>
             <div class="limit-body">
               <label for="limit-value">{{ limitDialog === 'flow' ? '流量数值' : '速率数值' }}</label>
-              <input id="limit-value" v-model.number="limitValue" type="number" min="0" placeholder="留空则无上限" />
+              <input id="limit-value" v-model.number="limitValue" type="number" min="0" />
               <label for="limit-unit">单位</label>
               <NSelect
                 id="limit-unit"
@@ -255,7 +248,6 @@ async function handlePaste(e: ClipboardEvent) {
                 class="limit-unit-select"
                 size="medium"
               />
-              <p v-if="limitDialog === 'speed'">浏览器限速只能限制平均速度，峰值可能仍有波动</p>
             </div>
             <footer class="limit-foot">
               <button class="np-btn-quiet" @click="limitDialog = null">取消</button>
@@ -274,45 +266,26 @@ async function handlePaste(e: ClipboardEvent) {
   padding-bottom: 64px;
 }
 
-.page-head {
+.instrument-title {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.page-head-main {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
 }
 
 .run-state {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1;
   white-space: nowrap;
+  transition: color var(--dur) var(--ease);
 }
 
 .run-state.live {
-  color: var(--text-secondary);
-}
-
-.state-text {
-  font-size: 12px;
-}
-
-.state-time {
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
+  color: var(--trace);
 }
 
 .home-grid {
@@ -528,13 +501,6 @@ async function handlePaste(e: ClipboardEvent) {
 
 .limit-unit-select {
   width: 100%;
-}
-
-.limit-body p {
-  margin-top: 2px;
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.5;
 }
 
 .limit-foot {

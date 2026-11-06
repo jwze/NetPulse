@@ -83,7 +83,7 @@ onUnmounted(() => {
 
 <template>
   <div class="pane">
-    <PaneBar hint="六项 IPv6 能力测试，同时用同一目标对比 IPv4 与 IPv6">
+    <PaneBar>
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />

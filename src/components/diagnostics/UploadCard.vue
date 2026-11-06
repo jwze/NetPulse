@@ -116,7 +116,6 @@ onBeforeUnmount(() => controller?.abort())
         </div>
       </div>
 
-      <p class="up-tip">上行决定直播、云盘与视频会议的上限。</p>
       <p v-if="error" class="up-error">{{ error }}</p>
     </div>
   </DiagCard>
@@ -242,7 +241,6 @@ onBeforeUnmount(() => controller?.abort())
   text-overflow: ellipsis;
 }
 
-.up-tip,
 .up-error {
   color: var(--text-muted);
   font-size: 11px;

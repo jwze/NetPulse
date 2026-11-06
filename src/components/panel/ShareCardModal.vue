@@ -83,7 +83,6 @@ watch(() => props.show, (visible) => {
           <header>
             <div class="share-head-text">
               <h3>成绩卡</h3>
-              <span class="share-head-note">本次测速的截图存证</span>
             </div>
             <button type="button" aria-label="关闭" @click="emit('close')">
               <Icon name="x" :size="14" />
@@ -93,7 +92,7 @@ watch(() => props.show, (visible) => {
           <div class="share-body">
             <img v-if="preview" :src="preview" alt="测速成绩卡预览" />
             <p v-else-if="generating" class="share-empty">正在绘制…</p>
-            <p v-else class="share-empty">还没有测速记录，先跑一次再生成成绩卡。</p>
+            <p v-else class="share-empty">还没有测速记录</p>
           </div>
 
           <footer>
@@ -146,13 +145,6 @@ header {
   font-size: 13px;
   font-weight: 400;
   letter-spacing: 0;
-}
-
-.share-head-note {
-  display: block;
-  margin-top: 3px;
-  color: var(--text-muted);
-  font-size: 11px;
 }
 
 header button {

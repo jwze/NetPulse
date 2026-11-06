@@ -48,7 +48,7 @@ onUnmounted(() => {
 
 <template>
   <div class="pane">
-    <PaneBar hint="流媒体与 AI 服务在当前线路的可达情况">
+    <PaneBar>
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />
@@ -83,9 +83,7 @@ onUnmounted(() => {
             <ul v-if="adviceText.length" class="un-advice-list">
               <li v-for="item in adviceText" :key="item.id">{{ item.text }}</li>
             </ul>
-            <p v-else class="np-empty">
-              检测后列出哪个服务在哪个地区不可用、该把域名分到哪条线路。
-            </p>
+            <p v-else class="np-empty">—</p>
           </div>
         </section>
 
@@ -101,18 +99,9 @@ onUnmounted(() => {
                 <span class="un-exit-ids">{{ exit.ids.length }} 个服务</span>
               </li>
             </ul>
-            <p v-else class="np-empty">检测后按服务看到的地区分组。</p>
+            <p v-else class="np-empty">—</p>
           </div>
-          <p v-if="exits.length > 1" class="un-note">不同服务看到不同的国家，说明规则按域名分流。</p>
-        </section>
-
-        <section class="np-card np-panel un-how">
-          <header class="np-panel-head"><h2>怎么判定</h2></header>
-          <ul class="un-how-list">
-            <li><b>Cloudflare trace</b><span>读它看到的国家，最直接。</span></li>
-            <li><b>服务自己的接口</b><span>读地区与片源；NBC 需要 POST，DAZN 需要先有登录态。</span></li>
-            <li><b>纯连通性</b><span>读不到信息时按能不能打开推测，列表里标成「推测」。</span></li>
-          </ul>
+          <p v-if="exits.length > 1" class="un-note">不同服务看到不同的国家，规则按域名分流。</p>
         </section>
       </aside>
     </div>
@@ -125,8 +114,7 @@ onUnmounted(() => {
 }
 
 .un-advice,
-.un-exits,
-.un-how {
+.un-exits {
   min-width: 0;
 }
 
@@ -206,31 +194,6 @@ onUnmounted(() => {
 .un-note {
   padding-top: 8px;
   border-top: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-.un-how-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  list-style: none;
-}
-
-.un-how-list li {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.un-how-list b {
-  color: var(--text-primary);
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.un-how-list span {
   color: var(--text-muted);
   font-size: 11px;
   line-height: 1.5;

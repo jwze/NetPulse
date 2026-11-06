@@ -111,7 +111,7 @@ onUnmounted(() => {
 
 <template>
   <div class="pane">
-    <PaneBar hint="按类别列出常用服务，取多次采样的中位数">
+    <PaneBar>
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />

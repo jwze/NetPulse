@@ -31,7 +31,7 @@ const rows = computed(() =>
     </header>
 
     <p v-if="!rows.length" class="np-empty eg-empty">
-      {{ running ? '正在询问各类目的地…' : '还没有结果。开始探测后会列出这条线路上所有的出口。' }}
+      {{ running ? '正在探测' : '—' }}
     </p>
 
     <ul v-else class="eg-list">
@@ -54,7 +54,7 @@ const rows = computed(() =>
       </li>
     </ul>
 
-    <p v-if="rows.length > 1" class="eg-note">D 是本地线路，P 是代理；同一条线路的不同协议地址合并成一个出口。</p>
+    <p v-if="rows.length > 1" class="eg-note">D 本地线路 · P 代理</p>
   </section>
 </template>
 

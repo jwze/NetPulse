@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { PAIR_WHERE } from '@/data/ipv6Hosts'
-import { CMP_HINT, cmpText, fmtMs, type Compare, type TestResult, type Tone } from '@/utils/ipv6'
+import { cmpText, fmtMs, type Compare, type TestResult, type Tone } from '@/utils/ipv6'
 
 interface PairRow {
   id: string
@@ -53,7 +53,6 @@ function diffTone(pair: PairRow): string {
 }
 
 const title = computed(() => (props.pending ? '尚未测试' : cmpText(props.compare)))
-const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
 </script>
 
 <template>
@@ -64,7 +63,6 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
     </header>
 
     <p class="cmp-verdict" :class="pending ? 's-muted' : `s-${tone}`">{{ title }}</p>
-    <p v-if="hint" class="cmp-hint">{{ hint }}</p>
 
     <div class="cmp-table">
       <div class="cmp-row cmp-title">
@@ -100,12 +98,6 @@ const hint = computed(() => (props.pending ? '' : CMP_HINT[props.compare.key]))
   font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.02em;
-}
-
-.cmp-hint {
-  color: var(--text-secondary);
-  font-size: 12px;
-  line-height: 1.6;
 }
 
 .cmp-table {

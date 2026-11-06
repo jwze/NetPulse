@@ -1,13 +1,6 @@
-<script setup lang="ts">
-defineProps<{
-  hint?: string
-}>()
-</script>
-
 <template>
   <div class="pane-bar">
     <div class="pane-bar-main">
-      <span v-if="hint" class="pane-hint">{{ hint }}</span>
       <slot />
     </div>
 
@@ -34,12 +27,6 @@ defineProps<{
   gap: 8px;
   flex-wrap: wrap;
   min-width: 0;
-}
-
-.pane-hint {
-  color: var(--text-muted);
-  font-size: 11px;
-  line-height: 1.5;
 }
 
 .pane-bar-actions {

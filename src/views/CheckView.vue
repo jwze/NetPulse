@@ -47,13 +47,6 @@ function go(catId: string, tabId?: string) {
 
 <template>
   <div class="np-shell check-page">
-    <header class="check-head">
-      <div class="check-head-main">
-        <h1 class="np-page-title">检测中心</h1>
-        <p class="np-page-sub">所有检测收在这里，打开即自动检测；只有占带宽的几项需要手动开始</p>
-      </div>
-    </header>
-
     <div class="cat-row">
       <nav class="cat-bar" aria-label="检测分类">
         <button
@@ -67,7 +60,6 @@ function go(catId: string, tabId?: string) {
           {{ cat.label }}
         </button>
       </nav>
-      <p v-if="category.tabs.length > 1" class="cat-desc">{{ tab.desc }}</p>
     </div>
 
     <nav v-if="category.tabs.length > 1" class="tab-bar" aria-label="检测项">
@@ -77,7 +69,6 @@ function go(catId: string, tabId?: string) {
         type="button"
         class="check-tab"
         :class="{ 'is-active': item.id === tab.id }"
-        :title="item.desc"
         @click="go(category.id, item.id)"
       >
         {{ item.label }}
@@ -95,21 +86,6 @@ function go(catId: string, tabId?: string) {
 .check-page {
   padding-top: 24px;
   padding-bottom: 64px;
-}
-
-.check-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.check-head-main {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
 }
 
 .cat-row {
@@ -156,14 +132,7 @@ function go(catId: string, tabId?: string) {
   font-weight: 500;
 }
 
-.cat-desc {
-  color: var(--text-muted);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-}
-
-.tab-bar {
-  display: flex;
+.tab-bar {  display: flex;
   align-items: center;
   gap: 2px;
   overflow-x: auto;
@@ -232,10 +201,6 @@ function go(catId: string, tabId?: string) {
   .cat-btn {
     flex: 1;
     padding: 0 8px;
-  }
-
-  .cat-desc {
-    display: none;
   }
 }
 </style>

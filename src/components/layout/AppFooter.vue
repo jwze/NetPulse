@@ -8,7 +8,6 @@ import { brand } from '@/config/brand'
       <span>&copy; {{ new Date().getFullYear() }} {{ brand.name }}</span>
       <span class="footer-sep" aria-hidden="true">/</span>
       <span class="footer-version">v{{ brand.version }}</span>
-      <span class="footer-note">{{ brand.tagline }}</span>
     </div>
   </footer>
 </template>
@@ -37,21 +36,11 @@ import { brand } from '@/config/brand'
   font-family: var(--font-mono);
 }
 
-.footer-note {
-  margin-left: auto;
-  letter-spacing: 0.02em;
-}
-
 @media (max-width: 640px) {
   .footer-row {
     height: auto;
     padding-block: 12px 20px;
     flex-wrap: wrap;
-  }
-
-  .footer-note {
-    margin-left: 0;
-    flex: 1 0 100%;
   }
 }
 </style>

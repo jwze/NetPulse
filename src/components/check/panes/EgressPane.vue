@@ -39,7 +39,7 @@ onUnmounted(() => {
 
 <template>
   <div class="pane">
-    <PaneBar hint="按目的地分组，看每条线路真正用的出口">
+    <PaneBar>
       <span v-if="sharedCode" class="np-chip">分享结果</span>
       <span v-else-if="running" class="np-chip np-chip-success">
         <span class="np-pulse-dot" />

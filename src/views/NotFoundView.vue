@@ -16,7 +16,6 @@ const router = useRouter()
         <p class="lost-code">404</p>
         <div class="lost-meta">
           <p class="lost-desc">这个地址没有记录</p>
-          <p class="lost-hint">可能已被移除，或者链接拼错了。</p>
         </div>
       </div>
 
@@ -98,12 +97,6 @@ const router = useRouter()
 .lost-desc {
   color: var(--text-primary);
   font-size: 14px;
-}
-
-.lost-hint {
-  margin-top: 4px;
-  color: var(--text-muted);
-  font-size: 12px;
 }
 
 .lost-trace {

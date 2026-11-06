@@ -33,11 +33,7 @@ const headline = computed(() => {
 })
 
 const detail = computed(() => {
-  if (!props.found) {
-    return props.running
-      ? '国内网站、海外 IP 服务、AI 服务、常用网站、单栈主机与 STUN 会同时询问，几秒内出结果。'
-      : '点「开始探测」后，会同时询问 51 个探测器，按看到的地址归并出口。'
-  }
+  if (!props.found) return props.running ? '正在探测' : ''
   const found = props.found
   switch (props.verdict) {
     case 'leak':
@@ -99,7 +95,7 @@ const icon = (tone: string) => (tone === 'bad' ? '✕' : tone === 'warn' ? '!' :
         <p class="eg-headline">{{ headline }}</p>
       </div>
     </div>
-    <p class="eg-detail">{{ detail }}</p>
+    <p v-if="detail" class="eg-detail">{{ detail }}</p>
 
     <ul class="eg-checks">
       <li v-for="item in checks" :key="item.id" class="eg-check-row">

@@ -15,16 +15,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ 'toggle-mask': [] }>()
 
-const SCORE_TIP = [
-  '满分 10 分：',
-  '4  能打开只有 IPv6 的网站',
-  '2  IPv6 大数据包不丢',
-  '2  双栈网站打开不用等',
-  '1  不靠 DNS 也能连 IPv6',
-  '1  浏览器优先走 IPv6',
-  '−1 IPv6 首次响应超过 3 秒',
-].join('\n')
-
 const tone = computed<Tone>(() => {
   const score = props.verdict?.score ?? 0
   if (score >= 9) return 'great'
@@ -61,12 +51,12 @@ function ipText(fam: 4 | 6): string {
   <section class="np-card np-panel score-card">
     <header class="np-panel-head">
       <h2>本次评分</h2>
-      <span class="np-panel-meta">满分 10 分 · 指到分数看扣分项</span>
+      <span class="np-panel-meta">满分 10 分</span>
     </header>
 
     <div class="score-body">
     <div class="score-top">
-      <div class="score-ring" :class="`s-${tone}`" :title="SCORE_TIP" tabindex="0">
+      <div class="score-ring" :class="`s-${tone}`" tabindex="0">
         <svg viewBox="0 0 120 120" aria-hidden="true">
           <circle class="ring-bg" cx="60" cy="60" r="52" />
           <circle class="ring-fg" cx="60" cy="60" r="52" :style="{ strokeDasharray: dash, opacity: score ? 1 : 0 }" />

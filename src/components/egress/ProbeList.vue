@@ -33,7 +33,6 @@ const groups = computed(() =>
   <section class="np-card np-panel eg-probes">
     <header class="np-panel-head">
       <h2>探测器</h2>
-      <span class="np-panel-meta">走另一条线路的会标出来</span>
     </header>
 
     <div class="eg-groups">
