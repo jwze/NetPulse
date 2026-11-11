@@ -6,7 +6,7 @@
 
 ## 1. 这个项目是什么
 
-NetPulse（网脉）是一个**纯前端**的网络测速与质量诊断面板。打开即测，没有账号、没有后端、没有统计上报，结果只留在访问者自己的浏览器里。
+net-pulse（网脉）是一个**纯前端**的网络测速与质量诊断面板。打开即测，没有账号、没有后端、没有统计上报，结果只留在访问者自己的浏览器里。
 
 **产品性格**：精确、克制、有读数感。使用者的画像是「会用的折腾党」——懂 NAT、懂 Bufferbloat、会看 ASN，不需要被教导。
 
@@ -154,7 +154,7 @@ src/
 | NBC / DAZN | 必须 POST，GET 返回 404 |
 | ECharts 6 | `grid.containLabel` 警告用 `LegacyGridContainLabel` |
 | 大读数 | 等宽 400 字重，勿用 500+ |
-| 子路径部署 | Pages 项目站点是 `/NetPulse/`，写死 `/xxx` 一定 404：HTML 用 `%BASE_URL%`，TS 用 `import.meta.env.BASE_URL`，`sw.js` 用 `registration.scope`，`public/manifest.webmanifest` 用相对路径 |
+| 子路径部署 | Pages 项目站点是 `/net-pulse/`，写死 `/xxx` 一定 404：HTML 用 `%BASE_URL%`，TS 用 `import.meta.env.BASE_URL`，`sw.js` 用 `registration.scope`，`public/manifest.webmanifest` 用相对路径 |
 
 ---
 
@@ -182,17 +182,17 @@ npm run build            # 构建
 
 **主站**：腾讯云轻量应用服务器，nginx 静态托管，HTTP 直出（不启用 HTTPS）。
 
-- 站点根目录 `/var/www/netpulse`，属主 `www-data`
-- 配置 `/etc/nginx/sites-available/netpulse.conf`，SPA 回退 `try_files $uri $uri/ /index.html`
+- 站点根目录 `/var/www/net-pulse`，属主 `www-data`
+- 配置 `/etc/nginx/sites-available/net-pulse.conf`，SPA 回退 `try_files $uri $uri/ /index.html`
 - `/assets/` 30 天 immutable，`sw.js` 不缓存
 - 发布方式：本地 `npm run build` → 打包 → 上传解包到临时目录 → **`mv` 目录轮转切换** → `nginx -t && nginx -s reload`
-- 回滚 = 把 `netpulse.prev` 换回来，不改配置
+- 回滚 = 把 `net-pulse.prev` 换回来，不改配置
 - 走 TAT 远程执行时有内容黑名单（`rm -rf`、`cat`、触碰站点目录的复合命令会 `AccessDeny`），改句式即可，不要硬绕
 - 具体实例 ID 与公网 IP 属于运维信息，**不进仓库**
 
 **GitHub Pages**：`main` 每次推送触发 `.github/workflows/deploy.yml`，类型检查 → 单测 → 构建 → 发布，任一环节失败即不发布。
 
-- 站点根由工作流算出：项目站点 `/NetPulse/`，`<owner>.github.io` 为 `/`，通过 `VITE_BASE` 注入
+- 站点根由工作流算出：项目站点 `/net-pulse/`，`<owner>.github.io` 为 `/`，通过 `VITE_BASE` 注入
 - 构建后补 `404.html`（history 路由兜底）与 `.nojekyll`
 - 因此**新增静态引用必须用 `import.meta.env.BASE_URL` 或相对路径**，不要写死 `/xxx`；`index.html` 用 `%BASE_URL%`
 

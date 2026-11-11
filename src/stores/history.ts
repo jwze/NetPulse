@@ -78,7 +78,7 @@ export const useHistoryStore = defineStore('history', () => {
       exportedAt: new Date().toISOString(),
       entries: entries.value,
     }
-    downloadText(`netpulse-history-${stamp()}.json`, JSON.stringify(payload, null, 2), 'application/json;charset=utf-8')
+    downloadText(`net-pulse-history-${stamp()}.json`, JSON.stringify(payload, null, 2), 'application/json;charset=utf-8')
   }
 
   function exportCsv() {
@@ -100,7 +100,7 @@ export const useHistoryStore = defineStore('history', () => {
     const csv = [header, ...rows]
       .map(cols => cols.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
       .join('\r\n')
-    downloadText(`netpulse-history-${stamp()}.csv`, `\ufeff${csv}`, 'text/csv;charset=utf-8')
+    downloadText(`net-pulse-history-${stamp()}.csv`, `\ufeff${csv}`, 'text/csv;charset=utf-8')
   }
 
   return { entries, add, clear, exportJson, exportCsv }

@@ -362,7 +362,7 @@ function formatTime(text: string) {
             v-model:value="form.headers"
             type="textarea"
             :autosize="{ minRows: 2, maxRows: 4 }"
-            placeholder='{"User-Agent":"NetPulse"}'
+            placeholder='{"User-Agent":"net-pulse"}'
           />
         </div>
         <footer>

@@ -95,7 +95,7 @@ function exportImage() {
     exitText: exitText.value,
     date: new Date(shared.value?.ts ?? Date.now()),
   })
-  downloadCanvas(canvas, `netpulse-latency-${stamp()}.png`)
+  downloadCanvas(canvas, `net-pulse-latency-${stamp()}.png`)
   message.success('分享图已保存')
 }
 

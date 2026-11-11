@@ -67,7 +67,7 @@ function exportImage() {
     date: new Date(sharedTs.value || Date.now()),
     elapsed: elapsed.value,
   })
-  downloadCanvas(canvas, `netpulse-ipv6-${stamp()}.png`)
+  downloadCanvas(canvas, `net-pulse-ipv6-${stamp()}.png`)
   message.success('分享图已保存')
 }
 

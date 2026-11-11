@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "NetPulse · 网络脉搏",
-  "short_name": "NetPulse",
+  "name": "net-pulse · 网络脉搏",
+  "short_name": "net-pulse",
   "description": "纯前端的网络测速与质量监测面板",
   "lang": "zh-CN",
   "start_url": "./",

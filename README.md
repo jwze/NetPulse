@@ -1,4 +1,4 @@
-# NetPulse · 网脉
+# net-pulse · 网脉
 
 纯前端的网络测速与质量诊断面板。打开就能测，没有账号、没有后端、没有上报，所有结果只留在你自己的浏览器里。
 
@@ -163,7 +163,7 @@ scripts/          gen-icons.mjs，图标唯一来源
 **GitHub Pages**：`.github/workflows/deploy.yml` 在 `main` 分支每次推送时类型检查 → 单测 → 构建 → 发布，失败则不发布。
 
 1. 仓库 Settings → Pages → Build and deployment → Source 选 **GitHub Actions**
-2. 推送到 `main`，工作流自动算出站点根：项目站点 `/NetPulse/`，用户站点 `<owner>.github.io` 为 `/`
+2. 推送到 `main`，工作流自动算出站点根：项目站点 `/net-pulse/`，用户站点 `<owner>.github.io` 为 `/`
 3. 构建时补 `404.html`（history 路由兜底）与 `.nojekyll`
 
 子路径部署下 `manifest.webmanifest`、`sw.js`、`nodes.json` 全部按相对路径或 `import.meta.env.BASE_URL` 解析，无需改代码。

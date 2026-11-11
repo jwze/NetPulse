@@ -112,7 +112,7 @@ function canvasDraw(): string {
   ctx.fillStyle = '#f60'
   ctx.fillRect(0, 0, 120, 24)
   ctx.fillStyle = '#069'
-  ctx.fillText('NetPulse 隐私画像 🌐 0123', 4, 6)
+  ctx.fillText('net-pulse 隐私画像 🌐 0123', 4, 6)
   ctx.strokeStyle = 'rgba(102, 204, 0, 0.7)'
   ctx.beginPath()
   ctx.arc(200, 30, 20, 0, Math.PI * 1.5)
@@ -520,7 +520,7 @@ export async function readLocal(): Promise<LocalSide> {
   rows.fontfp = await sha8(fontText.join('|'))
   const range2 = document.createRange()
   const span = document.createElement('span')
-  span.textContent = 'NetPulse 文字度量'
+  span.textContent = 'net-pulse 文字度量'
   span.style.cssText = 'position:absolute;left:-9999px;font:14.5px "Georgia"'
   document.body.appendChild(span)
   range2.selectNodeContents(span)

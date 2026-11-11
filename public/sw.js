@@ -10,7 +10,7 @@ const VERSION = 'np-v5'
 const SHELL_CACHE = `${VERSION}-shell`
 const ASSET_CACHE = `${VERSION}-assets`
 
-/** 站点根，形如 '/' 或 '/NetPulse/' */
+/** 站点根，形如 '/' 或 '/net-pulse/' */
 const BASE = new URL(self.registration.scope).pathname
 const INDEX_URL = `${BASE}index.html`
 const SHELL_URLS = [

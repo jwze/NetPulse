@@ -53,7 +53,7 @@ function handleDownload() {
   const url = URL.createObjectURL(blob.value)
   const link = document.createElement('a')
   link.href = url
-  link.download = `netpulse-${stamp()}.png`
+  link.download = `net-pulse-${stamp()}.png`
   link.click()
   window.setTimeout(() => URL.revokeObjectURL(url), 3000)
   message.success('成绩卡已保存')

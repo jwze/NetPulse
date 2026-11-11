@@ -2,7 +2,7 @@ import type { CustomNode } from '@/stores/nodes'
 import { findCustomNodeDuplicate, normalizeNodeLabel, normalizeNodeUrl } from '@/utils/customNodes'
 
 export interface NodeProfileFile {
-  type: 'netpulse_node_profile'
+  type: 'net-pulse_node_profile'
   version: 1
   exportedAt: string
   nodes: CustomNode[]
@@ -13,7 +13,9 @@ export interface ParsedNodeProfile {
   skippedCount: number
 }
 
-const PROFILE_TYPE = 'netpulse_node_profile'
+const PROFILE_TYPE = 'net-pulse_node_profile'
+/** 改名前的导出文件 type，仍可导入 */
+const LEGACY_PROFILE_TYPES = new Set(['netpulse_node_profile'])
 
 function nowText() {
   const now = new Date()
@@ -50,7 +52,7 @@ export function createNodeProfile(nodes: CustomNode[]): NodeProfileFile {
 }
 
 export function getNodeProfileFilename() {
-  return `netpulse_nodes_${Date.now()}.json`
+  return `net-pulse_nodes_${Date.now()}.json`
 }
 
 export function isNodeProfileFilename(fileName: string) {
@@ -71,7 +73,8 @@ export function downloadNodeProfile(profile: NodeProfileFile) {
 
 export function parseNodeProfileFile(raw: string, existingNodes: CustomNode[]): ParsedNodeProfile {
   const parsed = JSON.parse(raw) as Partial<NodeProfileFile>
-  if (parsed.type !== PROFILE_TYPE || parsed.version !== 1 || !Array.isArray(parsed.nodes)) {
+  const type = String(parsed.type ?? '')
+  if ((type !== PROFILE_TYPE && !LEGACY_PROFILE_TYPES.has(type)) || parsed.version !== 1 || !Array.isArray(parsed.nodes)) {
     throw new Error('配置文件格式不正确')
   }
 
