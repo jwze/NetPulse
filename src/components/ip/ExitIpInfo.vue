@@ -1,138 +1,115 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useClipboard } from '@vueuse/core'
-import { useNetworkStore } from '@/stores/network'
-import { fetchIpInfo, type IpInfo } from '@/utils/ipInfo'
+import { onUnmounted, ref } from 'vue'
+import { useExitStack } from '@/composables/useExitStack'
+import { FAMILIES, REGIONS } from '@/data/exitStacks'
+import { latencyTone } from '@/utils/exitStack'
+import { fmtMs } from '@/utils/latency'
+import { copyText } from '@/utils/clipboard'
 import Icon from '@/components/ui/Icon.vue'
 
-const { copy, copied } = useClipboard()
-const networkStore = useNetworkStore()
+const { blocks, loading, refresh } = useExitStack()
 
-type LatencyLevel = 'good' | 'ok' | 'bad' | ''
+const copiedIp = ref('')
+const spinning = ref(false)
+let copiedTimer = 0
 
-interface LatencyState {
-  ms: number | string
-  level: LatencyLevel
+async function copy(ip: string) {
+  if (!ip) return
+  if (!await copyText(ip)) return
+  copiedIp.value = ip
+  window.clearTimeout(copiedTimer)
+  copiedTimer = window.setTimeout(() => { copiedIp.value = '' }, 1400)
 }
 
-const exitInfo = ref<IpInfo | null>(null)
-const loading = ref(true)
-const localLatency = ref<LatencyState>({ ms: '-', level: '' })
-const overseasLatency = ref<LatencyState>({ ms: '-', level: '' })
-
-let timers: number[] = []
-let isVisible = true
-let disposed = false
-
-function getLevel(ms: number): LatencyLevel {
-  if (ms <= 60) return 'good'
-  if (ms >= 200) return 'bad'
-  return 'ok'
-}
-
-/** 国内探测点（华为 204，不返回内容，适合做延迟探测） */
-const CN_PROBE = 'https://connectivitycheck.platform.hicloud.com/generate_204'
-/** 海外探测点（Cloudflare 204） */
-const GLOBAL_PROBE = 'https://cp.cloudflare.com/generate_204'
-
-async function probe(url: string): Promise<number | null> {
+async function onRefresh() {
+  if (spinning.value || loading.value) return
+  spinning.value = true
   try {
-    const start = performance.now()
-    await fetch(url, { method: 'HEAD', cache: 'no-store', mode: 'no-cors', referrerPolicy: 'no-referrer' })
-    return Math.round(performance.now() - start)
-  } catch {
-    return null
-  }
-}
-
-async function refreshExitInfo(first = false) {
-  if (disposed || !isVisible) return
-  try {
-    exitInfo.value = await fetchIpInfo()
-  } catch {
-    if (first) exitInfo.value = null
+    await refresh()
   } finally {
-    loading.value = false
+    spinning.value = false
   }
-  if (!disposed) timers.push(window.setTimeout(() => refreshExitInfo(), 60000))
 }
 
-async function refreshLatency() {
-  if (disposed || !isVisible) return
-  const [cn, global] = await Promise.all([probe(CN_PROBE), probe(GLOBAL_PROBE)])
-  localLatency.value = cn === null ? { ms: '-', level: '' } : { ms: cn, level: getLevel(cn) }
-  overseasLatency.value = global === null ? { ms: '-', level: '' } : { ms: global, level: getLevel(global) }
-  networkStore.setLocalLatency(cn ?? 0)
-  networkStore.setCloudflareLatency(global ?? 0)
-  if (!disposed) timers.push(window.setTimeout(refreshLatency, 5000))
+function toneOf(line: { ms: number | null }, region: 'cn' | 'global') {
+  return latencyTone(line.ms, region)
 }
 
-function onVisibilityChange() {
-  isVisible = document.visibilityState === 'visible'
-}
-
-function copyIp() {
-  if (exitInfo.value?.ip) copy(exitInfo.value.ip)
-}
-
-onMounted(() => {
-  document.addEventListener('visibilitychange', onVisibilityChange)
-  void refreshExitInfo(true)
-  void refreshLatency()
-})
-
-onUnmounted(() => {
-  disposed = true
-  document.removeEventListener('visibilitychange', onVisibilityChange)
-  timers.forEach(t => clearTimeout(t))
-  timers = []
-})
+onUnmounted(() => window.clearTimeout(copiedTimer))
 </script>
 
 <template>
-  <section class="np-card egress-card">
+  <section class="np-card exit-card">
     <header class="np-panel-head">
       <h2 class="np-panel-title">出口地址</h2>
-      <span v-if="copied" class="copied">已复制</span>
+      <div class="head-tools">
+        <span v-if="copiedIp" class="copied">已复制</span>
+        <button
+          class="np-btn-ghost refresh"
+          :disabled="loading || spinning"
+          aria-label="刷新出口地址"
+          @click="onRefresh"
+        >
+          <Icon name="refresh" :size="14" :class="{ 'np-spin': loading || spinning }" />
+        </button>
+      </div>
     </header>
 
-    <div v-if="loading" class="loading">
-      <span class="np-skel" style="width: 62%" />
-      <span class="np-skel" style="width: 38%" />
+    <div v-if="loading" class="exit-grid">
+      <div v-for="region in REGIONS" :key="region.id" class="exit-block">
+        <span class="exit-region">{{ region.label }}</span>
+        <div class="exit-lines">
+          <div v-for="family in FAMILIES" :key="family" class="exit-skel">
+            <span class="np-skel skel-addr" />
+            <span class="np-skel skel-geo" />
+          </div>
+        </div>
+      </div>
     </div>
 
-    <template v-else>
-      <button class="ip-row" type="button" :disabled="!exitInfo" @click="copyIp">
-        <span class="ip-text" :title="exitInfo?.ip || ''">
-          {{ exitInfo ? exitInfo.displayAddress : '未获取到出口信息' }}
-        </span>
-        <Icon v-if="exitInfo" name="copy" :size="14" class="copy-icon" />
-      </button>
-
-      <dl class="latency">
-        <div>
-          <dt>国内</dt>
-          <dd :class="`latency-${localLatency.level || 'none'}`">
-            {{ localLatency.ms }}<em v-if="localLatency.level">ms</em>
-          </dd>
+    <div v-else class="exit-grid">
+      <div v-for="block in blocks" :key="block.region" class="exit-block">
+        <span class="exit-region">{{ block.label }}</span>
+        <div class="exit-lines">
+          <template v-for="line in block.lines" :key="line.family">
+            <button class="exit-line" :disabled="!line.ip" @click="copy(line.ip)">
+              <span class="fam">IPv{{ line.family }}</span>
+              <span class="addr" :title="line.ip || ''">{{ line.ip || '不可用' }}</span>
+              <span class="ms" :class="line.ip ? `tone-${toneOf(line, block.region)}` : ''">
+                <template v-if="line.ms != null">{{ fmtMs(line.ms) }}<em>ms</em></template>
+                <template v-else>—</template>
+              </span>
+            </button>
+            <p class="exit-geo">
+              <template v-if="line.ip && line.area">
+                <span v-if="line.sameAsPrev" class="same">同上</span>
+                <template v-else>
+                  <span>{{ line.area }}</span>
+                  <span v-if="line.carrier" class="carrier"> · {{ line.carrier }}</span>
+                  <span v-if="line.asn" class="asn">{{ line.asn }}</span>
+                </template>
+              </template>
+              <span v-else class="dash">—</span>
+            </p>
+          </template>
         </div>
-        <div>
-          <dt>海外</dt>
-          <dd :class="`latency-${overseasLatency.level || 'none'}`">
-            {{ overseasLatency.ms }}<em v-if="overseasLatency.level">ms</em>
-          </dd>
-        </div>
-      </dl>
-    </template>
+      </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.egress-card {
+.exit-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   padding: 20px;
+}
+
+.head-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .copied {
@@ -140,88 +117,169 @@ onUnmounted(() => {
   font-size: 11px;
 }
 
-.loading {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 6px 0;
+.refresh {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
 }
 
-.ip-row {
+.exit-grid {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 12px;
+}
+
+.exit-block {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 4px 10px;
+  min-height: 74px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.exit-block:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.exit-region {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.exit-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.exit-line {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 6px;
   width: 100%;
-  min-height: 32px;
+  height: 18px;
   padding: 0;
-  border: none;
+  border: 0;
   background: none;
   text-align: left;
   cursor: pointer;
 }
 
-.ip-row:disabled {
+.exit-line:disabled {
   cursor: default;
 }
 
-.ip-text {
+.fam {
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+.addr {
   min-width: 0;
   overflow: hidden;
   color: var(--text-primary);
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: -0.01em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.copy-icon {
+.exit-line:disabled .addr {
   color: var(--text-muted);
-  opacity: 0;
-  transition: opacity var(--dur-fast) var(--ease);
-}
-
-.ip-row:hover .copy-icon,
-.ip-row:focus-visible .copy-icon {
-  opacity: 1;
-}
-
-.latency {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.latency dt {
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
-.latency dd {
-  display: flex;
-  align-items: baseline;
-  gap: 3px;
-  margin: 2px 0 0;
-  font-family: var(--font-mono);
-  font-size: 15px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.2;
-}
-
-.latency dd em {
-  font-style: normal;
-  font-size: 10px;
   font-weight: 400;
-  opacity: 0.7;
 }
 
-.latency-good { color: var(--tone-good); }
-.latency-ok { color: var(--tone-warn); }
-.latency-bad { color: var(--tone-bad); }
-.latency-none { color: var(--text-muted); }
+.exit-line:not(:disabled):hover .addr {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--border-strong);
+}
+
+.ms {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ms em {
+  margin-left: 1px;
+  font-style: normal;
+  font-size: 9px;
+  opacity: 0.65;
+}
+
+/* 判色要盖过 .ms 自己的颜色，所以带上 .ms 一起写 */
+.ms.tone-good { color: var(--tone-good); }
+.ms.tone-warn { color: var(--tone-warn); }
+.ms.tone-bad { color: var(--tone-bad); }
+.ms.tone-none { color: var(--text-muted); }
+
+.exit-geo {
+  height: 16px;
+  margin: 0;
+  padding-left: 32px;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.exit-geo .same {
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.exit-geo .carrier {
+  color: var(--text-secondary);
+}
+
+.exit-geo .asn {
+  margin-left: 4px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.exit-geo .dash {
+  opacity: 0.6;
+}
+
+/* 骨架与成品同高，条也从地址列起，出结果时不顶开页面 */
+.exit-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 36px;
+  padding: 2px 0 0 32px;
+}
+
+.skel-addr {
+  width: 76%;
+  height: 12px;
+}
+
+.skel-geo {
+  width: 52%;
+  height: 10px;
+}
+
+@media (max-width: 400px) {
+  .exit-geo {
+    font-size: 10px;
+  }
+}
 </style>

@@ -114,6 +114,7 @@ scripts/          gen-icons.mjs，图标唯一来源
 | 能力 | 主要端点 |
 | --- | --- |
 | 出口 IP 与归属 | `ipwho.is` → 回退 `ipapi.co` |
+| 测速台出口地址卡 | 国内 `ipv4/ipv6.ddnspod.com`、海外 `api4/6.ipify.org`，归属同上 |
 | 双栈探测 | `v4.ident.me` / `v6.ident.me` |
 | DoH 对比 | `dns.alidns.com`、Cloudflare、Google |
 | 链路质量 | 华为 / Cloudflare 204 端点 |

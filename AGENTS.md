@@ -154,6 +154,8 @@ src/
 | NBC / DAZN | 必须 POST，GET 返回 404 |
 | ECharts 6 | `grid.containLabel` 警告用 `LegacyGridContainLabel` |
 | 大读数 | 等宽 400 字重，勿用 500+ |
+| `ipwho.is` 免费额度 | 1000 次/天按域名算，出口卡的归属必须带 TTL 缓存 + 每小时预算，别每次刷新都问 |
+| 出口地址按协议栈拆 | 浏览器不能指定协议族，只能用单栈域名（`ipv4/ipv6.ddnspod.com`、`api4/6.ipify.org`）分别问 |
 | 子路径部署 | Pages 项目站点是 `/net-pulse/`，写死 `/xxx` 一定 404：HTML 用 `%BASE_URL%`，TS 用 `import.meta.env.BASE_URL`，`sw.js` 用 `registration.scope`，`public/manifest.webmanifest` 用相对路径 |
 
 ---

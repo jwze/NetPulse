@@ -1,6 +1,7 @@
 /**
  * 出口 IP 查询：全部走公开接口，无自有后端。
- * 主接口 ipwho.is（字段最全，含 ASN 与风控标记），失败回退 ipapi.co。
+ * 主接口 ipwho.is（字段最全，含 ASN 与风控标记，lang=zh-CN 拿中文地名），
+ * 失败回退 ipapi.co。按 IP 结果缓存，出口不变就不重复问。
  */
 
 export interface IpInfo {
@@ -148,7 +149,7 @@ function normalizeIpapi(data: IpapiResponse): IpInfo {
 
 export async function fetchIpInfo(signal?: AbortSignal): Promise<IpInfo> {
   try {
-    const resp = await fetch('https://ipwho.is/', {
+    const resp = await fetch('https://ipwho.is/?lang=zh-CN', {
       cache: 'no-store',
       referrerPolicy: 'no-referrer',
       signal,
@@ -170,3 +171,102 @@ export async function fetchIpInfo(signal?: AbortSignal): Promise<IpInfo> {
     return normalizeIpapi(data)
   }
 }
+
+/* ---------- 指定 IP 的归属（出口地址卡用） ---------- */
+
+/** ipwho.is 免费额度按域名计 1000 次/天，出口没变就不该重复问 */
+const GEO_TTL = 30 * 60 * 1000
+const GEO_KEY = 'np:exit-geo:v1'
+
+/** 出口卡之外还有别的卡片在问 ipwho，这里再留一道闸：一小时最多 30 次 */
+const GEO_BUDGET = 30
+const GEO_WINDOW = 60 * 60 * 1000
+const spent: number[] = []
+
+function takeBudget() {
+  const now = Date.now()
+  while (spent.length && now - spent[0] > GEO_WINDOW) spent.shift()
+  if (spent.length >= GEO_BUDGET) return false
+  spent.push(now)
+  return true
+}
+
+interface GeoEntry {
+  at: number
+  info: IpInfo
+}
+
+function readGeoCache(): Record<string, GeoEntry> {
+  try {
+    const raw = sessionStorage.getItem(GEO_KEY)
+    if (!raw) return {}
+    const data = JSON.parse(raw) as Record<string, GeoEntry>
+    return data && typeof data === 'object' ? data : {}
+  } catch {
+    return {}
+  }
+}
+
+function saveGeoCache(ip: string, info: IpInfo) {
+  try {
+    const all = readGeoCache()
+    all[ip] = { at: Date.now(), info }
+    sessionStorage.setItem(GEO_KEY, JSON.stringify(all))
+  } catch {
+    // 隐私模式下写不进去，只是少了缓存
+  }
+}
+
+/** 地址直接进路径，IPv6 的冒号不转义也能命中 */
+function ipPath(ip: string) {
+  return /^[0-9a-f:.]+$/i.test(ip) ? ip : encodeURIComponent(ip)
+}
+
+async function queryIpwho(ip: string, signal?: AbortSignal): Promise<IpInfo> {
+  const resp = await fetch(`https://ipwho.is/${ipPath(ip)}?lang=zh-CN`, {
+    cache: 'no-store',
+    referrerPolicy: 'no-referrer',
+    signal,
+  })
+  if (!resp.ok) throw new Error(`ipwho ${resp.status}`)
+  const data = (await resp.json()) as IpwhoResponse
+  if (data?.success === false || !data?.ip) throw new Error('ipwho 未返回结果')
+  return normalizeIpwho(data)
+}
+
+async function queryIpapi(ip: string, signal?: AbortSignal): Promise<IpInfo> {
+  const resp = await fetch(`https://ipapi.co/${ipPath(ip)}/json/`, {
+    cache: 'no-store',
+    referrerPolicy: 'no-referrer',
+    signal,
+  })
+  if (!resp.ok) throw new Error(`ipapi ${resp.status}`)
+  const data = (await resp.json()) as IpapiResponse
+  if (!data?.ip) throw new Error('ipapi 未返回结果')
+  return normalizeIpapi(data)
+}
+
+/**
+ * 查某个地址的归属。走缓存；两个接口都不通时，把上一次的结果交回去，
+ * 没有就返回 null（界面显示「—」，不编造）。
+ */
+export async function fetchIpInfoOf(ip: string, signal?: AbortSignal): Promise<IpInfo | null> {
+  const target = (ip || '').trim()
+  if (!target) return null
+  const cached = readGeoCache()[target]
+  if (cached && Date.now() - cached.at < GEO_TTL) return cached.info
+  if (!takeBudget()) return cached?.info ?? null
+
+  for (const query of [queryIpwho, queryIpapi]) {
+    if (signal?.aborted) break
+    try {
+      const info = await query(target, signal)
+      saveGeoCache(target, info)
+      return info
+    } catch {
+      // 换下一个接口
+    }
+  }
+  return cached?.info ?? null
+}
+
